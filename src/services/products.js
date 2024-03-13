@@ -1,8 +1,14 @@
+
 import productModel from "../model/ProductModel.js"
 
-export const addProducts = async (name, description, price, stock, category) => {
+export const addProducts = async (name, description, price, stock, category, image) => {
   try {
-    const newProduct = await productModel.create({ name, description, price, stock, category })
+    // const result = await uploadImage(image)
+    // console.log(result)
+    // const imagenBase64 = '...'; // Base64 de la imagen
+    // const nombreImagen = 'pizza.png'; // Nombre de la imagen
+    // guardarImagen(nombreImagen, Buffer.from(imagenBase64, 'base64'));
+    const newProduct = await productModel.create({ name, description, price, stock, category,image })
     return newProduct
   } catch (error) {
     console.log(error)

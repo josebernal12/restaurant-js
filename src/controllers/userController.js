@@ -1,3 +1,4 @@
+import generateToken from "../helpers/generateToken.js";
 import { deleteUser, getUserById, getUsers, updateUser } from "../services/user.js";
 
 export const getUsersController = async (req, res) => {
@@ -20,7 +21,13 @@ export const deleteUserController = async (req, res) => {
 export const updateUserController = async (req, res) => {
   const { name, lastName, email } = req.body
   const { id } = req.params
-  
+
   const user = await updateUser(id, name, lastName, email)
   res.json(user)
+}
+
+export const renewToken = (req, res) => {
+  const { id } = req.params
+  const token = generateToken(id)
+  res.json(token)
 }

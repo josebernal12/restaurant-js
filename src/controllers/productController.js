@@ -1,8 +1,8 @@
 import { addProducts, deleteProduct, getProducts, getProductsById, updateProduct } from "../services/products.js"
 
 export const addProductController = async (req, res) => {
-  const { name, description, price, stock, category } = req.body
-  const newProduct = await addProducts(name, description, price, stock, category)
+  const { name, description, price, stock, category, image } = req.body
+  const newProduct = await addProducts(name, description, price, stock, category, image)
   res.json(newProduct)
 
 }
