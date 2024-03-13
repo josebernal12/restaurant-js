@@ -14,7 +14,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/api/user', userRouter)
 // app.use('/api/product', productRouter)
-app.listen(8080, () => {
+app.listen(port, () => {
   sequelize.authenticate()
   console.log('Connection has been established successfully.');
   console.log('server listening to port 8080')
