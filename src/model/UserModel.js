@@ -1,32 +1,14 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../database/database.js';
+import mongoose from 'mongoose'
+const { Schema } = mongoose
 
-
-// Definimos el modelo de usuario usando Sequelize
-const UserModel = sequelize.define('User', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
+const bookSchema = new Schema({
   name: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    require: true
   },
-  lastName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  email: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-});
+}, {
+    timestamps: true
+})
 
-export default UserModel
+const bookModel = mongoose.model('Book', bookSchema)
+export default bookModel 
