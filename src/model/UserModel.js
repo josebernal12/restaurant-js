@@ -1,8 +1,20 @@
 import mongoose from 'mongoose'
 const { Schema } = mongoose
 
-const bookSchema = new Schema({
+const userSchema = new Schema({
   name: {
+    type: String,
+    require: true
+  },
+  lastName: {
+    type: String,
+    require: true
+  },
+  email: {
+    type: String,
+    require: true
+  },
+  password: {
     type: String,
     require: true
   },
@@ -10,5 +22,5 @@ const bookSchema = new Schema({
     timestamps: true
 })
 
-const bookModel = mongoose.model('Book', bookSchema)
-export default bookModel 
+const userModel = mongoose.model('User', userSchema)
+export default userModel 
