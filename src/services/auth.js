@@ -11,7 +11,6 @@ export const register = async (name, lastName, email, password, confirmPassword)
       if (confirmPassword !== password) {
         return 'Los passwords no coinciden';
       } else {
-        // Devuelve una promesa que resuelve con el nuevo usuario
         const saltRound = bcrypt.genSaltSync(saltRounds)
         const hash = bcrypt.hashSync(password, saltRound)
         const user = await userModel.create({ name, lastName, email, password: hash })
@@ -27,7 +26,7 @@ export const register = async (name, lastName, email, password, confirmPassword)
 
   } catch (error) {
     console.log(error);
-    throw error; // Asegúrate de propagar el error para que sea manejado correctamente fuera de esta función
+    throw error; 
   }
 };
 
