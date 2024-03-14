@@ -1,8 +1,8 @@
-import rolModel from "../model/rolModel.js"
+import RolModel from '../model/RolModel'
 
 export const createRol = async (name, permissions) => {
   try {
-    const newRol = await rolModel.create({ name, permissions })
+    const newRol = await RolModel.create({ name, permissions })
     if(!newRol) {
       return 'error a la creacion del rol'
     }
