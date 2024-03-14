@@ -1,8 +1,9 @@
 import generateToken from "../helpers/generateToken.js";
 import { checkEmailInDB } from "../helpers/validate.js";
 import userModel from "../model/UserModel.js";
+import RolModel from '../model/RolModel.js';
 import bcrypt from 'bcrypt'
-export const register = async (name, lastName, email, password, confirmPassword) => {
+export const register = async (name, lastName, email, password, confirmPassword, rol) => {
   const saltRounds = 10;
 
   try {
@@ -13,20 +14,29 @@ export const register = async (name, lastName, email, password, confirmPassword)
       } else {
         const saltRound = bcrypt.genSaltSync(saltRounds)
         const hash = bcrypt.hashSync(password, saltRound)
-        const user = await userModel.create({ name, lastName, email, password: hash })
-        const token = await generateToken(user.id)
+        if (!rol) {
+          const rolMember = await RolModel.findOne({ name: 'miembro' });
+          const user = await userModel.create({ name, lastName, email, password: hash, rol: rolMember })
+          const token =  generateToken(user.id)
+          return {
+            user,
+            token
+          }
+        }
+        const user = await userModel.create({ name, lastName, email, password: hash, rol })
+        const token = generateToken(user.id)
         return {
           user,
           token
         }
       }
-    }else {
-      return  'el email ya existe'
+    } else {
+      return 'el email ya existe'
     }
 
   } catch (error) {
     console.log(error);
-    throw error; 
+    throw error;
   }
 };
 

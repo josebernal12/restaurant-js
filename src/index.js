@@ -7,12 +7,15 @@ import userRouter from './router/router.js'
 
 import { connectDB } from './database/database.js'
 import productRouter from './router/product.js'
+import rolRouter from './router/rol.js'
+
 const app = express()
 const port = process.env.PORT || 8080
 app.use(cors())
 app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
+app.use('/api/rol', rolRouter)
 app.listen(port, () => {
   connectDB()
 

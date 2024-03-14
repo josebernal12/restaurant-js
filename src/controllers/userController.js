@@ -19,10 +19,10 @@ export const deleteUserController = async (req, res) => {
 }
 
 export const updateUserController = async (req, res) => {
-  const { name, lastName, email } = req.body
+  const { name, lastName, email, rolId } = req.body
   const { id } = req.params
 
-  const user = await updateUser(id, name, lastName, email)
+  const user = await updateUser(id, name, lastName, email, rolId)
   res.json(user)
 }
 

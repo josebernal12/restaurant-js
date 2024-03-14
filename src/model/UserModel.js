@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 const { Schema } = mongoose
-
 const userSchema = new Schema({
   name: {
     type: String,
@@ -19,9 +18,8 @@ const userSchema = new Schema({
     require: true
   },
   rol: {
-    type: String,
-    enum: ['admin', 'miembro'],
-    default: 'miembro'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Rol',
   }
 }, {
   timestamps: true
