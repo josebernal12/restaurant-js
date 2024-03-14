@@ -2,8 +2,8 @@ import { login, register } from '../services/auth.js'
 
 
 export const registerController = async (req, res) => {
-  const { name, lastName, email, password, confirmPassword } = req.body
-  const user = await register(name, lastName, email, password, confirmPassword)
+  const { name, lastName, email, password, confirmPassword, rol } = req.body
+  const user = await register(name, lastName, email, password, confirmPassword, rol)
   res.json({
     user
   })

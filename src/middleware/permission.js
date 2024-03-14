@@ -2,27 +2,29 @@ import jwt from 'jsonwebtoken'
 import RolModel from '../model/RolModel.js';
 import userModel from '../model/UserModel.js';
 
-const checkJwt = async (req, res, next) => {
+export const checkJwt = async (req, res, next) => {
   let token = "";
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.KEYSECRET || 'defaultSecret')
       const user = await userModel.findById(decoded.id)
-      return user
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+      req.user = user; // Almacenar el usuario en el objeto de solicitud
+      next(); // Pasar al siguiente middleware
     } catch (error) {
-      console.log('error')
+      console.log('error', error);
+      return res.status(401).json({ msg: 'Token no válido' });
     }
+  } else {
+    return res.status(401).json({ msg: 'Token no válido' });
   }
-  if (!token) {
-    console.log('tokeen')
-    const error = new Error('Token no valid')
-    return res.status(401).json({ msg: error.message })
-  }
-  next()
-}
+};
+
 export const addUserPermission = async (req, res, next) => {
-  const user = await checkJwt(req, res, next)
+  const user = req.user
   if (user) {
     const rol = await RolModel.findById(user.rol)
     if (rol.permissions.agregarUsuario) {
@@ -34,7 +36,7 @@ export const addUserPermission = async (req, res, next) => {
   }
 }
 export const updateUserPermission = async (req, res, next) => {
-  const user = await checkJwt(req, res, next)
+  const user = req.user
   if (user) {
     const rol = await RolModel.findById(user.rol)
     if (rol.permissions.actualizarUsuario) {
@@ -46,7 +48,7 @@ export const updateUserPermission = async (req, res, next) => {
   }
 }
 export const deleteUserPermission = async (req, res, next) => {
-  const user = await checkJwt(req, res, next)
+  const user = req.user
   if (user) {
     const rol = await RolModel.findById(user.rol)
     if (rol.permissions.eliminarUsuario) {

@@ -6,7 +6,10 @@ const { Schema } = mongoose;
 const permissionsSchema = new Schema({
   eliminarUsuario: { type: Boolean, default: false },
   agregarUsuario: { type: Boolean, default: false },
-  actualizarUsuario: { type: Boolean, default: false }
+  actualizarUsuario: { type: Boolean, default: false },
+  eliminarProducto: { type: Boolean, default: false },
+  agregarProducto: { type: Boolean, default: false },
+  actualizarProducto: { type: Boolean, default: false },
 });
 
 const RolSchema = new Schema({
@@ -19,7 +22,10 @@ const RolSchema = new Schema({
     default: {
       eliminarUsuario: false,
       agregarUsuario: false,
-      actualizarUsuario: false
+      actualizarUsuario: false,
+      eliminarProducto: false,
+      agregarProducto: false,
+      actualizarProducto: false,
     }
   }
 });
