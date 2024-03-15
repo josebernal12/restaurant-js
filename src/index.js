@@ -10,6 +10,8 @@ import productRouter from './router/product.js'
 import rolRouter from './router/rol.js'
 import tableRouter from './router/table.js'
 import ticketRouter from './router/ticket.js'
+import billRouter from './router/bill.js'
+
 const app = express()
 const port = process.env.PORT || 8080
 app.use(cors())
@@ -18,7 +20,7 @@ app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
 app.use('/api/rol', rolRouter)
 app.use('/api/table', tableRouter)
-app.use('/api/ticket', ticketRouter)
+app.use('/api/bill', billRouter)
 app.listen(port, () => {
   connectDB()
 
