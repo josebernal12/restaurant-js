@@ -49,6 +49,7 @@ export const updateUserPermission = async (req, res, next) => {
 }
 export const deleteUserPermission = async (req, res, next) => {
   const user = req.user
+
   if (user) {
     const rol = await RolModel.findById(user.rol)
     if (rol.permissions.eliminarUsuario) {
