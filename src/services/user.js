@@ -3,7 +3,7 @@ import userModel from "../model/UserModel.js"
 
 export const getUsers = async () => {
   try {
-    const users = await userModel.find()
+    const users = await userModel.find().populate('rol')
     if (!users) {
       return 'no hay usuarios'
     }
