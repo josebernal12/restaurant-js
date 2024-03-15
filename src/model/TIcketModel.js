@@ -4,19 +4,19 @@ const { Schema } = mongoose
 const ticketSchema = new Schema({
   name: {
     type: String,
-    required: true
+    // required: true
   },
   price: {
     type: Number,
-    required: true
+    // required: true
   },
   subTotal: {
     type: Number,
-    required: true,
+    // required: true,
   },
   total: {
     type: Number,
-    required: true,
+    // required: true,
   },
   tableId: {
     type: mongoose.Schema.Types.ObjectId,

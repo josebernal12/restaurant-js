@@ -20,6 +20,7 @@ app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
 app.use('/api/rol', rolRouter)
 app.use('/api/table', tableRouter)
+app.use('/api/ticket', ticketRouter)
 app.use('/api/bill', billRouter)
 app.listen(port, () => {
   connectDB()
