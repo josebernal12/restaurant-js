@@ -2,14 +2,13 @@ import mongoose from 'mongoose'
 const { Schema } = mongoose
 
 const ticketSchema = new Schema({
-  name: {
-    type: String,
-    // required: true
-  },
-  price: {
-    type: Number,
-    // required: true
-  },
+  products: [
+    {
+      name: String,
+      price: Number,
+      stock: Number
+    }
+  ],
   subTotal: {
     type: Number,
     // required: true,
