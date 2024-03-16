@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { addProductController, deleteProductController, getProductByIdController, getProductsController, updateProductController } from '../controllers/productController.js'
+import { addProductController, deleteProductController, getProductByIdController, getProductsController, searchProductController, updateProductController } from '../controllers/productController.js'
 import {
   addProductPermission,
   deleteProductPermission,
@@ -14,7 +14,7 @@ router.post('/', [checkJwt, addProductPermission], addProductController)
 router.get('/:id', getProductByIdController)
 router.put('/update/:id', [checkJwt, updateProductPermission], updateProductController)
 router.delete('/delete/:id', [checkJwt, deleteProductPermission], deleteProductController)
-
+router.post('/search', searchProductController)
 
 
 export default router

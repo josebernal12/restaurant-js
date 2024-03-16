@@ -1,5 +1,5 @@
 import generateToken from "../helpers/generateToken.js";
-import { deleteUser, getUserById, getUsers, updateUser } from "../services/user.js";
+import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
 
 export const getUsersController = async (req, res) => {
   const users = await getUsers()
@@ -30,4 +30,10 @@ export const renewToken = (req, res) => {
   const { id } = req.params
   const token = generateToken(id)
   res.json(token)
+}
+
+export const userSearchController = async (req, res) => {
+  const { name } = req.body
+  const user = await searchUser(name)
+  res.json(user)
 }

@@ -3,7 +3,7 @@ import productModel from "../model/ProductModel.js"
 
 export const addProducts = async (name, description, price, stock, category, image) => {
   try {
-    const newProduct = await productModel.create({ name, description, price, stock, category,image })
+    const newProduct = await productModel.create({ name, description, price, stock, category, image })
     return newProduct
   } catch (error) {
     console.log(error)
@@ -54,6 +54,29 @@ export const updateProduct = async (id, name, description, stock, price, categor
       return 'error en la actualizacion'
     }
     return productUpdate
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const searchProduct = async (name, price, category,) => {
+  try {
+    const productSearch = await productModel.find(
+      {
+        name: { $regex: new RegExp(name, 'i') },
+        // price: {
+        //   $regex: new RegExp(price, 'i'),
+        // },
+        category: { $regex: new RegExp(category, 'i') }
+
+      })
+
+    if (!productSearch) {
+      return {
+        msg: 'error en la busqueda'
+      }
+    }
+    return productSearch
   } catch (error) {
     console.log(error)
   }

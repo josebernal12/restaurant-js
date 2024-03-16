@@ -52,4 +52,17 @@ export const updateUser = async (id, name, lastName, email, rolId) => {
   }
 }
 
+export const searchUser = async (name) => {
+  try {
+    const user = await userModel.find({ name: { $regex: new RegExp(name, 'i') } })
+    if (!user) {
+      return {
+        msg: 'no hay usuarios con ese nombre'
+      }
+    }
+    return user
+  } catch (error) {
+    console.log(error)
+  }
+}
 
