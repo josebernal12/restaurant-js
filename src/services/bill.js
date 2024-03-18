@@ -1,14 +1,12 @@
 import billModel from "../model/BillModel.js"
 
-export const generateBill = async (ticketId, tableId, userId) => {
+export const generateBill = async (products, ticketId, tableId, userId) => {
   try {
-    console.log(ticketId)
-    console.log(tableId)
-    console.log(userId)
+
     if (!ticketId || !tableId || !userId) {
       return 'error al generar facturas (te falta datos por proporcionar)'
     }
-    const newBill = await billModel.create({ ticketId, tableId, userId })
+    const newBill = await billModel.create({ products, ticketId, tableId, userId })
     if (!newBill) {
       return 'error al generar la factura'
     }

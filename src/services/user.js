@@ -1,17 +1,32 @@
 import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
-
-export const getUsers = async (name) => {
+import RolModel from '../model/RolModel.js'
+export const getUsers = async (query) => {
   try {
-    const users = await userModel.find(name).populate('rol')
-    if (!users) {
-      return 'no hay usuarios'
+    if (query.rol) { // Si se proporciona un nombre de rol en la consulta
+      const rol = await RolModel.findOne({ name: query.rol }); // Buscar el rol por nombre
+      if (!rol) {
+        return 'No se encontró el rol especificado';
+      }
+      const users = await userModel.find({ rol: rol._id }); // Buscar usuarios por el ObjectId del rol
+      if (!users || users.length === 0) {
+        return 'No hay usuarios con el rol especificado';
+      }
+      return users;
     }
-    return users
+
+    // Si no se especifica un nombre de rol en la consulta, buscar usuarios según otros criterios
+    const users = await userModel.find(query).populate('rol');
+    if (!users || users.length === 0) {
+      return 'No hay usuarios que coincidan con los criterios de búsqueda';
+    }
+    return users;
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    throw error; // Propagar el error para que sea manejado en el controlador
   }
 }
+
 export const getUserById = async (id) => {
   try {
     const user = await userModel.findById(id)

@@ -7,9 +7,16 @@ export const getUsersController = async (req, res) => {
 
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
-  }   
-   // if (req.query.age) query.age = req.query.age;
-  // if (req.query.role) query.role = req.query.role;
+  }
+  if (req.query.rol) {
+    query.rol = { $regex: req.query.rol, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  }
+  if (req.query.email) {
+    query.email = { $regex: req.query.email, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  }
+  if (req.query.lastName) {
+    query.lastName = { $regex: req.query.lastName, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  }
   const users = await getUsers(query)
   res.json(users)
 }

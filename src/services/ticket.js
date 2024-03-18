@@ -55,3 +55,5 @@ export const getTicketById = async (id) => {
     console.log(error)
   }
 }
+
+export const closeTicket = async(id) => {}
