@@ -16,7 +16,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
 
 export const updateTicket = async (id, products, subTotal, total, tableId, userId) => {
   try {
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products, subTotal, total, tableId, userId }, { new: true })
+    const ticketId = await ticketModel.findOne({ tableId: id })
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId._id, { products, subTotal, total, tableId, userId }, { new: true })
     if (!ticketUpdate) {
       return 'no se pudo actualizar'
     }
