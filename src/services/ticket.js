@@ -41,7 +41,7 @@ export const getTickets = async () => {
 
 export const getTicketById = async (id) => {
   try {
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findOne({ tableId: id })
     if (!ticket) {
       return {
         msg: 'no hay ticket con ese id'
