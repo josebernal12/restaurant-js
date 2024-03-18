@@ -10,9 +10,9 @@ export const addProducts = async (name, description, price, stock, category, ima
   }
 }
 
-export const getProducts = async () => {
+export const getProducts = async (name) => {
   try {
-    const products = await productModel.find()
+    const products = await productModel.find(name)
     if (!products) {
       return 'no hay productos'
     }
