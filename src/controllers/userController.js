@@ -2,7 +2,15 @@ import generateToken from "../helpers/generateToken.js";
 import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
 
 export const getUsersController = async (req, res) => {
-  const users = await getUsers()
+
+  const query = {}; // Inicializar el objeto de consulta
+
+  if (req.query.name) {
+    query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  }   
+   // if (req.query.age) query.age = req.query.age;
+  // if (req.query.role) query.role = req.query.role;
+  const users = await getUsers(query)
   res.json(users)
 }
 

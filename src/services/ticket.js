@@ -1,4 +1,5 @@
 import ticketModel from "../model/TIcketModel.js"
+import tableModel from "../model/TableModel.js"
 
 export const createTicket = async (products, subTotal, total, tableId, userId) => {
   try {
@@ -6,6 +7,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
     if (!newTicket) {
       return 'error al crear el ticket'
     }
+    await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true })
     return newTicket
   } catch (error) {
     console.log(error)

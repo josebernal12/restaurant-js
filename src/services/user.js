@@ -1,9 +1,9 @@
 import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 
-export const getUsers = async () => {
+export const getUsers = async (name) => {
   try {
-    const users = await userModel.find().populate('rol')
+    const users = await userModel.find(name).populate('rol')
     if (!users) {
       return 'no hay usuarios'
     }
