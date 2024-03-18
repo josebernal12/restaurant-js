@@ -7,7 +7,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
     if (!newTicket) {
       return 'error al crear el ticket'
     }
-    await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true })
+    await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
     return newTicket
   } catch (error) {
     console.log(error)
