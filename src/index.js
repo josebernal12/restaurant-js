@@ -11,6 +11,7 @@ import rolRouter from './router/rol.js'
 import tableRouter from './router/table.js'
 import ticketRouter from './router/ticket.js'
 import billRouter from './router/bill.js'
+import activitiesRouter from './router/activities.js'
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -22,6 +23,7 @@ app.use('/api/rol', rolRouter)
 app.use('/api/table', tableRouter)
 app.use('/api/ticket', ticketRouter)
 app.use('/api/bill', billRouter)
+app.use('/api/activities', activitiesRouter)
 app.listen(port, () => {
   connectDB()
 
