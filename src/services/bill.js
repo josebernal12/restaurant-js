@@ -4,7 +4,7 @@ import tableModel from "../model/TableModel.js"
 export const generateBill = async (ticketId, tableId, userId) => {
   try {
 
-    if (!ticketId || !tableId || !userId) {
+    if (!ticketId || !tableId ) {
       return 'error al generar facturas (te falta datos por proporcionar)'
     }
     const newBill = await billModel.create({ ticketId, tableId, userId })
