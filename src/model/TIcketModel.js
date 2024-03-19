@@ -17,6 +17,10 @@ const ticketSchema = new Schema({
     type: Number,
     // required: true,
   },
+  completed: {
+    type: Boolean,
+    default: false
+  },
   tableId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'table'
