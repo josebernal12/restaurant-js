@@ -1,14 +1,23 @@
+import mongoose from "mongoose";
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 
 export const createTicket = async (products, subTotal, total, tableId, userId) => {
   try {
-    const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
-    if (!newTicket) {
-      return 'error al crear el ticket'
+    const tableObjectId = mongoose.Types.ObjectId(tableId);
+    const table = await tableModel.findById(tableObjectId)
+    if (table) {
+      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
+      if (!newTicket) {
+        return 'error al crear el ticket'
+      }
+      await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
+      return newTicket
     }
-    await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
-    return newTicket
+    return {
+      msg: 'no existen mesas con ese id'
+    }
+
   } catch (error) {
     console.log(error)
   }
@@ -65,6 +74,14 @@ export const deleteTicket = async (id) => {
       }
     }
     return ticketDeleted
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const joinTable = async (idsTables) => {
+  try {
+   const ticket =  await ticketModel.create()
   } catch (error) {
     console.log(error)
   }

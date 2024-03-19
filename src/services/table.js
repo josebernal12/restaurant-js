@@ -48,3 +48,5 @@ export const availableTable = async (id, available) => {
     console.log(error)
   }
 }
+
+

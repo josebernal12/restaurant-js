@@ -15,13 +15,14 @@ export const generateBill = async (ticketId, tableId, userId) => {
     if (!table) {
       return {
         msg: 'la mesa con ese id no existe'
-      }    }
+      }
+    }
     const ticket = await ticketModel.findById(ticketId)
 
     if (ticket.tableId.toString() === tableId) {
       const newBill = await billModel.create({ ticketId, tableId, userId })
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true })
-      await ticketModel.findByIdAndUpdate(ticketId, { completed: true }, { new: true })
+      await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true })
 
       if (!newBill) {
         return 'error al generar la factura'
