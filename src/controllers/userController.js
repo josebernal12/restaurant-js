@@ -4,7 +4,7 @@ import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../se
 export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
-
+  let page;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
@@ -17,7 +17,10 @@ export const getUsersController = async (req, res) => {
   if (req.query.lastName) {
     query.lastName = { $regex: req.query.lastName, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
-  const users = await getUsers(query)
+  if (req.query.page) {
+    page = req.query.page // 'i' para hacer la búsqueda case-insensitive
+  }
+  const users = await getUsers(query, page)
   res.json(users)
 }
 

@@ -1,22 +1,26 @@
 import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 import RolModel from '../model/RolModel.js'
-export const getUsers = async (query) => {
+export const getUsers = async (query, page) => {
+  const perPage = 10;
+  const pageQuery = parseInt(page) || 1;
+  const skip = perPage * (pageQuery - 1);
   try {
-    if (query.rol) { // Si se proporciona un nombre de rol en la consulta
-      const rol = await RolModel.findOne({ name: query.rol }); // Buscar el rol por nombre
+    if (query.rol) {
+      const rol = await RolModel.findOne({ name: query.rol });
       if (!rol) {
         return 'No se encontró el rol especificado';
       }
-      const users = await userModel.find({ rol: rol._id }); // Buscar usuarios por el ObjectId del rol
+      const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').exec();
       if (!users || users.length === 0) {
         return 'No hay usuarios con el rol especificado';
       }
       return users;
     }
-
-    // Si no se especifica un nombre de rol en la consulta, buscar usuarios según otros criterios
-    const users = await userModel.find(query).populate('rol');
+    const users = await userModel.find(query).limit(perPage)
+      .skip(skip)
+      .populate('rol')
+      .exec();;
     if (!users || users.length === 0) {
       return 'No hay usuarios que coincidan con los criterios de búsqueda';
     }
