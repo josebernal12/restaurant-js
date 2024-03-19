@@ -9,14 +9,17 @@ export const addProductController = async (req, res) => {
 
 export const getProductsController = async (req, res) => {
   const query = {}; // Inicializar el objeto de consulta
-
+  let page;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
   if (req.query.category) {
     query.category = { $regex: req.query.category, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
-  const products = await getProducts(query)
+  if (req.query.page) {
+    page = req.query.page // 'i' para hacer la búsqueda case-insensitive
+  }
+  const products = await getProducts(query, page)
   res.json(products)
 
 }

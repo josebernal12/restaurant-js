@@ -17,6 +17,13 @@ export const getUsers = async (query, page) => {
       }
       return users;
     }
+    // else if (query.name) {
+    //   const users = await userModel.find(query).populate('rol').limit(10).skip(10)
+    //   if (!users || users.length === 0) {
+    //     return 'No hay usuarios que coincidan con los criterios de búsqueda';
+    //   }
+    //   return users;
+    // }
     const users = await userModel.find(query).limit(perPage)
       .skip(skip)
       .populate('rol')
