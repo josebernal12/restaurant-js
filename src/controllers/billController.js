@@ -1,4 +1,4 @@
-import { generateBill, getBills } from "../services/bill.js"
+import { generateBill, getBIllById, getBills } from "../services/bill.js"
 
 export const generateBillController = async (req, res) => {
   const { ticketId } = req.body
@@ -11,4 +11,10 @@ export const generateBillController = async (req, res) => {
 export const getBillsController = async (req, res) => {
   const bills = await getBills()
   res.json(bills)
+}
+
+export const getBillByIdController = async (req, res) => {
+  const { id } = req.params
+  const bill = await getBIllById(id)
+  res.json(bill)
 }

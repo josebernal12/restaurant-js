@@ -56,4 +56,16 @@ export const getTicketById = async (id) => {
   }
 }
 
-export const closeTicket = async(id) => {}
+export const deleteTicket = async (id) => {
+  try {
+    const ticketDeleted = await ticketModel.findByIdAndDelete(id, { new: true })
+    if (!ticketDeleted) {
+      return {
+        msg: 'no hay tickets con ese id'
+      }
+    }
+    return ticketDeleted
+  } catch (error) {
+    console.log(error)
+  }
+}

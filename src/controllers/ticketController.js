@@ -1,4 +1,4 @@
-import { createTicket, getTicketById, getTickets, updateTicket } from "../services/ticket.js"
+import { createTicket, deleteTicket, getTicketById, getTickets, updateTicket } from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
   const { products, subtotal, total } = req.body
@@ -28,5 +28,11 @@ export const getTicketsByIdController = async (req, res) => {
 
   const ticket = await getTicketById(id)
 
+  res.json(ticket)
+}
+
+export const deleteTicketController = async (req, res) => {
+  const { id } = req.params
+  const ticket = await deleteTicket(id)
   res.json(ticket)
 }
