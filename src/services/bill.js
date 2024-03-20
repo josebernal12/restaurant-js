@@ -38,9 +38,12 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async () => {
+export const getBills = async (page) => {
   try {
-    const bill = await billModel.find().populate('ticketId').populate('tableId')
+    const perPage = 10;
+    const pageQuery = parseInt(page) || 1;
+    const skip = perPage * (pageQuery - 1);
+    const bill = await billModel.find().populate('ticketId').populate('tableId').limit(10).skip(skip)
     if (!bill) {
       return 'no hay facturas'
     }

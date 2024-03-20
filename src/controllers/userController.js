@@ -18,7 +18,7 @@ export const getUsersController = async (req, res) => {
     query.lastName = { $regex: req.query.lastName, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
   if (req.query.page) {
-    page = req.query.page // 'i' para hacer la búsqueda case-insensitive
+    page = req.query.page 
   }
   const users = await getUsers(query, page)
   res.json(users)

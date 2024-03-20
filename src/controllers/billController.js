@@ -9,7 +9,11 @@ export const generateBillController = async (req, res) => {
 }
 
 export const getBillsController = async (req, res) => {
-  const bills = await getBills()
+  let page
+  if (req.query.page) {
+    page = req.query.page
+  }
+  const bills = await getBills( page)
   res.json(bills)
 }
 
