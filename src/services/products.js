@@ -12,21 +12,30 @@ export const addProducts = async (name, description, price, stock, category, ima
 
 export const getProducts = async (name, page) => {
   try {
+
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
-    if (name) {
+    if (name.name) {
+      const productTotal = await productModel.countDocuments()
       const products = await productModel.find(name)
       if (!products) {
         return 'no hay productos'
       }
-      return products
+      return {
+        products,
+        productTotal
+      }
     }
+    const productTotal = await productModel.countDocuments()
     const products = await productModel.find(name).limit(perPage).skip(skip).exec()
     if (!products) {
       return 'no hay productos'
     }
-    return products
+    return {
+      products,
+      productTotal
+    }
   } catch (error) {
     console.log(error)
   }
