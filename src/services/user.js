@@ -11,19 +11,17 @@ export const getUsers = async (query, page) => {
       if (!rol) {
         return 'No se encontró el rol especificado';
       }
+      const usersTotal = await userModel.countDocuments()
       const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').exec();
       if (!users || users.length === 0) {
         return 'No hay usuarios con el rol especificado';
       }
-      return users;
+      return {
+        users,
+        usersTotal
+      };
     }
-    // else if (query.name) {
-    //   const users = await userModel.find(query).populate('rol').limit(10).skip(10)
-    //   if (!users || users.length === 0) {
-    //     return 'No hay usuarios que coincidan con los criterios de búsqueda';
-    //   }
-    //   return users;
-    // }
+    const usersTotal = await userModel.countDocuments()
     const users = await userModel.find(query).limit(perPage)
       .skip(skip)
       .populate('rol')
@@ -31,7 +29,10 @@ export const getUsers = async (query, page) => {
     if (!users || users.length === 0) {
       return 'No hay usuarios que coincidan con los criterios de búsqueda';
     }
-    return users;
+    return {
+      users,
+      usersTotal
+    };
   } catch (error) {
     console.log(error);
     throw error; // Propagar el error para que sea manejado en el controlador

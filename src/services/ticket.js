@@ -6,6 +6,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
   try {
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
+    // const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
     if (table) {
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
       if (!newTicket) {
@@ -81,7 +82,7 @@ export const deleteTicket = async (id) => {
 
 export const joinTable = async (idsTables) => {
   try {
-   const ticket =  await ticketModel.create()
+    const ticket = await ticketModel.create()
   } catch (error) {
     console.log(error)
   }
