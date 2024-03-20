@@ -1,14 +1,22 @@
 import activitiesModel from "../model/ActivitiesRecently.js"
 
-export const addActivities = async (message, date, description) => {
+export const addActivities = async (id, message, date, description) => {
   try {
-    const newActivitie = await activitiesModel.create({ activities: { message, date, description } })
-    if (!newActivitie) {
-      return {
-        msg: 'error al crear la actividad'
+    const activitie = await activitiesModel.findById(id)
+    if (activitie) {
+      activitie.activities.push({ message, date, description }) 
+      activitie.save()
+      return activitie
+    } else {
+      const newActivitie = await activitiesModel.create({ activities: { message, date, description } })
+      if (!newActivitie) {
+        return {
+          msg: 'error al crear la actividad'
+        }
       }
+      return newActivitie
     }
-    return newActivitie
+
   } catch (error) {
     console.log(error)
   }
