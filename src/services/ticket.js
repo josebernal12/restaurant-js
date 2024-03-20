@@ -6,8 +6,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
   try {
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
-    // const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
-    if (table) {
+    const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
+    if (table && !existTicket) {
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
       if (!newTicket) {
         return 'error al crear el ticket'

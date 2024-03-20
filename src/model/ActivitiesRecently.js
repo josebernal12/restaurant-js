@@ -14,9 +14,13 @@ const activitiesSchema = new Schema({
     description: {
       type: String,
       required: true
-    }
+    },
+    timestamp: {
+      type: Number,
+      default: Date.now()
+  }
   }]
-})
+},)
 
 const activitiesModel = mongoose.model('activitiesRecently', activitiesSchema)
 export default activitiesModel
