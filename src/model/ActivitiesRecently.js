@@ -16,8 +16,7 @@ const activitiesSchema = new Schema({
       required: true
     },
     timestamp: {
-      type: Number,
-      default: Date.now()
+      type: String,
   }
   }]
 },)
