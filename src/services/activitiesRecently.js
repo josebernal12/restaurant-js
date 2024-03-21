@@ -24,7 +24,7 @@ export const addActivities = async (id, message, date, description) => {
           msg: 'error al crear la actividad'
         }
       }
-    
+
       return activitie
     }
 
@@ -33,9 +33,10 @@ export const addActivities = async (id, message, date, description) => {
   }
 }
 
-export const getActivities = async () => {
+export const getActivities = async (page = 1) => {
+  const pageQuery = Number(page) * 10
   try {
-    const activities = await activitiesModel.find().limit(10)
+    const activities = await activitiesModel.find()
     if (!activities) {
       return {
         msg: 'no hay actividades recientes'
@@ -48,9 +49,8 @@ export const getActivities = async () => {
     const activitiesOrder = flattenedActivities.sort((a, b) => {
       return new Date(b.timestamp) - new Date(a.timestamp); // Orden descendente
     });
-
-
-    return activitiesOrder
+    const activitiesPage = activitiesOrder.splice(pageQuery - 10, pageQuery)
+    return activitiesPage
   } catch (error) {
     console.log(error)
   }

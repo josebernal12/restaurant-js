@@ -13,7 +13,7 @@ export const getBillsController = async (req, res) => {
   if (req.query.page) {
     page = req.query.page
   }
-  const bills = await getBills( page)
+  const bills = await getBills(page)
   res.json(bills)
 }
 

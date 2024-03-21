@@ -8,6 +8,10 @@ export const addActivitiesController = async (req, res) => {
 }
 
 export const getActivitiesController = async (req, res) => {
-  const activities = await getActivities()
+  let page;
+  if (req.query.page) {
+    page = req.query.page
+  }
+  const activities = await getActivities(page)
   res.json(activities)
 }

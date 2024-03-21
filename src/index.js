@@ -4,7 +4,7 @@ import cors from 'cors'
 
 import 'dotenv/config'
 import userRouter from './router/router.js'
-
+//TODO CREAR PAGINACION A LAS ACTIVIDADES RECIENTES
 import { connectDB } from './database/database.js'
 import productRouter from './router/product.js'
 import rolRouter from './router/rol.js'
@@ -12,7 +12,6 @@ import tableRouter from './router/table.js'
 import ticketRouter from './router/ticket.js'
 import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
-//TODO MODIFICAR LAS ACTIVIDADES PARA QUE AL CREAR TAMBIEN ME TRAIGA TODOS HACIA ARRIBA
 const app = express()
 const port = process.env.PORT || 8080
 app.use(cors())
