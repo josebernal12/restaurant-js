@@ -12,7 +12,7 @@ import tableRouter from './router/table.js'
 import ticketRouter from './router/ticket.js'
 import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
-
+//TODO MODIFICAR LAS ACTIVIDADES PARA QUE AL CREAR TAMBIEN ME TRAIGA TODOS HACIA ARRIBA
 const app = express()
 const port = process.env.PORT || 8080
 app.use(cors())

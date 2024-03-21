@@ -1,3 +1,4 @@
+import { generateDate } from "../helpers/generateDate.js";
 import activitiesModel from "../model/ActivitiesRecently.js"
 
 export const addActivities = async (id, message, date, description) => {
@@ -5,40 +6,26 @@ export const addActivities = async (id, message, date, description) => {
     const activitie = await activitiesModel.findById(id)
     if (activitie) {
       const currentDate = new Date();
-
-      const year = currentDate.getFullYear();
-      const month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
-      const day = ("0" + currentDate.getDate()).slice(-2);
-
-      const hours = ("0" + currentDate.getHours()).slice(-2);
-      const minutes = ("0" + currentDate.getMinutes()).slice(-2);
-      const seconds = ("0" + currentDate.getSeconds()).slice(-2);
-
-      const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
+      const formattedDate = generateDate(currentDate)
       activitie.activities.push({ message, date, description, timestamp: formattedDate })
       activitie.save()
-      return activitie
+      const flattenedActivities = [].concat(...activitie.activities); // Aplanar el array de arrays
+
+      const activitiesOrder = flattenedActivities.sort((a, b) => {
+        return new Date(b.timestamp) - new Date(a.timestamp); // Orden descendente
+      });
+      return activitiesOrder
     } else {
       const currentDate = new Date();
-
-      const year = currentDate.getFullYear();
-      const month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
-      const day = ("0" + currentDate.getDate()).slice(-2);
-
-      const hours = ("0" + currentDate.getHours()).slice(-2);
-      const minutes = ("0" + currentDate.getMinutes()).slice(-2);
-      const seconds = ("0" + currentDate.getSeconds()).slice(-2);
-
-      const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      const formattedDate = generateDate(currentDate)
       const newActivitie = await activitiesModel.create({ activities: { message, date, description, timestamp: formattedDate } })
-
       if (!newActivitie) {
         return {
           msg: 'error al crear la actividad'
         }
       }
-      return newActivitie
+    
+      return activitie
     }
 
   } catch (error) {
@@ -62,16 +49,7 @@ export const getActivities = async () => {
       return new Date(b.timestamp) - new Date(a.timestamp); // Orden descendente
     });
 
-    // const date1 = new Date(dateString1);
-    // const date2 = new Date(dateString2);
 
-    // if (date1 < date2) {
-    //   console.log(`${dateString1} es anterior a ${dateString2}`);
-    // } else if (date1 > date2) {
-    //   console.log(`${dateString1} es posterior a ${dateString2}`);
-    // } else {
-    //   console.log(`${dateString1} es igual a ${dateString2}`);
-    // }
     return activitiesOrder
   } catch (error) {
     console.log(error)
