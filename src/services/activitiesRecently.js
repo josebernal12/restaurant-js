@@ -50,7 +50,12 @@ export const getActivities = async (page = 1) => {
       return new Date(b.timestamp) - new Date(a.timestamp); // Orden descendente
     });
     const activitiesPage = activitiesOrder.splice(pageQuery - 10, pageQuery)
-    return activitiesPage
+    const quantityActivities = activitiesMap.reduce((total, arr) => total.concat(arr), []).length;
+
+    return {
+      activitiesPage,
+      quantityActivities
+    }
   } catch (error) {
     console.log(error)
   }
