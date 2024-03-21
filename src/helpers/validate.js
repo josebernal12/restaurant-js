@@ -3,9 +3,7 @@ import userModel from "../model/UserModel.js";
 
 export const checkEmailInDB = async (email) => {
   try {
-    console.log(email)
     const existEmail = await userModel.findOne({ email });
-    console.log(existEmail)
     if (!existEmail) {
       return null;
     }

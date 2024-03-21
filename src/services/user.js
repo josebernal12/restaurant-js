@@ -63,8 +63,16 @@ export const deleteUser = async (id) => {
 }
 export const updateUser = async (id, name, lastName, email, rolId) => {
   try {
+    const user = await userModel.findById(id)
+    if (user.email === email) {
+      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
+      if (!userUpdate) {
+        return 'error en la actualizacion'
+      }
+      return userUpdate
+
+    }
     const exist = await checkEmailInDB(email)
-    console.log(exist)
     if (exist === null) {
       const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
       if (!userUpdate) {
