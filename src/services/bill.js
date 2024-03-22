@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import billModel from "../model/BillModel.js"
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
+import productModel from "../model/ProductModel.js"
 
 export const generateBill = async (ticketId, tableId, userId) => {
   try {
@@ -18,12 +19,14 @@ export const generateBill = async (ticketId, tableId, userId) => {
       }
     }
     const ticket = await ticketModel.findById(ticketId)
-
     if (ticket.tableId.toString() === tableId) {
       const newBill = await billModel.create({ ticketId, tableId, userId })
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true })
-      await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true })
-
+      const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true })
+      const idRef = ticketUpdate.products.map(value => value.ref)
+      const stockTicket = ticketUpdate.products.map(value => value.stock)
+      const products = await productModel.findById(idRef.toString())
+      await productModel.findByIdAndUpdate(idRef.toString(), { stock: products.stock - stockTicket })
       if (!newBill) {
         return 'error al generar la factura'
       }
