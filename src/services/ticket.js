@@ -8,21 +8,40 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
     const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
+
     if (table && !existTicket) {
+      let invalid = false; // Inicializamos la bandera como falsa
+      for (const product of products) {
+        const productUpdate = await productModel.findById(product._id)
+        const newStock = productUpdate.stock - product.stock;
+        if (newStock < 0) {
+          invalid = true; // Establecemos la bandera como verdadera si encontramos un producto con cantidad inválida
+          break; // Salimos del bucle ya que no es necesario seguir verificando los demás productos
+        }
+      }
+
+      if (invalid) {
+        return {
+          msg: 'La cantidad de al menos uno de los productos supera el stock disponible'
+        };
+      }
+
+      // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto
+      for (const product of products) {
+        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
+      }
+
+      await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
       if (!newTicket) {
-        return 'error al crear el ticket'
+        return 'Error al crear el ticket'
       }
-      for (const product of newTicket.products) {
-        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: - product.stock } });
-      }
-      await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
-      return newTicket
-    }
-    return {
-      msg: 'no existen mesas con ese id'
+      return newTicket;
     }
 
+    return {
+      msg: 'No existen mesas con ese ID'
+    }
   } catch (error) {
     console.log(error)
   }
@@ -31,6 +50,9 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
 export const updateTicket = async (id, products, subTotal, total, tableId, userId) => {
   try {
     const ticketId = await ticketModel.findOne({ tableId: id })
+    for (const product of ticketId.products) {
+      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: - product.stock } });
+    }
     const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId._id, { products, subTotal, total, tableId, userId }, { new: true })
     if (!ticketUpdate) {
       return 'no se pudo actualizar'
