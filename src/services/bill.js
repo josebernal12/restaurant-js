@@ -46,11 +46,15 @@ export const getBills = async (page) => {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
+    const totalBills = await billModel.countDocuments()
     const bill = await billModel.find().populate('ticketId').populate('tableId').limit(10).skip(skip)
     if (!bill) {
       return 'no hay facturas'
     }
-    return bill
+    return {
+      totalBills,
+      bill
+    }
   } catch (error) {
     console.log(error)
   }
