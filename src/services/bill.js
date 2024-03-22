@@ -3,7 +3,7 @@ import billModel from "../model/BillModel.js"
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
-
+//TODO ARREGLAR QUE CUANDO TENGO 2 PRODUCTOS EN EL TICKET FALLA POR QUE HAY 2 IDS. PRODUCTS SI ME TRAE LOS 2
 export const generateBill = async (ticketId, tableId, userId) => {
   try {
 
@@ -20,13 +20,12 @@ export const generateBill = async (ticketId, tableId, userId) => {
     }
     const ticket = await ticketModel.findById(ticketId)
     if (ticket.tableId.toString() === tableId) {
-      const newBill = await billModel.create({ ticketId, tableId, userId })
-      await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true })
-      const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true })
-      const idRef = ticketUpdate.products.map(value => value.ref)
-      const stockTicket = ticketUpdate.products.map(value => value.stock)
-      const products = await productModel.findById(idRef.toString())
-      await productModel.findByIdAndUpdate(idRef.toString(), { stock: products.stock - stockTicket })
+      const newBill = await billModel.create({ ticketId, tableId, userId });
+      await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
+      const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true });
+      for (const product of ticketUpdate.products) {
+        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
+      }
       if (!newBill) {
         return 'error al generar la factura'
       }

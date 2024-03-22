@@ -7,10 +7,7 @@ const ticketSchema = new Schema({
       name: String,
       price: Number,
       stock: Number,
-      ref: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
-      }
+     
     }
   ],
   subTotal: {
