@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
+import productModel from "../model/ProductModel.js";
 
 export const createTicket = async (products, subTotal, total, tableId, userId) => {
   try {
@@ -11,6 +12,9 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
       if (!newTicket) {
         return 'error al crear el ticket'
+      }
+      for (const product of newTicket.products) {
+        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: - product.stock } });
       }
       await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
       return newTicket
@@ -83,6 +87,24 @@ export const deleteTicket = async (id) => {
 export const joinTable = async (idsTables) => {
   try {
     const ticket = await ticketModel.create()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const cancelAccount = async (id) => {
+  try {
+    const ticketCancel = await ticketModel.findByIdAndDelete(id, { new: true })
+    if (!ticketCancel) {
+      return {
+        msg: "no hay ticket con ese id"
+      }
+    }
+    for (const product of ticketCancel.products) {
+      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: + product.stock } });
+    }
+
+    return 'producto cancelado'
   } catch (error) {
     console.log(error)
   }
