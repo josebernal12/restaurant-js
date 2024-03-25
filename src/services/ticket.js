@@ -46,22 +46,68 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
     console.log(error)
   }
 }
-
 export const updateTicket = async (id, products, subTotal, total, tableId, userId) => {
   try {
-    const ticketId = await ticketModel.findOne({ tableId: id })
-    for (const product of ticketId.products) {
-      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: - product.stock } });
+    // Encontrar el ticket actual
+    const ticket = await ticketModel.findById(id);
+    if (!ticket) {
+      return {
+        msg: 'El ticket no existe'
+      };
     }
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(ticketId._id, { products, subTotal, total, tableId, userId }, { new: true })
+
+    // Objeto para almacenar la diferencia de stock
+    const stockDifference = {};
+
+    // Verificar si hay suficiente stock para los productos en el ticket y calcular la diferencia
+    for (const product of products) {
+      const originalProduct = ticket.products.find(p => p._id.toString() === product._id.toString());
+      if (!originalProduct) {
+        return {
+          msg: `El producto ${product._id} no está en el ticket original`
+        };
+      }
+
+      const diff = product.stock - originalProduct.stock;
+      stockDifference[product._id] = diff;
+
+      const productData = await productModel.findById(product._id);
+      if (!productData) {
+        return {
+          msg: `No se encontró el producto ${product._id}`
+        };
+      }
+      if (productData.stock + diff < 0) {
+        return {
+          msg: `No hay suficiente stock disponible para el producto ${product._id}`
+        };
+      }
+    }
+
+    // Actualizar el stock de los productos
+    for (const productId in stockDifference) {
+      await productModel.findByIdAndUpdate(productId, { $inc: { stock: -stockDifference[productId] } });
+    }
+
+    // Actualizar el ticket
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products, subTotal, total, tableId, userId }, { new: true });
     if (!ticketUpdate) {
-      return 'no se pudo actualizar'
+      return {
+        msg: 'No se pudo actualizar el ticket'
+      };
     }
-    return ticketUpdate
+
+    return ticketUpdate;
   } catch (error) {
-    console.log(errp)
+    console.log(error);
+    return {
+      msg: 'Ocurrió un error al actualizar el ticket'
+    };
   }
-}
+};
+
+
+
 
 export const getTickets = async () => {
   try {

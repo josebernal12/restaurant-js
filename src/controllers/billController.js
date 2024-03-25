@@ -10,6 +10,10 @@ export const generateBillController = async (req, res) => {
 
 export const getBillsController = async (req, res) => {
   let page
+  const query = {}
+  if (req.query.page) {
+    page = req.query.page
+  }
   if (req.query.page) {
     page = req.query.page
   }
