@@ -3,7 +3,8 @@ import billModel from "../model/BillModel.js"
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
-//TODO ARREGLAR QUE CUANDO TENGO 2 PRODUCTOS EN EL TICKET FALLA POR QUE HAY 2 IDS. PRODUCTS SI ME TRAE LOS 2
+import moment from 'moment'; // Importa la librería moment.js para manejar fechas
+
 export const generateBill = async (ticketId, tableId, userId) => {
   try {
 
@@ -38,24 +39,77 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async (page) => {
+export const getBills = async (page, type) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
-    const totalBills = await billModel.countDocuments()
-    const bill = await billModel.find().populate('ticketId').populate('tableId').limit(10).skip(skip)
-    if (!bill) {
-      return 'no hay facturas'
+    const totalBills = await billModel.countDocuments();
+
+    console.log("Total de facturas en la base de datos:", totalBills);
+
+    // Obtener la fecha actual
+    const currentDate = moment();
+
+    console.log("Fecha actual:", currentDate.format());
+
+    let billsFiltered;
+
+    if (type === 'day') {
+      // Filtrar las facturas creadas hace un día
+      const oneDayAgo = currentDate.clone().subtract(1, 'day');
+      console.log("Filtrando facturas creadas hace un día:", oneDayAgo.format());
+      billsFiltered = await billModel.find({ createdAt: { $gte: oneDayAgo.toDate() } })
+        .populate('ticketId')
+        .populate('tableId')
+        .limit(10)
+        .skip(skip)
+        .sort({ createdAt: -1 });
+    } else if (type === 'week') {
+      // Filtrar las facturas creadas hace una semana
+      const oneWeekAgo = currentDate.clone().subtract(1, 'week');
+      console.log("Filtrando facturas creadas hace una semana:", oneWeekAgo.format());
+      billsFiltered = await billModel.find({ createdAt: { $gte: oneWeekAgo.toDate(), $lt: currentDate.toDate() } })
+        .populate('ticketId')
+        .populate('tableId')
+        .limit(10)
+        .skip(skip)
+        .sort({ createdAt: -1 });
+    } else if (type === 'year') {
+      // Filtrar las facturas creadas hace un año
+      const oneYearAgo = currentDate.clone().subtract(1, 'year');
+      console.log("Filtrando facturas creadas hace un año:", oneYearAgo.format());
+      billsFiltered = await billModel.find({ createdAt: { $gte: oneYearAgo.toDate(), $lt: currentDate.toDate() } })
+        .populate('ticketId')
+        .populate('tableId')
+        .limit(10)
+        .skip(skip)
+        .sort({ createdAt: -1 });
+    } else {
+      // No se proporcionó un tipo de filtro válido, devolver todas las facturas sin filtrar por fecha
+      console.log("No se proporcionó un tipo de filtro válido. Obteniendo todas las facturas.");
+      billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .limit(10)
+        .skip(skip)
+        .sort({ createdAt: -1 });
     }
+
+    console.log("Cantidad de facturas filtradas:", billsFiltered.length);
+
     return {
       totalBills,
-      bill
-    }
+      billsFiltered,
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    throw error;
   }
-}
+};
+
+
+
 
 export const getBIllById = async (id) => {
   try {

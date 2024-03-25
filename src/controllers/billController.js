@@ -9,15 +9,15 @@ export const generateBillController = async (req, res) => {
 }
 
 export const getBillsController = async (req, res) => {
-  let page
-  const query = {}
+  let page;
+  let type;
   if (req.query.page) {
     page = req.query.page
   }
-  if (req.query.page) {
-    page = req.query.page
+  if (req.query.type) {
+    type = req.query.type
   }
-  const bills = await getBills(page)
+  const bills = await getBills(page, type)
   res.json(bills)
 }
 
