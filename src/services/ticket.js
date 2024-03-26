@@ -126,13 +126,17 @@ export const getTickets = async () => {
 
 export const getTicketById = async (id) => {
   try {
-    const ticket = await ticketModel.findOne({ tableId: id })
+    const tableObjectId = mongoose.Types.ObjectId(id);
+    const ticket = await ticketModel.findOne({ tableId: tableObjectId })
+
     if (!ticket) {
       return {
         msg: 'no hay ticket con ese id'
       }
     }
-    return ticket
+    if (ticket.completed === false) {
+      return ticket
+    }
   } catch (error) {
     console.log(error)
   }
