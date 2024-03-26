@@ -128,7 +128,6 @@ export const getTicketById = async (id) => {
   try {
     const tableObjectId = mongoose.Types.ObjectId(id);
     const ticket = await ticketModel.findOne({ tableId: tableObjectId })
-
     if (!ticket) {
       return {
         msg: 'no hay ticket con ese id'
