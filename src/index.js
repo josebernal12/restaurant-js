@@ -14,7 +14,10 @@ import activitiesRouter from './router/activities.js'
 const app = express()
 const port = process.env.PORT || 8080
 
-app.use(cors())
+app.use(cors({
+  origin: ['http://127.0.0.1:5173', 'http://localhost:5173'],
+
+}))
 app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
