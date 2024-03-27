@@ -32,7 +32,11 @@ const server = app.listen(port, () => {
 
 
 const io = new Server(server, {
-  pingTimeout: 60000
+  pingTimeout: 60000,
+  cors: {
+    origin: ['http://127.0.0.1:5173', 'http://localhost:5173'],
+
+  }
 })
 
 io.on('connection', (socket) => {
