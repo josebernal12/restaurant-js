@@ -14,10 +14,7 @@ import activitiesRouter from './router/activities.js'
 const app = express()
 const port = process.env.PORT || 8080
 
-app.use(cors({
-  origin: ['http://127.0.0.1:5174', 'http://localhost:5174'],
-
-}))
+app.use(cors())
 app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
@@ -36,10 +33,10 @@ const server = app.listen(port, () => {
 
 const io = new Server(server, {
   pingTimeout: 60000,
-  cors: {
-    origin: ['http://127.0.0.1:5174', 'http://localhost:5174'],
+  // cors: {
+  //   origin: ['http://127.0.0.1:5174', 'http://localhost:5174'],
 
-  }
+  // }
 })
 
 io.on('connection', (socket) => {
