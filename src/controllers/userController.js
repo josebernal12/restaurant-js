@@ -5,6 +5,7 @@ export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
   let page;
+  let showAll;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
@@ -18,9 +19,12 @@ export const getUsersController = async (req, res) => {
     query.lastName = { $regex: req.query.lastName, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
   if (req.query.page) {
-    page = req.query.page 
+    page = req.query.page
   }
-  const users = await getUsers(query, page)
+  if (req.query.showAll) {
+    showAll = req.query.showAll
+  }
+  const users = await getUsers(query, page, showAll)
   res.json(users)
 }
 
