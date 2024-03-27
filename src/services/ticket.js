@@ -59,17 +59,17 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     // Objeto para almacenar la diferencia de stock
     const stockDifference = {};
 
-    // Verificar si hay suficiente stock para los productos en el ticket y calcular la diferencia
+    // Verificar y calcular la diferencia de stock para los productos en el ticket
     for (const product of products) {
       const originalProduct = ticket.products.find(p => p._id.toString() === product._id.toString());
       if (!originalProduct) {
-        return {
-          msg: `El producto ${product._id} no está en el ticket original`
-        };
+        // Si el producto no existe en el ticket original, considerarlo como un nuevo producto
+        stockDifference[product._id] = product.stock;
+      } else {
+        // Calcular la diferencia de stock para los productos existentes en el ticket
+        const diff = product.stock - originalProduct.stock;
+        stockDifference[product._id] = diff;
       }
-
-      const diff = product.stock - originalProduct.stock;
-      stockDifference[product._id] = diff;
 
       const productData = await productModel.findById(product._id);
       if (!productData) {
@@ -77,7 +77,7 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
           msg: `No se encontró el producto ${product._id}`
         };
       }
-      if (productData.stock + diff < 0) {
+      if (productData.stock + stockDifference[product._id] < 0) {
         return {
           msg: `No hay suficiente stock disponible para el producto ${product._id}`
         };
@@ -105,6 +105,7 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     };
   }
 };
+
 
 
 
