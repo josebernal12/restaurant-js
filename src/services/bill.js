@@ -39,13 +39,12 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async (page, type) => {
+export const getBills = async (page, type, name) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
     const totalBills = await billModel.countDocuments();
-
     console.log("Total de facturas en la base de datos:", totalBills);
 
     // Obtener la fecha actual
@@ -91,16 +90,25 @@ export const getBills = async (page, type) => {
       billsFiltered = await billModel.find()
         .populate('ticketId')
         .populate('tableId')
+        .populate('userId')
         .limit(10)
         .skip(skip)
         .sort({ createdAt: -1 });
     }
-
-    console.log("Cantidad de facturas filtradas:", billsFiltered.length);
-
+    const search = billsFiltered.filter(value => {
+      if (name === value.userId.name) {
+        return value
+      }
+    })
+    if (!name) {
+      return {
+        totalBills,
+        billsFiltered
+      }
+    }
     return {
       totalBills,
-      billsFiltered,
+      billsFiltered: search,
     };
   } catch (error) {
     console.log(error);
