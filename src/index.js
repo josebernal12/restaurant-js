@@ -15,7 +15,7 @@ const app = express()
 const port = process.env.PORT || 8080
 
 app.use(cors({
-  origin: ['http://127.0.0.1:5174', 'http://localhost:5173'],
+  origin: ['http://127.0.0.1:5174', 'http://localhost:5174'],
 
 }))
 app.use(express.json())
@@ -37,7 +37,7 @@ const server = app.listen(port, () => {
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ['http://127.0.0.1:5174', 'http://localhost:5173'],
+    origin: ['http://127.0.0.1:5174', 'http://localhost:5174'],
 
   }
 })
