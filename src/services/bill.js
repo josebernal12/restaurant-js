@@ -39,7 +39,7 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async (page, type, name) => {
+export const getBills = async (page, type, name, showAll) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -53,7 +53,19 @@ export const getBills = async (page, type, name) => {
     console.log("Fecha actual:", currentDate.format());
 
     let billsFiltered;
+    console.log(showAll)
+    if (showAll === "1") {
+      billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .populate('userId')
+        .sort({ createdAt: -1 });
 
+      return {
+        totalBills,
+        billsFiltered
+      }
+    }
     if (type === 'day') {
       // Filtrar las facturas creadas hace un día
       const oneDayAgo = currentDate.clone().subtract(1, 'day');
