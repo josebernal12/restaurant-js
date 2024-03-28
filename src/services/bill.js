@@ -53,7 +53,6 @@ export const getBills = async (page, type, name, showAll) => {
     console.log("Fecha actual:", currentDate.format());
 
     let billsFiltered;
-    console.log(showAll)
     if (showAll === "1") {
       billsFiltered = await billModel.find()
         .populate('ticketId')
@@ -107,11 +106,7 @@ export const getBills = async (page, type, name, showAll) => {
         .skip(skip)
         .sort({ createdAt: -1 });
     }
-    const search = billsFiltered.filter(value => {
-      if (name === value.userId.name) {
-        return value
-      }
-    })
+    const search = billsFiltered.filter(value => value.userId.name.includes(name))
     if (!name) {
       return {
         totalBills,
