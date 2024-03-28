@@ -46,10 +46,9 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('conectacdo a socket io')
 
-
   socket.on('crear ticket', ticket => {
+    console.log('ticket creado con exito con socket',ticket)
     socket.to(ticket).emit('ticket creado', ticket)
-    console.log(ticket)
   })
 
 
