@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('crear ticket', ticket => {
-    io.to(ticket).emit('ticket creado', ticket)
+    socket.to(ticket).emit('ticket creado', ticket)
     console.log(ticket)
   })
 
