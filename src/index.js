@@ -13,8 +13,12 @@ import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
 const app = express()
 const port = process.env.PORT || 8080
-
-app.use(cors())
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200
+}
+app.use(corsOptions)
 app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
