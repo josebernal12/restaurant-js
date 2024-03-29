@@ -13,12 +13,12 @@ import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
 const app = express()
 const port = process.env.PORT || 8080
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
-  credentials: true,            //access-control-allow-credentials:true
-  optionSuccessStatus: 200
-}
-app.use(cors(corsOptions))
+// const corsOptions = {
+//   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
+//   credentials: true,            //access-control-allow-credentials:true
+//   optionSuccessStatus: 200
+// }
+app.use(cors())
 app.use(express.json())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
@@ -35,21 +35,21 @@ const server = app.listen(port, () => {
 })
 
 
-const io = new Server(server, {
-  pingTimeout: 60000,
-  cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
+// const io = new Server(server, {
+//   pingTimeout: 60000,
+//   cors: {
+//     origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
 
-  }
-})
+//   }
+// })
 
-io.on('connection', (socket) => {
-  console.log('conectacdo a socket io')
+// io.on('connection', (socket) => {
+//   console.log('conectacdo a socket io')
 
-  socket.on('crear ticket', ticket => {
-    console.log('ticket creado con exito con socket', ticket)
-    socket.emit('ticket creado', ticket)
-  })
+//   socket.on('crear ticket', ticket => {
+//     console.log('ticket creado con exito con socket', ticket)
+//     socket.emit('ticket creado', ticket)
+//   })
 
 
-})
+// })
