@@ -11,6 +11,8 @@ import tableRouter from './router/table.js'
 import ticketRouter from './router/ticket.js'
 import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
+import noteRouter from './router/note.js'
+
 const app = express()
 const port = process.env.PORT || 8080
 // const corsOptions = {
@@ -27,6 +29,7 @@ app.use('/api/table', tableRouter)
 app.use('/api/ticket', ticketRouter)
 app.use('/api/bill', billRouter)
 app.use('/api/activities', activitiesRouter)
+app.use('/api/note', noteRouter)
 const server = app.listen(port, () => {
   connectDB()
 
