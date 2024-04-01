@@ -1,6 +1,6 @@
 import generateToken from "../helpers/generateToken.js";
 import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
-
+import jwt from 'jsonwebtoken'
 export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
@@ -58,4 +58,10 @@ export const userSearchController = async (req, res) => {
   const { name } = req.body
   const user = await searchUser(name)
   res.json(user)
+}
+
+export const logoutController = async (req, res) => {
+  req.user = null
+  const token = req.headers.authorization.split(' ')[1];
+  res.json('logout exitoso')
 }

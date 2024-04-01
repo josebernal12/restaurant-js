@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import { loginController, registerController } from '../controllers/authController.js'
-import { deleteUserController, getUserByIdController, getUsersController, renewToken, updateUserController, userSearchController } from '../controllers/userController.js'
+import { deleteUserController, getUserByIdController, getUsersController, logoutController, renewToken, updateUserController, userSearchController } from '../controllers/userController.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission } from '../middleware/permission.js'
 
@@ -15,4 +15,5 @@ router.delete('/users/delete/:id', [checkJwt, deleteUserPermission], deleteUserC
 router.post('/register', registerController)
 router.post('/login', loginController)
 router.post('/renew-token/:id', renewToken)
+router.get('/logout', [checkJwt], logoutController)
 export default router
