@@ -1,10 +1,15 @@
 import mongoose, { Schema } from 'mongoose'
 
 const notesSchema = new Schema({
-  message: {
-    type: String,
-    required: true,
-  },
+  note:[
+    {
+      message: String,
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+      }
+    }
+  ],
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

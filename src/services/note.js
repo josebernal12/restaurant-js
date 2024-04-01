@@ -1,8 +1,8 @@
 import noteModel from "../model/NotesModel.js"
 
-export const createNote = async (message, ticketId, userId) => {
+export const createNote = async (note, ticketId, userId) => {
   try {
-    const newNote = await noteModel.create({ message, ticketId, userId })
+    const newNote = await noteModel.create({ note, ticketId, userId })
     if (!newNote) {
       return {
         msg: 'error al crear la nota'
@@ -14,9 +14,9 @@ export const createNote = async (message, ticketId, userId) => {
   }
 }
 
-export const updateNote = async (id, message, ticketId, userId) => {
+export const updateNote = async (id, note, ticketId, userId) => {
   try {
-    const noteUpdate = await noteModel.findByIdAndUpdate(id, { message, ticketId, userId }, { new: true })
+    const noteUpdate = await noteModel.findByIdAndUpdate(id, { note, ticketId, userId }, { new: true })
     if (!noteUpdate) {
       return {
         msg: 'no existe nota con ese id'
@@ -29,8 +29,15 @@ export const updateNote = async (id, message, ticketId, userId) => {
 }
 
 
-export const deleteNote = async (id) => {
+export const deleteNote = async (id, idBody) => {
   try {
+    if (idBody) {
+      const notes = await noteModel.findById(id)
+      const noteUpdate = notes.note.filter(value => value._id.toString() !== idBody)
+      notes.note = noteUpdate
+      notes.save()
+      return notes
+    }
     const noteDeleted = await noteModel.findByIdAndDelete(id, { new: true })
     if (!noteDeleted) {
       return {
