@@ -4,8 +4,8 @@ import { checkJwt } from '../middleware/permission.js'
 
 const router = Router()
 
-router.post('/:id', [checkJwt], generateBillController)
-router.get('/', [checkJwt], getBillsController)
-router.get('/:id', [checkJwt], getBillByIdController)
+router.post('/:id',  generateBillController)
+router.get('/',  getBillsController)
+router.get('/:id',  getBillByIdController)
 
 export default router

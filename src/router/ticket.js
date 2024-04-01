@@ -11,10 +11,10 @@ import {
 
 const router = Router()
 
-router.post('/:id', [checkJwt, createTicketController])
-router.put('/update/:id', [checkJwt], updateTicketController)
+router.post('/:id', createTicketController)
+router.put('/update/:id', updateTicketController)
 router.get('/', getTicketsController)
 router.get('/:id', getTicketsByIdController)
-router.delete('/delete/:id', [checkJwt], deleteTicketController)
-router.delete('/cancel/:id', [checkJwt], cancelTicketController)
+router.delete('/delete/:id', deleteTicketController)
+router.delete('/cancel/:id', cancelTicketController)
 export default router
