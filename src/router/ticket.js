@@ -4,8 +4,10 @@ import {
   cancelTicketController,
   createTicketController,
   deleteTicketController,
+  finishedTicketController,
   getTicketsByIdController,
   getTicketsController,
+  receivedTicketController,
   updateTicketController
 } from '../controllers/ticketController.js'
 
@@ -17,4 +19,6 @@ router.get('/', getTicketsController)
 router.get('/:id', getTicketsByIdController)
 router.delete('/delete/:id', deleteTicketController)
 router.delete('/cancel/:id', cancelTicketController)
+router.put('/received/:id', receivedTicketController)
+router.put('/finished/:id', finishedTicketController)
 export default router

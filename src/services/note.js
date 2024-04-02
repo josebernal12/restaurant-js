@@ -1,8 +1,10 @@
 import noteModel from "../model/NotesModel.js"
+import tableModel from "../model/TableModel.js"
 
-export const createNote = async (note, ticketId, userId) => {
+export const createNote = async (note, ticketId, userId, tableId) => {
   try {
-    const newNote = await noteModel.create({ note, ticketId, userId })
+    ticke
+    const newNote = await noteModel.create({ note, ticketId, userId, tableId })
     if (!newNote) {
       return {
         msg: 'error al crear la nota'

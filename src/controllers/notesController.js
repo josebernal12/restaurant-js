@@ -1,8 +1,15 @@
-import { createNote, deleteNote, getAllNotes, getNoteById, updateNote } from "../services/note.js"
+import {
+  createNote,
+  deleteNote,
+  getAllNotes,
+  getNoteById,
+  updateNote
+} from "../services/note.js"
 
 export const createNoteController = async (req, res) => {
   const { note, ticketId, userId } = req.body
-  const newNote = await createNote(note, ticketId, userId)
+  const { id } = req.params
+  const newNote = await createNote(note, ticketId, userId, id)
   res.json(newNote)
 }
 export const updateNoteController = async (req, res) => {

@@ -36,6 +36,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
       if (!newTicket) {
         return 'Error al crear el ticket'
       }
+      newTicket.status = 'proceso'
+      newTicket.save()
       return newTicket;
     }
 
@@ -177,6 +179,39 @@ export const cancelAccount = async (id) => {
     }
 
     return 'producto cancelado'
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const receivedTicket = async (id) => {
+  try {
+    const ticket = await ticketModel.findById(id)
+    if (!ticket) {
+      return {
+        msg: 'no hay ticket con ese id'
+      }
+    }
+    ticket.status = 'completado'
+    ticket.save()
+    return ticket
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const finishedTicket = async (id) => {
+  try {
+    const ticket = await ticketModel.findById(id)
+    if (!ticket) {
+      return {
+        msg: 'no hay tickets con ese id'
+      }
+    }
+    ticket.status = 'finalizado'
+    ticket.save()
+    return ticket
   } catch (error) {
     console.log(error)
   }

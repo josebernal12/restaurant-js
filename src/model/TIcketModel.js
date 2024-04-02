@@ -7,7 +7,7 @@ const ticketSchema = new Schema({
       name: String,
       price: Number,
       stock: Number,
-     
+
     }
   ],
   subTotal: {
@@ -29,7 +29,10 @@ const ticketSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  status: {
+    type: String,
+  },
 
 }, {
   timestamps: true

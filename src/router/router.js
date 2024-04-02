@@ -17,4 +17,5 @@ router.post('/login', loginController)
 router.post('/renew-token/:id', renewToken)
 router.get('/logout', logoutController)
 router.get('/obtain-user', [checkJwt], obtainUserByToken)
+
 export default router
