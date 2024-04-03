@@ -3,6 +3,11 @@ import ticketModel from "../model/TIcketModel.js"
 
 export const createNote = async (note,  userId, tableId) => {
   try {
+    if(!tableId){
+      return {
+        msg :'error no viene tableId'
+      }
+    }
     const ticketId = await ticketModel.findOne({ tableId })
     console.log(ticketId)
     const newNote = await noteModel.create({ note, ticketId, userId, tableId })
