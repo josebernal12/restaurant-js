@@ -106,11 +106,17 @@ export const getBills = async (page, type, name, showAll) => {
         .skip(skip)
         .sort({ createdAt: -1 });
     }
-    const search = billsFiltered.filter(value => value.userId.name.includes(name))
+
     if (!name) {
       return {
         totalBills,
         billsFiltered
+      }
+    }
+    const search = billsFiltered.filter(value => value.userId.name.includes(name))
+    if (!search) {
+      return {
+        msg: 'no hay facturas con ese nombre'
       }
     }
     return {

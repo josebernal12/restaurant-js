@@ -1,19 +1,17 @@
 import { cancelAccount, createTicket, deleteTicket, finishedTicket, getTicketById, getTickets, receivedTicket, updateTicket } from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
-  const { products, subtotal, total } = req.body
+  const { products, subtotal, total, userId } = req.body
   const { id } = req.params
-  const userId = req.user
 
   const ticket = await createTicket(products, subtotal, total, id, userId)
   res.json(ticket)
 }
 
 export const updateTicketController = async (req, res) => {
-  const { products, subTotal, total, tableId } = req.body
+  const { products, subTotal, total, tableId, userId } = req.body
   const { id } = req.params
-  const user = req.user
-  const ticket = await updateTicket(id, products, subTotal, total, tableId, user)
+  const ticket = await updateTicket(id, products, subTotal, total, tableId, userId)
 
   res.json(ticket)
 }
