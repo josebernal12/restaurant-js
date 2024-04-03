@@ -9,7 +9,11 @@ export const createNote = async (note,  userId, tableId) => {
       }
     }
     const ticketId = await ticketModel.findOne({ tableId })
-    console.log(ticketId)
+    if(!ticketId) {
+      return {
+        msg: 'no hay mesa relacionada con ese ticket'
+      }
+    }
     const newNote = await noteModel.create({ note, ticketId, userId, tableId })
     if (!newNote) {
       return {
