@@ -1,9 +1,10 @@
 import noteModel from "../model/NotesModel.js"
-import tableModel from "../model/TableModel.js"
+import ticketModel from "../model/TIcketModel.js"
 
-export const createNote = async (note, ticketId, userId, tableId) => {
+export const createNote = async (note,  userId, tableId) => {
   try {
-    ticke
+    const ticketId = await ticketModel.findOne({ tableId })
+    console.log(ticketId)
     const newNote = await noteModel.create({ note, ticketId, userId, tableId })
     if (!newNote) {
       return {

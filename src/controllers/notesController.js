@@ -7,9 +7,8 @@ import {
 } from "../services/note.js"
 
 export const createNoteController = async (req, res) => {
-  const { note, ticketId, userId } = req.body
-  const { id } = req.params
-  const newNote = await createNote(note, ticketId, userId, id)
+  const { note,  userId, tableId } = req.body
+  const newNote = await createNote(note, userId, tableId)
   res.json(newNote)
 }
 export const updateNoteController = async (req, res) => {
