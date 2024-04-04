@@ -38,21 +38,21 @@ const server = app.listen(port, () => {
 })
 
 
-// const io = new Server(server, {
-//   pingTimeout: 60000,
-//   cors: {
-//     origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
 
-//   }
-// })
+  }
+})
 
-// io.on('connection', (socket) => {
-//   console.log('conectacdo a socket io')
+io.on('connection', (socket) => {
+  console.log('conectacdo a socket io')
 
-//   socket.on('crear ticket', ticket => {
-//     console.log('ticket creado con exito con socket', ticket)
-//     socket.emit('ticket creado', ticket)
-//   })
+  socket.on('crear ticket', ticket => {
+    console.log('ticket creado con exito con socket', ticket)
+    socket.emit('ticket creado', ticket)
+  })
 
 
-// })
+})

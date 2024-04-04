@@ -6,6 +6,9 @@ const tableSchema = new Schema({
     type: Boolean,
     default: false
   },
+  number: {
+    type: Number
+  }
 },
   { timestamps: true })
 
