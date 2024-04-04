@@ -17,7 +17,7 @@ const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173'],
-  credentials: true,          
+  credentials: true,
   optionSuccessStatus: 200
 }
 app.use(cors(corsOptions))
@@ -50,9 +50,18 @@ io.on('connection', (socket) => {
   console.log('conectacdo a socket io')
 
   socket.on('crear ticket', ticket => {
-    console.log('ticket creado con exito con socket', ticket)
     io.emit('ticket creado', ticket)
   })
-
-
+  socket.on('actualizar ticket', ticket => {
+    io.emit('ticket actualizado', ticket)
+  })
+  socket.on('eliminar ticket', ticket => {
+    io.emit('ticket eliminado', ticket)
+  })
+  socket.on('recibir ticket', ticket => {
+    io.emit('ticket recibido', ticket)
+  })
+  socket.on('finalizar ticket', ticker => {
+    io.emit('ticket finalizado')
+  })
 })
