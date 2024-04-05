@@ -41,7 +41,7 @@ const server = app.listen(port, () => {
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173', 'https://table-main-master-master-3.onrender.com'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://table-main-master-master-3.onrender.com'],
 
   }
 })
