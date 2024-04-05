@@ -64,4 +64,13 @@ io.on('connection', (socket) => {
   socket.on('finalizar ticket', ticker => {
     io.emit('ticket finalizado')
   })
+  socket.on('crear nota', nota => {
+    io.emit('nota creada', nota)
+  })
+  socket.on('actualizar nota', nota => {
+    io.emit('nota actualizada', nota)
+  })
+  socket.on('eliminar nota', nota => {
+    io.emit('nota eliminada', nota)
+  })
 })
