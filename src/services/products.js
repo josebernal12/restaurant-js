@@ -10,7 +10,7 @@ export const addProducts = async (name, description, price, stock, category, ima
   }
 }
 
-export const getProducts = async (name, page, showAll) => {
+export const getProducts = async (name, page, showAll,quantity) => {
   try {
 
     const perPage = 10;
@@ -20,6 +20,14 @@ export const getProducts = async (name, page, showAll) => {
     if (showAll === "1") {
       const productTotal = await productModel.countDocuments()
       const products = await productModel.find()
+      return {
+        productTotal,
+        products
+      }
+    }
+    if(quantity) {
+      const productTotal = await productModel.countDocuments()
+      const products = await productModel.find().limit(quantity)
       return {
         productTotal,
         products

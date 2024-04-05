@@ -39,7 +39,7 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async (page, type, name, showAll) => {
+export const getBills = async (page, type, name, showAll, quantity) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -55,6 +55,19 @@ export const getBills = async (page, type, name, showAll) => {
     let billsFiltered;
     if (showAll === "1") {
       billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .populate('userId')
+        .sort({ createdAt: -1 });
+
+      return {
+        totalBills,
+        billsFiltered
+      }
+    }
+
+    if(quantity) {
+      billsFiltered = await billModel.find().limit(quantity)
         .populate('ticketId')
         .populate('tableId')
         .populate('userId')

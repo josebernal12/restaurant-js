@@ -1,7 +1,7 @@
 import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 import RolModel from '../model/RolModel.js'
-export const getUsers = async (query, page, showAll) => {
+export const getUsers = async (query, page, showAll, quantity) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
@@ -14,7 +14,14 @@ export const getUsers = async (query, page, showAll) => {
         users
       }
     }
-
+    if (quantity) {
+      const usersTotal = await userModel.countDocuments()
+      const users = await userModel.find().limit(quantity).populate('rol')
+      return {
+        usersTotal,
+        users
+      }
+    }
     if (query.rol) {
       const rol = await RolModel.findOne({ name: query.rol });
       if (!rol) {

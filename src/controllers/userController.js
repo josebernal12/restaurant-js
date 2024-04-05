@@ -1,11 +1,11 @@
 import generateToken from "../helpers/generateToken.js";
 import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
-import jwt from 'jsonwebtoken'
 export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
   let page;
   let showAll;
+  let quantity;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
@@ -24,7 +24,10 @@ export const getUsersController = async (req, res) => {
   if (req.query.showAll) {
     showAll = req.query.showAll
   }
-  const users = await getUsers(query, page, showAll)
+  if (req.query.quantity) {
+    quantity = req.query.quantity
+  }
+  const users = await getUsers(query, page, showAll, quantity)
   res.json(users)
 }
 
