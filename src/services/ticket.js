@@ -3,7 +3,7 @@ import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js";
 
-export const createTicket = async (products, subTotal, total, tableId, userId) => {
+export const createTicket = async (products, subTotal, total, tableId, userId, waiter) => {
   try {
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
@@ -32,7 +32,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId) =
       }
 
       await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
-      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId })
+      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter })
       if (!newTicket) {
         return 'Error al crear el ticket'
       }
@@ -129,7 +129,7 @@ export const getTickets = async () => {
 
 export const getTicketById = async (id) => {
   try {
-    
+
     const ticket = await ticketModel.findById(id)
     if (!ticket) {
       return {

@@ -1,10 +1,10 @@
 import { cancelAccount, createTicket, deleteTicket, finishedTicket, getTicketById, getTickets, receivedTicket, updateTicket } from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
-  const { products, subtotal, total, userId } = req.body
+  const { products, subtotal, total, userId, waiter } = req.body
   const { id } = req.params
 
-  const ticket = await createTicket(products, subtotal, total, id, userId)
+  const ticket = await createTicket(products, subtotal, total, id, userId, waiter)
   res.json(ticket)
 }
 
