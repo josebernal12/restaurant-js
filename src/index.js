@@ -2,7 +2,6 @@ import express from 'express'
 import 'dotenv/config'
 import cors from 'cors'
 import { Server, Socket } from 'socket.io'
-import 'dotenv/config'
 import userRouter from './router/router.js'
 import { connectDB } from './database/database.js'
 import productRouter from './router/product.js'
@@ -12,11 +11,12 @@ import ticketRouter from './router/ticket.js'
 import billRouter from './router/bill.js'
 import activitiesRouter from './router/activities.js'
 import noteRouter from './router/note.js'
+import targetRouter from './router/target.js'
 
 const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173' ,'https://table-main-master-master-3.onrender.com'],
+  origin: [process.env.FRONTEND_URL1, process.env.FRONTEND_URL2, process.env.FRONTEND_URL3, process.env.FRONTEND_URL4, process.env.FRONTEND_PRODUCTION],
   credentials: true,
   optionSuccessStatus: 200
 }
@@ -30,6 +30,7 @@ app.use('/api/ticket', ticketRouter)
 app.use('/api/bill', billRouter)
 app.use('/api/activities', activitiesRouter)
 app.use('/api/note', noteRouter)
+app.use('/api/target', targetRouter)
 const server = app.listen(port, () => {
   connectDB()
 
@@ -41,7 +42,7 @@ const server = app.listen(port, () => {
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://127.0.0.1:5173', 'https://table-main-master-master-3.onrender.com'],
+    origin: [process.env.FRONTEND_URL1, process.env.FRONTEND_URL2, process.env.FRONTEND_URL3, process.env.FRONTEND_URL4, process.env.FRONTEND_PRODUCTION],
 
   }
 })
