@@ -1,4 +1,4 @@
-import { addProducts, deleteProduct, getProducts, getProductsById, searchProduct, updateProduct } from "../services/products.js"
+import { addProducts, bestProduct, deleteProduct, getProducts, getProductsById, searchProduct, updateProduct } from "../services/products.js"
 
 export const addProductController = async (req, res) => {
   const { name, description, price, stock, category, image } = req.body
@@ -56,4 +56,10 @@ export const searchProductController = async (req, res) => {
   const { name, price, category } = req.body
   const productSearch = await searchProduct(name, price, category)
   res.json(productSearch)
+}
+
+export const bestProductController = async (req, res) => {
+  console.log('hola')
+  const bill = await bestProduct()
+  res.json(bill)
 }
