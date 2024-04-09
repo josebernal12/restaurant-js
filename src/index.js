@@ -62,8 +62,8 @@ io.on('connection', (socket) => {
   socket.on('recibir ticket', ticket => {
     io.emit('ticket recibido', ticket)
   })
-  socket.on('finalizar ticket', ticker => {
-    io.emit('ticket finalizado')
+  socket.on('finalizar ticket', ticket => {
+    io.emit('ticket finalizado', ticket)
   })
   socket.on('crear nota', nota => {
     io.emit('nota creada', nota)

@@ -51,6 +51,9 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     if (type === 'week') {
       startDate = currentDate.clone().subtract(1, 'week').startOf('week');
       endDate = currentDate.clone().subtract(1, 'week').endOf('week');
+    } else if (type === 'currentWeek') {
+      startDate = currentDate.clone().startOf('week');
+      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Saturday of current week
     }
 
     let query = {};
@@ -85,6 +88,11 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     throw error;
   }
 };
+
+
+
+
+
 
 
 
