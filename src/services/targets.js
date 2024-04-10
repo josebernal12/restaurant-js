@@ -2,17 +2,25 @@ import targetModel from "../model/TargetsModel.js"
 
 export const createTargets = async (targets) => {
   try {
-    const newTarget = await targetModel.create({ targets })
+    // Primero, eliminamos cualquier objetivo existente
+    await targetModel.deleteMany({}); // Esto eliminará todos los objetivos existentes
+
+    // Luego, creamos el nuevo objetivo
+    const newTarget = await targetModel.create({ targets });
+    
     if (!newTarget) {
       return {
-        msg: 'error al crear el objetivo'
-      }
+        msg: 'Error al crear el objetivo'
+      };
     }
-    return newTarget
+    return newTarget;
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Error en la operación'
+    };
   }
-}
+};
 
 export const updateTargets = async (id, targets) => {
   try {
