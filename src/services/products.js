@@ -135,8 +135,36 @@ export const bestProduct = async (range) => {
 
     // Si se proporciona un rango de tiempo, ajustar el filtro por fecha
     if (range) {
-      const startDate = startOfDay(new Date());
-      const endDate = endOfDay(new Date());
+      let startDate, endDate;
+
+      switch (range) {
+        case 'week':
+          const today = new Date();
+          const dayOfWeek = today.getDay();
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - dayOfWeek); // Primer día de la semana
+          endDate = new Date(today);
+          endDate.setDate(today.getDate() + (6 - dayOfWeek)); // Último día de la semana
+          break;
+        case 'month':
+          const currentDate = new Date();
+          startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // Primer día del mes actual
+          endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Último día del mes actual
+          break;
+        case 'quarter':
+          const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3); // Determinar el trimestre actual
+          startDate = new Date(new Date().getFullYear(), 3 * currentQuarter - 3, 1); // Primer día del trimestre actual
+          endDate = new Date(new Date().getFullYear(), 3 * currentQuarter, 0); // Último día del trimestre actual
+          break;
+        case 'year':
+          startDate = new Date(new Date().getFullYear(), 0, 1); // Primer día del año actual
+          endDate = new Date(new Date().getFullYear(), 11, 31); // Último día del año actual
+          break;
+        default:
+          throw new Error('Rango de tiempo no válido');
+      }
+
+      // Aplicar el filtro por fecha
       filter = { createdAt: { $gte: startDate, $lte: endDate } };
     }
 
@@ -181,6 +209,7 @@ export const bestProduct = async (range) => {
     throw new Error('Ocurrió un error al obtener los productos más vendidos.');
   }
 };
+
 
 
 
