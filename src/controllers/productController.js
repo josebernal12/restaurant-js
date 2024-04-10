@@ -59,7 +59,10 @@ export const searchProductController = async (req, res) => {
 }
 
 export const bestProductController = async (req, res) => {
-  console.log('hola')
-  const bill = await bestProduct()
+  let range;
+  if (req.query.range) {
+    range = req.query.query
+  }
+  const bill = await bestProduct(range)
   res.json(bill)
 }

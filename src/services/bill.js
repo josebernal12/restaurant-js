@@ -89,6 +89,76 @@ export const getBills = async (page, type, name, showAll, quantity) => {
   }
 };
 
+export const bestWaiter = async (type) => {
+  try {
+    let startDate, endDate;
+
+    // Determinar las fechas de inicio y fin según el tipo de consulta o si no se proporciona ningún tipo
+    switch (type) {
+      case 'week':
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const firstDayOfWeek = new Date(today);
+        firstDayOfWeek.setDate(today.getDate() - dayOfWeek);
+        startDate = new Date(firstDayOfWeek);
+        endDate = new Date(firstDayOfWeek);
+        endDate.setDate(endDate.getDate() + 6); // Fin de la semana
+        break;
+      case 'month':
+        const currentDate = new Date();
+        startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // Primer día del mes actual
+        endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Último día del mes actual
+        break;
+      case 'quarter':
+        const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3); // Determinar el trimestre actual
+        startDate = new Date(new Date().getFullYear(), 3 * currentQuarter - 3, 1); // Primer día del trimestre actual
+        endDate = new Date(new Date().getFullYear(), 3 * currentQuarter, 0); // Último día del trimestre actual
+        break;
+      case 'year':
+        startDate = new Date(new Date().getFullYear(), 0, 1); // Primer día del año actual
+        endDate = new Date(new Date().getFullYear(), 11, 31); // Último día del año actual
+        break;
+      default:
+        // Si no se proporciona un tipo, no establecer fechas de inicio y fin para obtener todas las facturas
+        startDate = null;
+        endDate = null;
+    }
+
+    // Construir la consulta basada en las fechas si se proporciona un tipo válido
+    const query = startDate && endDate ? {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    } : {};
+
+    const bills = await billModel.find(query)
+      .populate('ticketId')
+      .populate('userId')
+      .populate('tableId');
+
+    // Objeto para almacenar el conteo de camareros
+    const waiterCount = {};
+
+    // Iterar sobre las facturas y contar los camareros
+    bills.forEach(bill => {
+      const waiterName = bill.ticketId.waiter;
+
+      // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
+      if (waiterCount[waiterName]) {
+        waiterCount[waiterName]++; // Incrementar el contador si ya existe
+      } else {
+        waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
+      }
+    });
+
+    return waiterCount;
+  } catch (error) {
+    console.log(error);
+    throw new Error('Ocurrió un error al obtener las facturas');
+  }
+}
+
 
 
 
