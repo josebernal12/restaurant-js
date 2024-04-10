@@ -151,8 +151,11 @@ export const bestWaiter = async (type) => {
         waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
       }
     });
+    const waiterArray = Object.keys(waiterCount).map(waiterName => {
+      return { name: waiterName, sell: waiterCount[waiterName] };
+    });
 
-    return waiterCount;
+    return waiterArray;
   } catch (error) {
     console.log(error);
     throw new Error('Ocurrió un error al obtener las facturas');
