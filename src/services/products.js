@@ -132,19 +132,28 @@ export const TimeRange = {
 export const bestProduct = async (range) => {
   try {
     let filter = {};
-
+    console.log(range)
     // Si se proporciona un rango de tiempo, ajustar el filtro por fecha
     if (range) {
       let startDate, endDate;
-
+      console.log(range)
       switch (range) {
-        case 'week':
+        case 'day':
+          // Rango para el día actual
           const today = new Date();
-          const dayOfWeek = today.getDay();
           startDate = new Date(today);
-          startDate.setDate(today.getDate() - dayOfWeek); // Primer día de la semana
+          startDate.setHours(0, 0, 0, 0); // Comienzo del día
           endDate = new Date(today);
-          endDate.setDate(today.getDate() + (6 - dayOfWeek)); // Último día de la semana
+          endDate.setHours(23, 59, 59, 999); // Fin del día
+          console.log('entree day')
+          break;
+        case 'week':
+          const week = new Date();
+          const dayOfWeek = week.getDay();
+          startDate = new Date(week);
+          startDate.setDate(week.getDate() - dayOfWeek); // Primer día de la semana
+          endDate = new Date(week);
+          endDate.setDate(week.getDate() + (6 - dayOfWeek)); // Último día de la semana
           break;
         case 'month':
           const currentDate = new Date();

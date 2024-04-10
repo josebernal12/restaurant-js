@@ -61,7 +61,7 @@ export const searchProductController = async (req, res) => {
 export const bestProductController = async (req, res) => {
   let range;
   if (req.query.range) {
-    range = req.query.query
+    range = req.query.range
   }
   const bill = await bestProduct(range)
   res.json(bill)
