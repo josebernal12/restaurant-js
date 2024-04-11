@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
     io.emit('ticket finalizado', ticket)
   })
   socket.on('crear nota', nota => {
-    io.emit('nota creada', nota)
+    io.emit('nota creada', nota._id)
   })
   socket.on('actualizar nota', nota => {
     io.emit('nota actualizada', nota)
