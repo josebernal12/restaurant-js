@@ -1,4 +1,4 @@
-import { bestWaiter, generateBill, getBIllById, getBills } from "../services/bill.js"
+import { bestWaiter, generateBill, getBIllById, getBills, sells } from "../services/bill.js"
 
 export const generateBillController = async (req, res) => {
   const { ticketId, userId } = req.body
@@ -39,10 +39,20 @@ export const getBillByIdController = async (req, res) => {
 }
 
 export const bestWaiterController = async (req, res) => {
-  let type; 
+  let type;
   if (req.query.type) {
     type = req.query.type
   }
   const bill = await bestWaiter(type)
   res.json(bill)
+}
+
+
+export const sellsController = async (req, res) => {
+  let date;
+  if (req.query.date) {
+    date = req.query.date
+  }
+  const sellsTotal = await sells(date)
+  res.json(sellsTotal)
 }
