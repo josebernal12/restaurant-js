@@ -1,20 +1,20 @@
 import noteModel from "../model/NotesModel.js"
 import ticketModel from "../model/TIcketModel.js"
 
-export const createNote = async (note,  userId, tableId) => {
+export const createNote = async (note, userId, tableId) => {
   try {
-    if(!tableId){
+    if (!tableId) {
       return {
-        msg :'error no viene tableId'
+        msg: 'error no viene tableId'
       }
     }
     const ticketId = await ticketModel.findOne({ tableId })
-    if(!ticketId) {
+    if (!ticketId) {
       return {
         msg: 'no hay mesa relacionada con ese ticket'
       }
     }
-    const newNote = await noteModel.create({ note, ticketId, userId, tableId })
+    const newNote = await noteModel.create({ note, ticketId: ticketId._id, userId, tableId })
     if (!newNote) {
       return {
         msg: 'error al crear la nota'
