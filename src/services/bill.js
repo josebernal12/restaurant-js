@@ -47,7 +47,20 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     const currentDate = moment();
 
     let startDate, endDate;
+    if (showAll === "1") {
+      let billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .populate('userId')
+        .sort({ createdAt: -1 });
 
+      const totalBills = await billModel.countDocuments();
+
+      return {
+        totalBills,
+        billsFiltered
+      };
+    }
     if (type === 'week') {
       startDate = currentDate.clone().subtract(1, 'week').startOf('week');
       endDate = currentDate.clone().subtract(1, 'week').endOf('week');
