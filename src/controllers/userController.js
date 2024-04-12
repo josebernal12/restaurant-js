@@ -1,4 +1,6 @@
 import generateToken from "../helpers/generateToken.js";
+import { restorePassword } from "../services/auth.js";
+import crypto from 'crypto'
 import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
 export const getUsersController = async (req, res) => {
 
@@ -71,4 +73,23 @@ export const logoutController = async (req, res) => {
 
 export const obtainUserByToken = async (req, res) => {
   res.json(req.user)
+}
+
+export const restorePasswordController = async (req, res) => {
+  const { email, subject } = req.body
+  const token = crypto.randomBytes(20).toString('hex');
+  const text = `
+  Hola ${email},
+
+Para restablecer tu contraseña, haz clic en el siguiente enlace:
+
+http://localhost:8080/restore/${token}
+
+Por favor, ten en cuenta que este enlace es válido solo por un tiempo limitado.
+
+¡Gracias!
+  
+  `
+  const sendEmail = await restorePassword(email, subject, text)
+  res.json(sendEmail)
 }
