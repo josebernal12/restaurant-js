@@ -34,7 +34,9 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter })
       if (!newTicket) {
-        return 'Error al crear el ticket'
+        return {
+          msg: 'Error al crear el ticket'
+        }
       }
       newTicket.status = 'proceso'
       newTicket.save()
@@ -166,9 +168,10 @@ export const joinTable = async (idsTables) => {
   }
 }
 
-export const cancelAccount = async (id) => {
+export const cancelAccount = async (id, tableId) => {
   try {
     const ticketCancel = await ticketModel.findByIdAndDelete(id, { new: true })
+    await tableModel.findByIdAndUpdate(tableId, { available: true })
     if (!ticketCancel) {
       return {
         msg: "no hay ticket con ese id"
@@ -212,6 +215,14 @@ export const finishedTicket = async (id) => {
     ticket.status = 'finalizado'
     ticket.save()
     return ticket
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const completedProduct = async (id) => {
+  try {
+    await ticketModel.findById(id)
   } catch (error) {
     console.log(error)
   }

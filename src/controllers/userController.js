@@ -30,18 +30,30 @@ export const getUsersController = async (req, res) => {
     quantity = req.query.quantity
   }
   const users = await getUsers(query, page, showAll, quantity)
+  if (users.msg) {
+    res.status(400).json(users)
+    return
+  }
   res.json(users)
 }
 
 export const getUserByIdController = async (req, res) => {
   const { id } = req.params
   const users = await getUserById(id)
+  if (users.msg) {
+    res.status(400).json(users)
+    return
+  }
   res.json(users)
 }
 
 export const deleteUserController = async (req, res) => {
   const { id } = req.params
   const message = await deleteUser(id)
+  if (message.msg) {
+    res.status(400).json(message)
+    return
+  }
   res.json(message)
 }
 
@@ -50,7 +62,11 @@ export const updateUserController = async (req, res) => {
   const { id } = req.params
 
   const user = await updateUser(id, name, lastName, email, rolId)
-  res.json(user)
+  if (users.msg) {
+    res.status(400).json(users)
+    return
+  }
+  res.json(users)
 }
 
 export const renewToken = (req, res) => {

@@ -5,7 +5,6 @@ export const getUsers = async (query, page, showAll, quantity) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
-  console.log(showAll)
   try {
     if (showAll === "1") {
       const usersTotal = await userModel.countDocuments()
@@ -26,12 +25,16 @@ export const getUsers = async (query, page, showAll, quantity) => {
     if (query.rol) {
       const rol = await RolModel.findOne({ name: query.rol });
       if (!rol) {
-        return 'No se encontró el rol especificado';
+        return {
+          msg: 'No se encontró el rol especificado'
+        };
       }
       const usersTotal = await userModel.countDocuments()
       const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').exec();
       if (!users || users.length === 0) {
-        return 'No hay usuarios con el rol especificado';
+        return {
+          msg: 'No hay usuarios con el rol especificado'
+        };
       }
       return {
         users,
@@ -44,7 +47,9 @@ export const getUsers = async (query, page, showAll, quantity) => {
       .populate('rol')
       .exec();;
     if (!users || users.length === 0) {
-      return 'No hay usuarios que coincidan con los criterios de búsqueda';
+      return {
+        msg: 'No hay usuarios que coincidan con los criterios de búsqueda'
+      };
     }
     return {
       users,
@@ -60,7 +65,9 @@ export const getUserById = async (id) => {
   try {
     const user = await userModel.findById(id)
     if (!user) {
-      return 'no hay nigun usuario para ese id'
+      return {
+        msg: 'no hay nigun usuario para ese id'
+      }
     }
     return user
   } catch (error) {
@@ -71,7 +78,9 @@ export const deleteUser = async (id) => {
   try {
     const user = await userModel.findByIdAndDelete(id)
     if (!user) {
-      return 'no hay ningun usuario con ese id'
+      return {
+        msg: 'no hay ningun usuario con ese id'
+      }
     }
     return 'usuario eliminado'
   } catch (error) {
@@ -84,7 +93,9 @@ export const updateUser = async (id, name, lastName, email, rolId) => {
     if (user.email === email) {
       const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
       if (!userUpdate) {
-        return 'error en la actualizacion'
+        return {
+          msg: 'error en la actualizacion'
+        }
       }
       return userUpdate
 
@@ -93,11 +104,15 @@ export const updateUser = async (id, name, lastName, email, rolId) => {
     if (exist === null) {
       const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
       if (!userUpdate) {
-        return 'error en la actualizacion'
+        return {
+          msg: 'error en la actualizacion'
+        }
       }
       return userUpdate
     }
-    return 'el email ya existe en la base de datos'
+    return {
+      msg: 'el email ya existe en la base de datos'
+    }
 
   } catch (error) {
     console.log(error)

@@ -3,6 +3,10 @@ import { addProducts, bestProduct, deleteProduct, getProducts, getProductsById, 
 export const addProductController = async (req, res) => {
   const { name, description, price, stock, category, image } = req.body
   const newProduct = await addProducts(name, description, price, stock, category, image)
+  if (newProduct.msg) {
+    res.status(400).json(newProduct)
+    return
+  }
   res.json(newProduct)
 
 }
@@ -28,19 +32,30 @@ export const getProductsController = async (req, res) => {
     quantity = req.query.quantity // 'i' para hacer la búsqueda case-insensitive
   }
   const products = await getProducts(query, page, showAll, quantity)
+  if (products.msg) {
+    res.status(400).json(products)
+    return
+  }
   res.json(products)
-
 }
 
 export const getProductByIdController = async (req, res) => {
   const { id } = req.params
   const product = await getProductsById(id)
+  if (product.msg) {
+    res.status(400).json(product)
+    return
+  }
   res.json(product)
 }
 
 export const deleteProductController = async (req, res) => {
   const { id } = req.params
   const productDeleted = await deleteProduct(id)
+  if (productDeleted.msg) {
+    res.status(400).json(productDeleted)
+    return
+  }
   res.json(productDeleted)
 }
 
@@ -49,6 +64,10 @@ export const updateProductController = async (req, res) => {
   const { name, description, price, stock, category } = req.body
 
   const productUpdate = await updateProduct(id, name, description, price, stock, category)
+  if (productUpdate.msg) {
+    res.status(400).json(productUpdate)
+    return
+  }
   res.json(productUpdate)
 }
 
