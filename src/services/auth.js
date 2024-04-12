@@ -24,7 +24,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
             token
           }
         }
-        const user = await userModel.create({ name, lastName, email, password: hash, rol })
+        const user = (await userModel.create({ name, lastName, email, password: hash, rol })).populate('rol')
         const token = generateToken(user.id)
         return {
           user,
