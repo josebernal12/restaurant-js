@@ -76,20 +76,9 @@ export const obtainUserByToken = async (req, res) => {
 }
 
 export const restorePasswordController = async (req, res) => {
-  const { email, subject } = req.body
+  const { name, email } = req.body
   const token = crypto.randomBytes(20).toString('hex');
-  const text = `
-  Hola ${email},
 
-Para restablecer tu contraseña, haz clic en el siguiente enlace:
-
-http://localhost:8080/restore/${token}
-
-Por favor, ten en cuenta que este enlace es válido solo por un tiempo limitado.
-
-¡Gracias!
-  
-  `
-  const sendEmail = await restorePassword(email, subject, text)
+  const sendEmail = await restorePassword(name, email, token)
   res.json(sendEmail)
 }

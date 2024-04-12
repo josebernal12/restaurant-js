@@ -3,7 +3,7 @@ import { checkEmailInDB } from "../helpers/validate.js";
 import userModel from "../model/UserModel.js";
 import RolModel from '../model/RolModel.js';
 import bcrypt from 'bcrypt'
-import { sendEmail } from "../helpers/email.js";
+import { generateEmailByForgotPassword } from "../helpers/email.js";
 export const register = async (name, lastName, email, password, confirmPassword, rol) => {
   const saltRounds = 10;
 
@@ -65,7 +65,7 @@ export const login = async (email, password) => {
 }
 
 
-export const restorePassword = async (email, subject, text) => {
+export const restorePassword = async (name, email, token) => {
   try {
     // const exist = await checkEmailInDB(email)
     // if(!exist) {
@@ -73,7 +73,7 @@ export const restorePassword = async (email, subject, text) => {
     //     msg : 'el email no existe en la DB'
     //   }
     // }
-    sendEmail(email, subject, text)
+    generateEmailByForgotPassword(name, email, token)
   } catch (error) {
     console.log(error)
   }

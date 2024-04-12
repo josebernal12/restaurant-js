@@ -8,7 +8,7 @@ export const checkJwt = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.KEYSECRET || 'defaultSecret')
-      const user = await userModel.findById(decoded.id)
+      const user = await userModel.findById(decoded.id).populate('rol')
       if (!user) {
         throw new Error('Usuario no encontrado');
       }
