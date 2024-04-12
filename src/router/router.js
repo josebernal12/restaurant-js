@@ -7,10 +7,10 @@ import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission
 
 const router = Router()
 
-router.get('/users', [addUserPermission], getUsersController)
-router.get('/users/:id', [addUserPermission], getUserByIdController)
-router.put('/users/update/:id', [updateUserPermission], updateUserController)
-router.delete('/users/delete/:id', [deleteUserPermission],deleteUserController)
+router.get('/users', [checkJwt, addUserPermission], getUsersController)
+router.get('/users/:id', [checkJwt, addUserPermission], getUserByIdController)
+router.put('/users/update/:id', [checkJwt, updateUserPermission], updateUserController)
+router.delete('/users/delete/:id', [checkJwt, deleteUserPermission], deleteUserController)
 // router.post('/search', userSearchController)
 router.post('/register', registerController)
 router.post('/login', loginController)

@@ -10,11 +10,11 @@ import { checkJwt } from '../middleware/permission.js'
 const router = Router()
 
 router.get('/', getProductsController)
-router.post('/', [addProductPermission], addProductController)
+router.post('/', [checkJwt, addProductPermission], addProductController)
 router.get('/bestSeller', bestProductController)
-router.get('/:id', [addProductPermission], getProductByIdController)
-router.put('/update/:id', [updateProductPermission], updateProductController)
-router.delete('/delete/:id', [deleteProductPermission], deleteProductController)
+router.get('/:id', [checkJwt, addProductPermission], getProductByIdController)
+router.put('/update/:id', [checkJwt, updateProductPermission], updateProductController)
+router.delete('/delete/:id', [checkJwt, deleteProductPermission], deleteProductController)
 router.post('/search', searchProductController)
 
 

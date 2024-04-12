@@ -5,6 +5,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
+  console.log(showAll)
   try {
     if (showAll === "1") {
       const usersTotal = await userModel.countDocuments()
