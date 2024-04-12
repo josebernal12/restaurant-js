@@ -12,5 +12,9 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res) => {
   const { email, password } = req.body
   const user = await login(email, password)
+  if (user === "email o password no son correctos") {
+    res.status(400).json(user)
+    return
+  }
   res.json(user)
 }
