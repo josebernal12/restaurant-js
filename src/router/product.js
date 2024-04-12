@@ -9,7 +9,7 @@ import { checkJwt } from '../middleware/permission.js'
 
 const router = Router()
 
-router.get('/', [addProductPermission], getProductsController)
+router.get('/', getProductsController)
 router.post('/', [addProductPermission], addProductController)
 router.get('/bestSeller', bestProductController)
 router.get('/:id', [addProductPermission], getProductByIdController)
