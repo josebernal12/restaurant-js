@@ -11,7 +11,9 @@ export const register = async (name, lastName, email, password, confirmPassword,
     const user = await checkEmailInDB(email)
     if (!user) {
       if (confirmPassword !== password) {
-        return 'Los passwords no coinciden';
+        return {
+          msg: 'Los passwords no coinciden'
+        };
       } else {
         const saltRound = bcrypt.genSaltSync(saltRounds)
         const hash = bcrypt.hashSync(password, saltRound)
@@ -32,7 +34,9 @@ export const register = async (name, lastName, email, password, confirmPassword,
         }
       }
     } else {
-      return 'el email ya existe'
+      return {
+        msg: 'el email ya existe'
+      }
     }
 
   } catch (error) {
