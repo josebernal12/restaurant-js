@@ -4,6 +4,10 @@ export const generateBillController = async (req, res) => {
   const { ticketId, userId } = req.body
   const { id } = req.params
   const bill = await generateBill(ticketId, id, userId)
+  if (bill.msg) {
+    res.status(400).json(bill)
+    return
+  }
   res.json(bill)
 }
 
@@ -29,12 +33,20 @@ export const getBillsController = async (req, res) => {
     quantity = req.query.quantity
   }
   const bills = await getBills(page, type, name, showAll, quantity)
+  if (bills.msg) {
+    res.status(400).json(bills)
+    return
+  }
   res.json(bills)
 }
 
 export const getBillByIdController = async (req, res) => {
   const { id } = req.params
   const bill = await getBIllById(id)
+  if (bill.msg) {
+    res.status(400).json(bill)
+    return
+  }
   res.json(bill)
 }
 
@@ -44,6 +56,10 @@ export const bestWaiterController = async (req, res) => {
     type = req.query.type
   }
   const bill = await bestWaiter(type)
+  if (bill.msg) {
+    res.status(400).json(bill)
+    return
+  }
   res.json(bill)
 }
 
@@ -54,5 +70,9 @@ export const sellsController = async (req, res) => {
     date = req.query.date
   }
   const sellsTotal = await sells(date)
+  if (sellsTotal.msg) {
+    res.status(400).json(sellsTotal)
+    return
+  }
   res.json(sellsTotal)
 }

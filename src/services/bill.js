@@ -26,7 +26,9 @@ export const generateBill = async (ticketId, tableId, userId) => {
       await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true });
 
       if (!newBill) {
-        return 'error al generar la factura'
+        return {
+          msg: 'error al generar la factura'
+        }
       }
       return newBill
     }
