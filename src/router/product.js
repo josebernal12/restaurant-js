@@ -1,5 +1,13 @@
 import { Router } from 'express'
-import { addProductController, bestProductController, deleteProductController, getProductByIdController, getProductsController, inventaryController, searchProductController, updateProductController } from '../controllers/productController.js'
+import {
+  addProductController,
+  bestProductController,
+  deleteProductController,
+  getProductByIdController,
+  getProductsController,
+  searchProductController,
+  updateProductController
+} from '../controllers/productController.js'
 import {
   addProductPermission,
   deleteProductPermission,
@@ -12,7 +20,6 @@ const router = Router()
 router.get('/', getProductsController)
 router.post('/', [checkJwt, addProductPermission], addProductController)
 router.get('/bestSeller', bestProductController)
-router.get('/inventory', inventaryController) 
 router.put('/update/:id', [checkJwt, updateProductPermission], updateProductController)
 router.delete('/delete/:id', [checkJwt, deleteProductPermission], deleteProductController)
 router.post('/search', searchProductController)

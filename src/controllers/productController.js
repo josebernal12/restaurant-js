@@ -1,4 +1,12 @@
-import { addProducts, bestProduct, deleteProduct, getProducts, getProductsById, inventary, searchProduct, updateProduct } from "../services/products.js"
+import {
+  addProducts,
+  bestProduct,
+  deleteProduct,
+  getProducts,
+  getProductsById,
+  searchProduct,
+  updateProduct
+} from "../services/products.js"
 
 export const addProductController = async (req, res) => {
   const { name, description, price, stock, category, image } = req.body
@@ -84,26 +92,4 @@ export const bestProductController = async (req, res) => {
   }
   const bill = await bestProduct(range)
   res.json(bill)
-}
-
-export const inventaryController = async (req, res) => {
-  const query = {}; // Inicializar el objeto de consulta
-  let page;
-  let showAll;
-  let quantity;
-  if (req.query.name) {
-    query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
-  }
-  if (req.query.page) {
-    page = req.query.page // 'i' para hacer la búsqueda case-insensitive
-  }
-  if (req.query.showAll) {
-    showAll = req.query.showAll // 'i' para hacer la búsqueda case-insensitive
-  }
-  if (req.query.quantity) {
-    quantity = req.query.quantity // 'i' para hacer la búsqueda case-insensitive
-  }
-
-  const products = await inventary(query, quantity, page, showAll)
-  res.json(products)
 }
