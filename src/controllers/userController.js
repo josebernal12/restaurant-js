@@ -91,10 +91,3 @@ export const obtainUserByToken = async (req, res) => {
   res.json(req.user)
 }
 
-export const restorePasswordController = async (req, res) => {
-  const { name, email } = req.body
-  const token = crypto.randomBytes(20).toString('hex');
-
-  const sendEmail = await restorePassword(name, email, token)
-  res.json(sendEmail)
-}

@@ -3,7 +3,7 @@ import { checkEmailInDB } from "../helpers/validate.js";
 import userModel from "../model/UserModel.js";
 import RolModel from '../model/RolModel.js';
 import bcrypt from 'bcrypt'
-import { generateEmailByForgotPassword } from "../helpers/email.js";
+import { uid } from 'uid'
 export const register = async (name, lastName, email, password, confirmPassword, rol) => {
   const saltRounds = 10;
 
@@ -69,15 +69,56 @@ export const login = async (email, password) => {
 }
 
 
-export const restorePassword = async (name, email, token) => {
+export const restorePassword = async (email) => {
   try {
-    // const exist = await checkEmailInDB(email)
-    // if(!exist) {
-    //   return {
-    //     msg : 'el email no existe en la DB'
-    //   }
-    // }
-    generateEmailByForgotPassword(name, email, token)
+    const exist = await checkEmailInDB(email)
+    if (!exist) {
+      return {
+        msg: 'el email no existe en la DB'
+      }
+    }
+    exist.token = uid(16)
+    exist.save()
+    return exist
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const checkTokenEmail = async (token) => {
+  try {
+    const user = await userModel.findOne({ token })
+    if (!user) {
+      return {
+        msg: 'token no valido'
+      }
+    }
+    return user
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const changePassword = async (password, passwordRepit, token) => {
+  try {
+    const saltRounds = 10;
+    if (password !== passwordRepit) {
+      return {
+        msg: 'los password no son iguales'
+      }
+    }
+    const user = await userModel.findOne({ token })
+    if (!user) {
+      return {
+        msg: 'el token no es valido'
+      }
+    }
+    const saltRound = bcrypt.genSaltSync(saltRounds)
+    const hash = bcrypt.hashSync(password, saltRound)
+    user.password = hash
+    user.token = null
+    user.save()
+    return user
   } catch (error) {
     console.log(error)
   }
