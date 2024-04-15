@@ -222,7 +222,13 @@ export const finishedTicket = async (id) => {
 
 export const completedProduct = async (id) => {
   try {
-    await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id)
+    if (!ticket) {
+      return {
+        msg: 'no hay id con ese tikcet'
+      }
+    }
+    return ticket
   } catch (error) {
     console.log(error)
   }

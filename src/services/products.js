@@ -240,44 +240,44 @@ export const inventary = async (name, quantity, page, showAll) => {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
-  
+
     let query = {}; // Inicializamos la consulta como vacía
-  
+
     // Si se solicitan todos los productos
     if (showAll === "1") {
       const productTotal = await productModel.countDocuments()
-      const products = await productModel.find(query).select('-image -description');
+      const products = await productModel.find(query).select('-image -description -price');
       return {
         productTotal,
         products
       }
     }
-  
+
     // Si se solicita una cantidad específica de productos
     if (quantity) {
       const productTotal = await productModel.countDocuments()
-      const products = await productModel.find(query).limit(quantity).select('-image -description');
+      const products = await productModel.find(query).limit(quantity).select('-image -description -price');
       return {
         productTotal,
         products
       }
     }
-  
+
     // Si se busca por nombre
     if (name && name.name) {
       query = name;
     }
-  
+
     // Si se solicita una página específica de productos
     const productTotal = await productModel.countDocuments(query)
-    const products = await productModel.find(query).select('-image -description').limit(perPage).skip(skip).exec();
-  
+    const products = await productModel.find(query).select('-image -description -price').limit(perPage).skip(skip).exec();
+
     if (!products || products.length === 0) {
       return {
         msg: 'No hay productos'
       }
     }
-  
+
     return {
       products,
       productTotal
