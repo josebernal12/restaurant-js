@@ -26,7 +26,7 @@ export const inventaryController = async (req, res) => {
 
   const products = await inventary(query, quantity, page, showAll)
   if (products.msg) {
-    res.status(400).json(products)
+    res.status(404).json(products)
     return
   }
   res.json(products)
@@ -37,7 +37,7 @@ export const createProductInventoryController = async (req, res) => {
   const product = await createProductInventory(name, stock, max, min)
   console.log(product)
   if (product.msg) {
-    res.status(400).json(product)
+    res.status(404).json(product)
     return
   }
   res.json(product)
@@ -48,7 +48,7 @@ export const updateProductInventoryController = async (req, res) => {
   const { name, stock, max, min } = req.body
   const product = await updateProductInventory(id, name, stock, max, min)
   if (product.msg) {
-    res.status(400).json(product)
+    res.status(404).json(product)
     return
   }
   res.json(product)
@@ -58,7 +58,7 @@ export const deleteProductInventoryController = async (req, res) => {
   const { id } = req.params
   const product = await deleteProductInventory(id)
   if (product.msg) {
-    res.status(400).json(product)
+    res.status(404).json(product)
     return
   }
   res.json(product)
@@ -69,7 +69,7 @@ export const getProducInventoryByIdController = async (req, res) => {
 
   const product = await getProductByIdInventory(id)
   if (product.msg) {
-    res.status(400).json(product)
+    res.status(404).json(product)
     return
   }
   res.json(product)
