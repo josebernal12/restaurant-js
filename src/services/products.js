@@ -45,7 +45,7 @@ export const getProducts = async (name, page, showAll, quantity) => {
       const products = await productModel.find(name)
       if (!products) {
         return {
-          msg: 'no hay productos'
+          products: []
         }
       }
       return {

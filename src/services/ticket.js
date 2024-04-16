@@ -119,7 +119,7 @@ export const getTickets = async () => {
     const tickets = await ticketModel.find()
     if (!tickets) {
       return {
-        msg: 'no hay tickets creados'
+        tickets: []
       }
     }
     return tickets

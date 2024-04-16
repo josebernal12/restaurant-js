@@ -39,7 +39,7 @@ export const getActivities = async (page = 1) => {
     const activities = await activitiesModel.find()
     if (!activities) {
       return {
-        msg: 'no hay actividades recientes'
+        activities: []
       }
     }
     const activitiesMap = activities.map(value => value.activities);

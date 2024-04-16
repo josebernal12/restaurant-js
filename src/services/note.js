@@ -67,7 +67,7 @@ export const getAllNotes = async () => {
     const notes = await noteModel.find()
     if (!notes) {
       return {
-        msg: 'no hay notas'
+        notes: []
       }
     }
     return notes

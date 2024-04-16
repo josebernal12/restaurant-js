@@ -93,7 +93,11 @@ export const getBills = async (page, type, name, showAll, quantity) => {
       .sort({ createdAt: -1 });
 
     const totalBills = await billModel.countDocuments(query);
-
+    if (!billsFiltered) {
+      return {
+        billsFiltered: []
+      }
+    }
     return {
       totalBills,
       billsFiltered

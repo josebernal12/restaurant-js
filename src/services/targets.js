@@ -7,7 +7,7 @@ export const createTargets = async (targets) => {
 
     // Luego, creamos el nuevo objetivo
     const newTarget = await targetModel.create({ targets });
-    
+
     if (!newTarget) {
       return {
         msg: 'Error al crear el objetivo'
@@ -55,7 +55,7 @@ export const getAllTargets = async () => {
     const targets = await targetModel.find()
     if (!targets) {
       return {
-        msg: 'no hay objetivos'
+        targets: []
       }
     }
     return targets

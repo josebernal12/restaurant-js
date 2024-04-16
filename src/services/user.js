@@ -51,6 +51,11 @@ export const getUsers = async (query, page, showAll, quantity) => {
         msg: 'No hay usuarios que coincidan con los criterios de búsqueda'
       };
     }
+    if (users.length === 0) {
+      return {
+        users: []
+      }
+    }
     return {
       users,
       usersTotal
