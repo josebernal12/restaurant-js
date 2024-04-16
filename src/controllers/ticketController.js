@@ -89,7 +89,8 @@ export const finishedTicketController = async (req, res) => {
 
 export const completedProductController = async (req, res) => {
   const { id } = req.params
-  const ticket = await completedProduct(id)
+  const { idProduct } = req.body
+  const ticket = await completedProduct(id, idProduct)
   if (ticket.msg) {
     res.status(404).json(ticket)
     return

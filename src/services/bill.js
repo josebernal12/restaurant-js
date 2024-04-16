@@ -81,7 +81,8 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     }
 
     if (name) {
-      query['userId.name'] = { $regex: new RegExp(name, 'i') };
+      query['waiter'] = { $regex: new RegExp(name, 'i') };
+      console.log(query)
     }
 
     let billsFiltered = await billModel.find(query)

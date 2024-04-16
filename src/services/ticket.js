@@ -220,7 +220,7 @@ export const finishedTicket = async (id) => {
   }
 }
 
-export const completedProduct = async (id) => {
+export const completedProduct = async (id, idProduct) => {
   try {
     const ticket = await ticketModel.findById(id)
     if (!ticket) {
@@ -228,7 +228,14 @@ export const completedProduct = async (id) => {
         msg: 'no hay id con ese tikcet'
       }
     }
-    await ticketModel.findByIdAndUpdate(id, { completed: !ticket.completed }, { new: true })
+    ticket.products.forEach(product => {
+      console.log(product._id)
+      console.log(idProduct)
+      if (product._id.toString() === idProduct.toString()) {
+        product.completed = true
+      }
+    })
+    ticket.save()
     return ticket
   } catch (error) {
     console.log(error)
