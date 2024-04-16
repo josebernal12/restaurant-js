@@ -55,6 +55,12 @@ export const inventary = async (name, quantity, page, showAll) => {
 
 export const createProductInventory = async (name, stock, max, min) => {
   try {
+    const exist = await inventaryModel.findOne({ name })
+    if (exist) {
+      return {
+        msg: 'ya existe un producto con ese nombre'
+      }
+    }
     const newProduct = await inventaryModel.create({ name, stock, max, min })
     if (!newProduct) {
       return {

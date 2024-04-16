@@ -34,9 +34,6 @@ export const inventaryController = async (req, res) => {
 
 export const createProductInventoryController = async (req, res) => {
   const { name, stock, max, min } = req.body
-  console.log(name)
-  console.log(stock)
-  console.log(max)
   const product = await createProductInventory(name, stock, max, min)
   console.log(product)
   if (product.msg) {
