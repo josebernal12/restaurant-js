@@ -38,9 +38,7 @@ export const inventary = async (name, quantity, page, showAll) => {
     const products = await inventaryModel.find(query).select('-image -description -price').limit(perPage).skip(skip).exec();
 
     if (!products || products.length === 0) {
-      return {
-        msg: 'No hay productos'
-      }
+      return []
     }
 
     return {
