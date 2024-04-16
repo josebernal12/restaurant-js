@@ -228,6 +228,7 @@ export const completedProduct = async (id) => {
         msg: 'no hay id con ese tikcet'
       }
     }
+    await ticketModel.findByIdAndUpdate(id, { completed: !ticket.completed }, { new: true })
     return ticket
   } catch (error) {
     console.log(error)

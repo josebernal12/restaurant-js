@@ -25,6 +25,10 @@ export const inventaryController = async (req, res) => {
   }
 
   const products = await inventary(query, quantity, page, showAll)
+  if (products.msg) {
+    res.status(400).json(products)
+    return
+  }
   res.json(products)
 }
 
@@ -34,7 +38,7 @@ export const createProductInventoryController = async (req, res) => {
   console.log(stock)
   console.log(max)
   const product = await createProductInventory(name, stock, max, min)
-  console.log(product )
+  console.log(product)
   if (product.msg) {
     res.status(400).json(product)
     return
