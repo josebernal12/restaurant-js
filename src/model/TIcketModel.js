@@ -1,20 +1,24 @@
 import mongoose from 'mongoose'
 const { Schema } = mongoose
-
+import { uid } from 'uid'
 const ticketSchema = new Schema({
   products: [
     {
       name: String,
       price: Number,
       stock: Number,
+      uid: {
+        type: String,
+        default: uid(16)
+      },
       completed: {
         type: Boolean,
         default: false
       },
-      recipe: {
+      recipe: [{
         type: Schema.Types.ObjectId,
         ref: 'Inventary'
-      }
+      }]
 
     }
   ],

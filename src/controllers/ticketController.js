@@ -1,4 +1,4 @@
-import { cancelAccount, completedAllProductTicket, completedProduct, createTicket, deleteTicket, finishedTicket, getTicketById, getTickets, receivedTicket, updateTicket } from "../services/ticket.js"
+import { cancelAccount, completedAllProductTicket, completedProduct, createTicket, deleteTicket, finishedTicket, getTicketById, getTickets, newUpdateTicket, receivedTicket, updateTicket } from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
   const { products, subtotal, total, userId, waiter } = req.body
@@ -15,7 +15,7 @@ export const createTicketController = async (req, res) => {
 export const updateTicketController = async (req, res) => {
   const { products, subTotal, total, tableId, userId } = req.body
   const { id } = req.params
-  const ticket = await updateTicket(id, products, subTotal, total, tableId, userId)
+  const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId)
 
   if (ticket.msg) {
     res.status(404).json(ticket)
@@ -25,7 +25,11 @@ export const updateTicketController = async (req, res) => {
 }
 
 export const getTicketsController = async (req, res) => {
-  const tickets = await getTickets()
+  const query = {}; // Inicializar el objeto de consulta
+  if (req.query.waiter) {
+    query.waiter = { $regex: req.query.waiter, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  }
+  const tickets = await getTickets(query)
   if (tickets.msg) {
     res.status(404).json(tickets)
     return

@@ -88,13 +88,21 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
       }
     }
 
+    // Agregar nuevos productos al ticket
+    for (const productId in stockDifference) {
+      if (stockDifference[productId] > 0) {
+        const newProduct = products.find(p => p._id.toString() === productId);
+        ticket.products.push(newProduct);
+      }
+    }
+
     // Actualizar el stock de los productos
     for (const productId in stockDifference) {
       await productModel.findByIdAndUpdate(productId, { $inc: { stock: -stockDifference[productId] } });
     }
 
     // Actualizar el ticket
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products, subTotal, total, tableId, userId }, { new: true });
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId }, { new: true });
     if (!ticketUpdate) {
       return {
         msg: 'No se pudo actualizar el ticket'
@@ -110,9 +118,35 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
   }
 };
 
-
-export const getTickets = async () => {
+export const newUpdateTicket = async (id, products, subTotal, total, tableId, userId, type) => {
   try {
+    const ticket = await ticketModel.findById(id);
+    if (!ticket) {
+      return {
+        msg: 'El ticket no existe'
+      };
+    }
+    // if (type) {
+    //   ticket.products.forEach(async (product) => {
+    //     const product = await productModel.findById(product._id)
+    //   })
+
+    //   const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products, subTotal, total, tableId, userId })
+    //   return ticketUpdate
+    // }
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getTickets = async (name) => {
+  try {
+    if (name.waiter) {
+      const tickets = await ticketModel.find(name)
+      return tickets
+
+    }
     const tickets = await ticketModel.find()
     if (!tickets) {
       return {
