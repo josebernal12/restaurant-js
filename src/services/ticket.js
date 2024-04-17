@@ -31,7 +31,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
         await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
       }
 
-      await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
+      // await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
       const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter })
       if (!newTicket) {
         return {
