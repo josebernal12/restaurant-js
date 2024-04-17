@@ -10,6 +10,10 @@ const ticketSchema = new Schema({
       completed: {
         type: Boolean,
         default: false
+      },
+      recipe: {
+        type: Schema.Types.ObjectId,
+        ref: 'Inventary'
       }
 
     }

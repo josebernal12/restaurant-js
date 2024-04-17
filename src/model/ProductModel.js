@@ -25,7 +25,11 @@ const productSchema = new Schema({
   },
   image: {
     type: String,
-  }
+  },
+  recipe: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Inventary'
+  }]
 }, {
   timestamps: true
 })

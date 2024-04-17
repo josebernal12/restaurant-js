@@ -18,9 +18,7 @@ const inventarySchema = new Schema({
   min: {
     type: Number,
     required: true
-  },
- 
- 
+  }, 
 }, {
   timestamps: true
 })

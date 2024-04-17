@@ -3,9 +3,9 @@ import billModel from "../model/BillModel.js"
 import productModel from "../model/ProductModel.js"
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
-export const addProducts = async (name, description, price, stock, category, image) => {
+export const addProducts = async (name, description, price, stock, category, image, recipe) => {
   try {
-    const newProduct = await productModel.create({ name, description, price, stock, category, image })
+    const newProduct = await productModel.create({ name, description, price, stock, category, image, recipe })
     if (!newProduct) {
       return {
         msg: 'error al crear producto'

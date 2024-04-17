@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { checkJwt } from '../middleware/permission.js'
 import {
   cancelTicketController,
+  completedAllProductTicketController,
   completedProductController,
   createTicketController,
   deleteTicketController,
@@ -23,4 +24,5 @@ router.delete('/cancel/:id', cancelTicketController)
 router.put('/received/:id', receivedTicketController)
 router.put('/finished/:id', finishedTicketController)
 router.put('/completed/:id', completedProductController)
+router.put('/complete-all/:id', completedAllProductTicketController)
 export default router

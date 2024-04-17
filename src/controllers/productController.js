@@ -9,8 +9,8 @@ import {
 } from "../services/products.js"
 
 export const addProductController = async (req, res) => {
-  const { name, description, price, stock, category, image } = req.body
-  const newProduct = await addProducts(name, description, price, stock, category, image)
+  const { name, description, price, stock, category, image, recipe } = req.body
+  const newProduct = await addProducts(name, description, price, stock, category, image, recipe)
   if (newProduct.msg) {
     res.status(404).json(newProduct)
     return
