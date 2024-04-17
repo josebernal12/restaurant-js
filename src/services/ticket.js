@@ -9,7 +9,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     const table = await tableModel.findById(tableObjectId)
     const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
 
-    if (table && !existTicket) {
+    if (table) {
       let invalid = false; // Inicializamos la bandera como falsa
       for (const product of products) {
         const productUpdate = await productModel.findById(product._id)
@@ -284,6 +284,21 @@ export const completedAllProductTicket = async (id) => {
     })
     ticket.save()
     return ticket
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const joinAllProductsTicket = async (tableId) => {
+  try {
+    const ticket = await ticketModel.find({ tableId })
+    if (!ticket) {
+      return {
+        msg: 'no hay ticket en esa mesa'
+      }
+    }
+    return ticket  
   } catch (error) {
     console.log(error)
   }

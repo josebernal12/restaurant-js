@@ -9,6 +9,7 @@ import {
   finishedTicketController,
   getTicketsByIdController,
   getTicketsController,
+  joinAllProductsTicketController,
   receivedTicketController,
   updateTicketController
 } from '../controllers/ticketController.js'
@@ -25,4 +26,5 @@ router.put('/received/:id', receivedTicketController)
 router.put('/finished/:id', finishedTicketController)
 router.put('/completed/:id', completedProductController)
 router.put('/complete-all/:id', completedAllProductTicketController)
+router.get('/join-product/:id', joinAllProductsTicketController)
 export default router
