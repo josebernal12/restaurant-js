@@ -62,11 +62,11 @@ export const updateUserController = async (req, res) => {
   const { id } = req.params
 
   const user = await updateUser(id, name, lastName, email, rolId)
-  if (users.msg) {
-    res.status(404).json(users)
+  if (user.msg) {
+    res.status(404).json(user)
     return
   }
-  res.json(users)
+  res.json(user)
 }
 
 export const renewToken = (req, res) => {

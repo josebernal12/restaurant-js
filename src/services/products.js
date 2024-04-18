@@ -1,11 +1,14 @@
 
 import billModel from "../model/BillModel.js"
+import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 export const addProducts = async (name, description, price, stock, category, image, recipe) => {
   try {
-    const newProduct = await productModel.create({ name, description, price, stock, category, image, recipe })
+    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, recipe })).populate('recipe')
+    newProduct.recipe.forEach(async (value) => {
+      await inventaryModel.findByIdAndUpdate(value._id, { $inc: { stock: - value.stock } })
+    })
     if (!newProduct) {
       return {
         msg: 'error al crear producto'
@@ -98,19 +101,31 @@ export const deleteProduct = async (id) => {
 }
 
 
-export const updateProduct = async (id, name, description, stock, price, category) => {
+export const updateProduct = async (id, name, description, stock, price, category, recipe) => {
   try {
-    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category }, { new: true })
+    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, recipe }, { new: true }).populate('recipe')
     if (!productUpdate) {
       return {
-        msg: 'error en la actualizacion'
+        msg: 'Error en la actualización'
       }
     }
-    return productUpdate
+    
+    // Calcular la diferencia de stock
+    const oldStock = productUpdate.stock; // Stock anterior
+    const newStock = stock; // Nuevo stock
+    const stockDifference = newStock - oldStock; // Diferencia de stock
+
+    // Actualizar el inventario
+    productUpdate.recipe.forEach(async (value) => {
+      await inventaryModel.findByIdAndUpdate(value._id, { $inc: { stock: -value.stock * stockDifference } });
+    });
+
+    return productUpdate;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
+
 
 export const searchProduct = async (name, price, category,) => {
   try {

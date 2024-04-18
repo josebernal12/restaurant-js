@@ -27,8 +27,8 @@ const productSchema = new Schema({
     type: String,
   },
   recipe: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Inventary'
+    name: String,
+    stock: Number,
   }]
 }, {
   timestamps: true
