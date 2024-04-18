@@ -298,8 +298,39 @@ export const joinAllProductsTicket = async (tableId) => {
         msg: 'no hay ticket en esa mesa'
       }
     }
-    return ticket  
+    return ticket
   } catch (error) {
     console.log(error)
   }
 }
+export const getAllTickets = async () => {
+  const tickets = await ticketModel.find();
+
+  if (!tickets || tickets.length === 0) {
+    return {
+      tickets: []
+    };
+  }
+
+  // Crear un objeto para mapear tableId a arrays de tickets
+  const ticketsGrouped = tickets.reduce((acc, ticket) => {
+    const { tableId } = ticket;
+    if (!acc[tableId]) {
+      acc[tableId] = [ticket];
+    } else {
+      acc[tableId].push(ticket);
+    }
+    return acc;
+  }, {});
+
+  // Extraer los arrays de tickets agrupados en un solo array
+  const groupedTickets = Object.values(ticketsGrouped);
+
+  return {
+    tickets: groupedTickets
+  };
+};
+
+
+
+
