@@ -100,31 +100,35 @@ export const deleteProduct = async (id) => {
   }
 }
 
-
 export const updateProduct = async (id, name, description, stock, price, category, recipe) => {
   try {
-    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, recipe }, { new: true }).populate('recipe')
+    const productsBefore = await productModel.findById(id)
+    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, recipe }, { new: true }).populate('recipe');
     if (!productUpdate) {
-      return {
-        msg: 'Error en la actualización'
-      }
+      return { msg: 'Error en la actualización' };
     }
-    
-    // Calcular la diferencia de stock
-    const oldStock = productUpdate.stock; // Stock anterior
-    const newStock = stock; // Nuevo stock
-    const stockDifference = newStock - oldStock; // Diferencia de stock
-
-    // Actualizar el inventario
-    productUpdate.recipe.forEach(async (value) => {
-      await inventaryModel.findByIdAndUpdate(value._id, { $inc: { stock: -value.stock * stockDifference } });
-    });
+    // Actualizar el inventario para cada ingrediente de la receta
+    productUpdate.recipe.forEach(value => {
+      productsBefore.recipe.forEach(async (product) => {
+        if (value._id.toString() === product._id.toString()) {
+          const stockDifference = value.stock - product.stock
+          const inventary = await inventaryModel.findById(value._id)
+          if (inventary._id.toString() === value._id.toString()) {
+            await inventaryModel.findByIdAndUpdate(value._id, { stock: inventary.stock - stockDifference })
+          }
+        }
+      })
+    })
 
     return productUpdate;
   } catch (error) {
     console.log(error);
+    return { msg: 'Error en la actualización' };
   }
-}
+};
+
+
+
 
 
 export const searchProduct = async (name, price, category,) => {
