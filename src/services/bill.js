@@ -7,8 +7,8 @@ import moment from 'moment'; // Importa la librería moment.js para manejar fech
 
 export const generateBill = async (ticketId, tableId, userId) => {
   try {
-
-    if (!ticketId || !tableId) {
+    console.log(tableId)
+    if (!tableId) {
       return 'error al generar facturas (te falta datos por proporcionar)'
     }
     const tableObjectId = mongoose.Types.ObjectId(tableId);
@@ -20,11 +20,14 @@ export const generateBill = async (ticketId, tableId, userId) => {
       }
     }
     const ticket = await ticketModel.findById(ticketId)
-    if (ticket.tableId.toString() === tableId) {
-      const newBill = await billModel.create({ ticketId, tableId, userId });
+    const allTickets = await ticketModel.find({ tableId })
+   
+    if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
+      const newBill = await billModel.create({ ticketId: allTickets, tableId, userId });
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
-      await ticketModel.findByIdAndUpdate(ticketId, { completed: true, tableId: null }, { new: true });
-
+      allTickets.forEach(async (ticket) => {
+        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true, tableId: null }, { new: true });
+      })
       if (!newBill) {
         return {
           msg: 'error al generar la factura'

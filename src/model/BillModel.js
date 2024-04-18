@@ -3,10 +3,12 @@ import mongoose from 'mongoose'
 const { Schema } = mongoose
 
 const billSchema = new Schema({
-  ticketId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ticket'
-  },
+  ticketId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ticket'
+    }
+  ],
   tableId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'table'
