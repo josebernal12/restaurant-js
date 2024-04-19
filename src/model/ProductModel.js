@@ -29,6 +29,7 @@ const productSchema = new Schema({
   recipe: [{
     name: String,
     stock: Number,
+    unit: String
   }]
 }, {
   timestamps: true
