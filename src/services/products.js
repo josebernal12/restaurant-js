@@ -255,7 +255,7 @@ export const bestProduct = async (range) => {
     // Verificar si no hay productos disponibles
     if (sortedProducts.length === 0) {
       return {
-        msg : 'No hay productos disponibles dentro del rango de tiempo especificado.'
+        bills : []
       }
     }
 
