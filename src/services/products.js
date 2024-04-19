@@ -159,29 +159,30 @@ export const searchProduct = async (name, price, category,) => {
 export const TimeRange = {
   DAY: 'day',
   WEEK: 'week',
-  MONTH: 'month'
+  MONTH: 'month',
+  QUARTER: 'quarter',
+  YEAR: 'year'
 };
-
 
 export const bestProduct = async (range) => {
   try {
     let filter = {};
-    console.log(range)
+
     // Si se proporciona un rango de tiempo, ajustar el filtro por fecha
     if (range) {
       let startDate, endDate;
-      console.log(range)
+
       switch (range) {
-        case 'day':
+        case TimeRange.DAY:
           // Rango para el día actual
           const today = new Date();
           startDate = new Date(today);
           startDate.setHours(0, 0, 0, 0); // Comienzo del día
           endDate = new Date(today);
           endDate.setHours(23, 59, 59, 999); // Fin del día
-          console.log('entree day')
           break;
-        case 'week':
+        case TimeRange.WEEK:
+          // Rango para la semana actual
           const week = new Date();
           const dayOfWeek = week.getDay();
           startDate = new Date(week);
@@ -189,17 +190,20 @@ export const bestProduct = async (range) => {
           endDate = new Date(week);
           endDate.setDate(week.getDate() + (6 - dayOfWeek)); // Último día de la semana
           break;
-        case 'month':
+        case TimeRange.MONTH:
+          // Rango para el mes actual
           const currentDate = new Date();
           startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // Primer día del mes actual
           endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Último día del mes actual
           break;
-        case 'quarter':
-          const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3); // Determinar el trimestre actual
+        case TimeRange.QUARTER:
+          // Rango para el trimestre actual
+          const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3);
           startDate = new Date(new Date().getFullYear(), 3 * currentQuarter - 3, 1); // Primer día del trimestre actual
           endDate = new Date(new Date().getFullYear(), 3 * currentQuarter, 0); // Último día del trimestre actual
           break;
-        case 'year':
+        case TimeRange.YEAR:
+          // Rango para el año actual
           startDate = new Date(new Date().getFullYear(), 0, 1); // Primer día del año actual
           endDate = new Date(new Date().getFullYear(), 11, 31); // Último día del año actual
           break;
@@ -219,19 +223,22 @@ export const bestProduct = async (range) => {
 
     // Recorrer todas las facturas
     bills.forEach(bill => {
-      // Recorrer todos los productos de la factura
-      bill.ticketId.products.forEach(product => {
-        // Si el producto tiene un ID
-        if (product._id) {
-          // Si el producto ya está en el objeto, aumenta la cantidad vendida
-          if (soldProducts[product._id]) {
-            soldProducts[product._id].stock += product.stock;
-          } else {
-            // Si el producto no está en el objeto, inicializa la cantidad vendida
-            soldProducts[product._id] = { stock: product.stock };
+      // Verificar si bill.ticketId está definido
+      if (bill.ticketId && bill.ticketId.products) {
+        // Recorrer todos los productos de la factura
+        bill.ticketId.products.forEach(product => {
+          // Si el producto tiene un ID
+          if (product._id) {
+            // Si el producto ya está en el objeto, aumenta la cantidad vendida
+            if (soldProducts[product._id]) {
+              soldProducts[product._id].stock += product.stock;
+            } else {
+              // Si el producto no está en el objeto, inicializa la cantidad vendida
+              soldProducts[product._id] = { stock: product.stock };
+            }
           }
-        }
-      });
+        });
+      }
     });
 
     // Obtener los nombres de los productos más vendidos
@@ -245,6 +252,13 @@ export const bestProduct = async (range) => {
     // Ordenar los productos por la cantidad vendida (de mayor a menor)
     const sortedProducts = productsInfo.sort((a, b) => b.stock - a.stock);
 
+    // Verificar si no hay productos disponibles
+    if (sortedProducts.length === 0) {
+      return {
+        msg : 'No hay productos disponibles dentro del rango de tiempo especificado.'
+      }
+    }
+
     // Devolver los nombres y cantidades de los productos más vendidos
     return sortedProducts;
   } catch (error) {
@@ -252,4 +266,6 @@ export const bestProduct = async (range) => {
     throw new Error('Ocurrió un error al obtener los productos más vendidos.');
   }
 };
+
+
 
