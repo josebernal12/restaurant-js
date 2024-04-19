@@ -255,7 +255,7 @@ export const bestProduct = async (range) => {
     // Verificar si no hay productos disponibles
     if (sortedProducts.length === 0) {
       return {
-        bills : []
+        products : []
       }
     }
 
