@@ -175,6 +175,7 @@ export const bestProduct = async (range) => {
       switch (range) {
         case TimeRange.DAY:
           // Rango para el día actual
+          console.log('entreee')
           const today = new Date();
           startDate = new Date(today);
           startDate.setHours(0, 0, 0, 0); // Comienzo del día
@@ -223,12 +224,12 @@ export const bestProduct = async (range) => {
 
     // Recorrer todas las facturas
     bills.forEach(bill => {
-      // Verificar si bill.ticketId está definido
-      if (bill.ticketId && bill.ticketId.products) {
+      // Verificar si bill.ticketId está definido y si tiene productos
+      if (bill.ticketId && bill.ticketId.products && bill.ticketId.products.length > 0) {
         // Recorrer todos los productos de la factura
         bill.ticketId.products.forEach(product => {
-          // Si el producto tiene un ID
-          if (product._id) {
+          // Verificar si el producto tiene un ID válido y una cantidad
+          if (product._id && product.stock) {
             // Si el producto ya está en el objeto, aumenta la cantidad vendida
             if (soldProducts[product._id]) {
               soldProducts[product._id].stock += product.stock;
@@ -252,13 +253,6 @@ export const bestProduct = async (range) => {
     // Ordenar los productos por la cantidad vendida (de mayor a menor)
     const sortedProducts = productsInfo.sort((a, b) => b.stock - a.stock);
 
-    // Verificar si no hay productos disponibles
-    if (sortedProducts.length === 0) {
-      return {
-        products : []
-      }
-    }
-
     // Devolver los nombres y cantidades de los productos más vendidos
     return sortedProducts;
   } catch (error) {
@@ -266,6 +260,7 @@ export const bestProduct = async (range) => {
     throw new Error('Ocurrió un error al obtener los productos más vendidos.');
   }
 };
+
 
 
 

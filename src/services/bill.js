@@ -21,7 +21,7 @@ export const generateBill = async (ticketId, tableId, userId) => {
     }
     const ticket = await ticketModel.findById(ticketId)
     const allTickets = await ticketModel.find({ tableId })
-   
+
     if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
       const newBill = await billModel.create({ ticketId: allTickets, tableId, userId });
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
@@ -244,7 +244,6 @@ export const sells = async (date) => {
           // Filtrar por día (hoy)
           const startOfDayDate = startOfDay(new Date());
           const endOfDayDate = endOfDay(new Date());
-
           query = {
             createdAt: {
               $gte: startOfDayDate,
@@ -267,7 +266,10 @@ export const sells = async (date) => {
 
     let totalSales = 0;
     bills.forEach(bill => {
-      totalSales += bill.ticketId.total;
+      bill.ticketId.forEach(value => {
+        totalSales += value.total
+
+      })
     });
 
     return totalSales;
