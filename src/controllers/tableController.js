@@ -9,9 +9,14 @@ export const availableTableController = async (req, res) => {
 }
 
 export const createTableController = async (req, res) => {
+  let quantity;
   const { available } = req.body
+  if (req.query.quantity) {
+    quantity = req.query.quantity
+  }
+
   // const user = req.user
-  const table = await createTable(available)
+  const table = await createTable(available, quantity)
   res.json(table)
 }
 

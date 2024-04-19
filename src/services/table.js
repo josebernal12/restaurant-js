@@ -1,17 +1,36 @@
 import tableModel from "../model/TableModel.js"
 
-
-export const createTable = async (available) => {
+export const createTable = async (available, quantity) => {
   try {
-    const table = await tableModel.create({ available })
-    if (!table) {
-      return 'error al crear la tabla'
+    // Obtener el número máximo actual de mesa
+    const maxNumberTable = await tableModel.findOne({}, {}, { sort: { number: -1 } }).select('number');
+
+    // Si no hay mesas existentes, asignar 0 como número máximo
+    const maxNumber = maxNumberTable ? maxNumberTable.number : 0;
+
+    const tables = [];
+    if (quantity) {
+      for (let index = 0; index < Number(quantity); index++) {
+        const number = maxNumber + index + 1; // Incrementar el número basado en el número máximo actual y la iteración
+        const table = await tableModel.create({ available, number });
+        tables.push(table);
+      }
+    } else {
+      const table = await tableModel.create({ available });
+      tables.push(table);
     }
-    return table
+    if (!tables.length) {
+      return 'error al crear las tablas';
+    }
+    return tables;
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    throw error; // Re-lanzar el error para manejarlo en un contexto superior si es necesario
   }
-}
+};
+
+
+
 
 export const getTables = async () => {
   try {

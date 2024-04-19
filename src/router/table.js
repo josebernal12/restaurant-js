@@ -4,8 +4,8 @@ import { createTableController, getTableByIdController, getTablesController } fr
 
 const router = Router()
 //TODO AGREGAR [checkJwt] A LAS RUTAS
-router.post('/',  createTableController)
-router.get('/',  getTablesController)
-router.get('/:id',  getTableByIdController)
+router.post('/', [checkJwt], createTableController)
+router.get('/', getTablesController)
+router.get('/:id', getTableByIdController)
 
 export default router
