@@ -19,7 +19,7 @@ const inventarySchema = new Schema({
     type: Number,
     required: true
   }, 
-  units : {
+  unit : {
     type: String
   }
 }, {
