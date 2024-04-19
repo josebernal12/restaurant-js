@@ -53,7 +53,7 @@ export const inventary = async (name, quantity, page, showAll) => {
 }
 
 
-export const createProductInventory = async (name, stock, max, min, units) => {
+export const createProductInventory = async (name, stock, max, min, unit) => {
   try {
     const exist = await inventaryModel.findOne({ name })
     if (exist) {
@@ -61,7 +61,7 @@ export const createProductInventory = async (name, stock, max, min, units) => {
         msg: 'ya existe un producto con ese nombre'
       }
     }
-    const newProduct = await inventaryModel.create({ name, stock, max, min, units })
+    const newProduct = await inventaryModel.create({ name, stock, max, min, unit })
     if (!newProduct) {
       return {
         msg: 'hubo un error al crear producto'
