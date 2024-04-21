@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { changePasswordController, checkTokenEmailController, loginController, registerController,restorePasswordController } from '../controllers/authController.js'
+import { authGoogleController, changePasswordController, checkTokenEmailController, loginController, registerController, restorePasswordController } from '../controllers/authController.js'
 import { deleteUserController, getUserByIdController, getUsersController, logoutController, obtainUserByToken, renewToken, updateUserController, userSearchController } from '../controllers/userController.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission } from '../middleware/permission.js'
@@ -20,4 +20,5 @@ router.get('/obtain-user', [checkJwt], obtainUserByToken)
 router.post('/restore-password', restorePasswordController)
 router.get('/check-token/:token', checkTokenEmailController)
 router.post('/changePassword/:token', changePasswordController)
+router.post('/auth-google', authGoogleController)
 export default router

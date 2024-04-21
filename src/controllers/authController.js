@@ -1,4 +1,4 @@
-import { changePassword, checkTokenEmail, login, register, restorePassword } from '../services/auth.js'
+import { authGoogle, changePassword, checkTokenEmail, login, register, restorePassword } from '../services/auth.js'
 
 
 export const registerController = async (req, res) => {
@@ -52,4 +52,14 @@ export const changePasswordController = async (req, res) => {
     return
   }
   res.json(user)
+}
+
+export const authGoogleController = async (req, res) => {
+  const { user } = req.body
+  const newUser = await authGoogle(user)
+  if (newUser.msg) {
+    res.status(404).json(newUser)
+    return
+  }
+  res.json(newUser)
 }
