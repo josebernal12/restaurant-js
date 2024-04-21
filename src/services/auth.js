@@ -126,11 +126,13 @@ export const changePassword = async (password, passwordRepit, token) => {
 
 export const authGoogle = async (user, token) => {
   try {
-    if (user.rol) {
+    if (!user.rol) {
       const rolMember = await RolModel.findOne({ name: 'miembro' });
-      const newUser = (await userModel.create({ name: user.name, lastName: user.lastName, email: user.email, rol: rolMember })).populate('rol')
+      console.log(rolMember)
+      const newUser = await (await userModel.create({ name: user.name, lastName: user.lastName, email: user.email, rol: rolMember._id })).populate('rol')
+      console.log(newUser)
       return {
-        newUser,
+        user: newUser,
         token
       }
     }
@@ -140,7 +142,7 @@ export const authGoogle = async (user, token) => {
         msg: 'error al crear el usuario'
       }
     }
-    return { newUser, token }
+    return { user: newUser, token }
   } catch (error) {
     console.log(error)
   }
