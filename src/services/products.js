@@ -243,7 +243,6 @@ export const bestProduct = async (range) => {
       })
     });
 
-    // Obtener los nombres de los productos más vendidos
     const productIds = Object.keys(soldProducts);
 
     const productsInfo = await Promise.all(productIds.map(async productId => {
@@ -261,8 +260,11 @@ export const bestProduct = async (range) => {
       }
     }
 
+    // Obtener solo los nombres de los productos más vendidos
+    const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
+
     // Devolver los nombres y cantidades de los productos más vendidos
-    return sortedProducts;
+    return { products };
   } catch (error) {
     console.log(error);
     throw new Error('Ocurrió un error al obtener los productos más vendidos.');
