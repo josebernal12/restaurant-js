@@ -126,6 +126,14 @@ export const changePassword = async (password, passwordRepit, token) => {
 
 export const authGoogle = async (user, token) => {
   try {
+    if (user.rol) {
+      const rolMember = await RolModel.findOne({ name: 'miembro' });
+      const newUser = (await userModel.create({ name: user.name, lastName: user.lastName, email: user.email, rol: rolMember })).populate('rol')
+      return {
+        newUser,
+        token
+      }
+    }
     const newUser = await userModel.create(user)
     if (!newUser) {
       return {
