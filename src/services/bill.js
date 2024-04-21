@@ -154,7 +154,7 @@ export const bestWaiter = async (type) => {
         $lte: endDate
       }
     } : {};
-
+    console.log('entree primero')
     const bills = await billModel.find(query)
       .populate('ticketId')
       .populate('userId')
@@ -165,14 +165,17 @@ export const bestWaiter = async (type) => {
 
     // Iterar sobre las facturas y contar los camareros
     bills.forEach(bill => {
-      const waiterName = bill.ticketId.waiter;
+      console.log(bill)
+      bill.ticketId.forEach(value => {
+        const waiterName = value.waiter;
 
-      // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
-      if (waiterCount[waiterName]) {
-        waiterCount[waiterName]++; // Incrementar el contador si ya existe
-      } else {
-        waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
-      }
+        // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
+        if (waiterCount[waiterName]) {
+          waiterCount[waiterName]++; // Incrementar el contador si ya existe
+        } else {
+          waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
+        }
+      })
     });
     const waiterArray = Object.keys(waiterCount).map(waiterName => {
       return { name: waiterName, sell: waiterCount[waiterName] };

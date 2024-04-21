@@ -123,3 +123,11 @@ export const changePassword = async (password, passwordRepit, token) => {
     console.log(error)
   }
 }
+
+export const authEmail = (token, user) => {
+  try {
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
