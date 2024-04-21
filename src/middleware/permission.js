@@ -4,10 +4,12 @@ import userModel from '../model/UserModel.js';
 
 export const checkJwt = async (req, res, next) => {
   let token = "";
+
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.KEYSECRET || 'defaultSecret')
+      console.log(decoded)
       const user = await userModel.findById(decoded.id).populate('rol')
       if (!user) {
         throw new Error('Usuario no encontrado');

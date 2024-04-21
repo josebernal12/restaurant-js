@@ -55,8 +55,8 @@ export const changePasswordController = async (req, res) => {
 }
 
 export const authGoogleController = async (req, res) => {
-  const { user, token } = req.body
-  const newUser = await authGoogle(user, token)
+  const { user } = req.body
+  const newUser = await authGoogle(user)
   if (newUser.msg) {
     res.status(404).json(newUser)
     return
