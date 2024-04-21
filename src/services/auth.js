@@ -124,7 +124,7 @@ export const changePassword = async (password, passwordRepit, token) => {
   }
 }
 
-export const authGoogle = async (user) => {
+export const authGoogle = async (user, token) => {
   try {
     const newUser = await userModel.create(user)
     if (!newUser) {
@@ -132,7 +132,7 @@ export const authGoogle = async (user) => {
         msg: 'error al crear el usuario'
       }
     }
-    return newUser
+    return { newUser, token }
   } catch (error) {
     console.log(error)
   }
