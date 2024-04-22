@@ -22,7 +22,7 @@ export const getDesignTicket = async () => {
                 design : []
             }
         }
-        return bill
+        return bill[0]
     } catch (error) {
         console.log(error)
     }
