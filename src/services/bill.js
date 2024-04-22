@@ -84,8 +84,33 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     }
 
     if (name) {
-      query['waiter'] = { $regex: new RegExp(name, 'i') };
-      console.log(query)
+      const regex = new RegExp(name, 'i'); // Expresión regular insensible a mayúsculas y minúsculas
+      query['waiter'] = { $regex: regex };
+
+      let billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .populate('userId')
+        .limit(perPage)
+        .skip(skip)
+        .sort({ createdAt: -1 });
+
+      const totalBills = await billModel.countDocuments(query);
+      if (billsFiltered.length >= 1) {
+        const billWaiter = billsFiltered.filter(bill => {
+          return bill.ticketId.some(val => val.waiter.includes(name));
+        });
+
+
+        return {
+          billWaiter,
+          totalBills
+        }
+      }
+      return {
+        bill: []
+      }
+
     }
 
     let billsFiltered = await billModel.find(query)
@@ -95,7 +120,6 @@ export const getBills = async (page, type, name, showAll, quantity) => {
       .limit(perPage)
       .skip(skip)
       .sort({ createdAt: -1 });
-
     const totalBills = await billModel.countDocuments(query);
     if (!billsFiltered) {
       return {
