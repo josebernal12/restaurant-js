@@ -14,12 +14,12 @@ export const designTicket = async (name, email, logo, address, phone) => {
     }
 }
 
-export const getDesignTicketById = async (id) => {
+export const getDesignTicket = async () => {
     try {
-        const bill = await designModel.findById(id)
+        const bill = await designModel.find()
         if(!bill) {
             return {
-                msg : 'error no hay diseños con ese id'
+                design : []
             }
         }
         return bill
