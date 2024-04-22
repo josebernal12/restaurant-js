@@ -26,14 +26,14 @@ export const getUsers = async (query, page, showAll, quantity) => {
       const rol = await RolModel.findOne({ name: query.rol });
       if (!rol) {
         return {
-          msg: 'No se encontró el rol especificado'
+          users: []
         };
       }
       const usersTotal = await userModel.countDocuments()
       const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').exec();
       if (!users || users.length === 0) {
         return {
-          msg: 'No hay usuarios con el rol especificado'
+          users: []
         };
       }
       return {
@@ -48,7 +48,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
       .exec();;
     if (!users || users.length === 0) {
       return {
-        msg: 'No hay usuarios que coincidan con los criterios de búsqueda'
+        users: []
       };
     }
     if (users.length === 0) {
