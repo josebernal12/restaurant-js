@@ -9,7 +9,13 @@ const designTicketSchema = new Schema({
     logo: {
         type: String
     },
-    direccion: {
+    address: {
+        type: String
+    },
+    email: {
+        type: String
+    },
+    phone: {
         type: String
     }
 }, {
