@@ -18,7 +18,7 @@ export const checkJwt = async (req, res, next) => {
       next(); // Pasar al siguiente middleware
     } catch (error) {
       console.log('error', error);
-      return res.status(401).json({ msg: 'Token no válido' });
+      return res.status(401).json({ msg: 'Token no válido2' });
     }
   } else {
     return res.status(401).json({ msg: 'Token no válido' });
