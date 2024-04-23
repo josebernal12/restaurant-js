@@ -1,16 +1,15 @@
 import jwt from 'jsonwebtoken'
 import RolModel from '../model/RolModel.js';
 import userModel from '../model/UserModel.js';
-
 export const checkJwt = async (req, res, next) => {
   let token = "";
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.KEYSECRET || 'defaultSecret')
-      console.log(decoded)
-      const user = await userModel.findById(decoded.id).populate('rol')
+      const decoded = jwt.verify(token, process.env.KEYSECRET, { ignoreExpiration: true });
+      console.log(decoded);
+      const user = await userModel.findById(decoded.id).populate('rol');
       if (!user) {
         throw new Error('Usuario no encontrado');
       }
@@ -18,12 +17,17 @@ export const checkJwt = async (req, res, next) => {
       next(); // Pasar al siguiente middleware
     } catch (error) {
       console.log('error', error);
-      return res.status(401).json({ msg: token });
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ msg: 'Token expirado' });
+      } else {
+        return res.status(401).json({ msg: 'Token inválido' });
+      }
     }
   } else {
     return res.status(401).json({ msg: 'Token no válido' });
   }
 };
+
 
 export const addUserPermission = async (req, res, next) => {
   const user = req.user
