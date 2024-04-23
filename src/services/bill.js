@@ -44,7 +44,8 @@ export const generateBill = async (ticketId, tableId, userId) => {
   }
 }
 
-export const getBills = async (page, type, name, showAll, quantity) => {
+
+export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -52,6 +53,8 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     const currentDate = moment();
 
     let startDate, endDate;
+    
+    // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
       let billsFiltered = await billModel.find()
         .populate('ticketId')
@@ -66,16 +69,23 @@ export const getBills = async (page, type, name, showAll, quantity) => {
         billsFiltered
       };
     }
+
+    // Establece las fechas de inicio y fin según los parámetros type, firstDate y secondDate
     if (type === 'week') {
       startDate = currentDate.clone().subtract(1, 'week').startOf('week');
       endDate = currentDate.clone().subtract(1, 'week').endOf('week');
     } else if (type === 'currentWeek') {
       startDate = currentDate.clone().startOf('week');
-      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Saturday of current week
+      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Sábado de la semana actual
+    } else if (firstDate && secondDate) {
+      console.log('enttreeee')
+      startDate = moment(firstDate).startOf('day');
+      endDate = moment(secondDate).endOf('day');
     }
 
     let query = {};
 
+    // Agrega las fechas a la consulta si están definidas
     if (startDate && endDate) {
       query.createdAt = {
         $gte: startDate.toDate(),
@@ -83,11 +93,12 @@ export const getBills = async (page, type, name, showAll, quantity) => {
       };
     }
 
+    // Realiza la búsqueda por nombre si se proporciona
     if (name) {
       const regex = new RegExp(name, 'i'); // Expresión regular insensible a mayúsculas y minúsculas
       query['waiter'] = { $regex: regex };
 
-      let billsFiltered = await billModel.find()
+      let billsFiltered = await billModel.find(query)
         .populate('ticketId')
         .populate('tableId')
         .populate('userId')
@@ -96,23 +107,25 @@ export const getBills = async (page, type, name, showAll, quantity) => {
         .sort({ createdAt: -1 });
 
       const totalBills = await billModel.countDocuments(query);
+      
+      // Filtra las facturas por camarero si hay alguna coincidencia
       if (billsFiltered.length >= 1) {
         const billWaiter = billsFiltered.filter(bill => {
           return bill.ticketId.some(val => val.waiter.includes(name));
         });
 
-
         return {
           billWaiter,
           totalBills
-        }
+        };
       }
+      
       return {
-        bill: []
-      }
-
+        billsFiltered: []
+      };
     }
 
+    // Realiza la búsqueda de facturas según la consulta definida
     let billsFiltered = await billModel.find(query)
       .populate('ticketId')
       .populate('tableId')
@@ -120,12 +133,15 @@ export const getBills = async (page, type, name, showAll, quantity) => {
       .limit(perPage)
       .skip(skip)
       .sort({ createdAt: -1 });
+
     const totalBills = await billModel.countDocuments(query);
+
     if (!billsFiltered) {
       return {
         billsFiltered: []
-      }
+      };
     }
+
     return {
       totalBills,
       billsFiltered
@@ -135,6 +151,7 @@ export const getBills = async (page, type, name, showAll, quantity) => {
     throw error;
   }
 };
+
 
 export const bestWaiter = async (type) => {
   try {

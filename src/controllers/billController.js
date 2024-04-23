@@ -17,8 +17,16 @@ export const getBillsController = async (req, res) => {
   let name;
   let showAll;
   let quantity;
+  let firstDate;
+  let secondDate;
   if (req.query.page) {
     page = req.query.page
+  }
+  if (req.query.firstDate) {
+    firstDate = req.query.firstDate
+  }
+  if (req.query.secondDate) {
+    secondDate = req.query.secondDate
   }
   if (req.query.type) {
     type = req.query.type
@@ -32,7 +40,7 @@ export const getBillsController = async (req, res) => {
   if (req.query.quantity) {
     quantity = req.query.quantity
   }
-  const bills = await getBills(page, type, name, showAll, quantity)
+  const bills = await getBills(page, type, name, showAll, quantity, firstDate, secondDate)
   if (bills.msg) {
     res.status(404).json(bills)
     return
