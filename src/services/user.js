@@ -68,7 +68,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
 
 export const getUserById = async (id) => {
   try {
-    const user = await userModel.findById(id)
+    const user = await userModel.findById(id).populate('rol').select('-password')
     if (!user) {
       return {
         msg: 'no hay nigun usuario para ese id'
