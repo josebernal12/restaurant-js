@@ -44,29 +44,33 @@ export const register = async (name, lastName, email, password, confirmPassword,
     throw error;
   }
 };
-
 export const login = async (email, password) => {
   try {
-    const user = await checkEmailInDB(email)
+    const user = await checkEmailInDB(email);
 
     if (!user) {
-      console.log('entree-1')
-      return 'email o password no son correctos'
+      console.log('entree-1');
+      return 'email o password no son correctos';
     }
-    console.log('entree')
-    console.log(user)
-    const match = await bcrypt.compare(password, user.password)
+
+    const match = await bcrypt.compare(password, user.password);
     if (match) {
-      const token = generateToken(user.id)
-      const userLogin = { user, token }
-      return userLogin
+      // Crear un nuevo objeto user sin la contraseña
+      const userWithoutPassword = {
+        ...user.toObject(), // Convertir el objeto Mongoose a un objeto plano
+        password: undefined // Opcionalmente puedes utilizar null o eliminar esta línea si prefieres no incluir el campo
+      };
+
+      const token = generateToken(user._id); // Supongo que el ID del usuario es user._id
+      const userLogin = { user: userWithoutPassword, token }; // Construir el objeto userLogin
+      return userLogin;
     } else {
-      return 'email o password no son correctos'
+      return 'email o password no son correctos';
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 
 export const restorePassword = async (email) => {
