@@ -3,7 +3,7 @@ import userModel from "../model/UserModel.js";
 
 export const checkEmailInDB = async (email) => {
   try {
-    const existEmail = await userModel.findOne({ email }).populate('rol');
+    const existEmail = await userModel.findOne({ email }).populate('rol').select('-password');
     if (!existEmail) {
       return null;
     }
