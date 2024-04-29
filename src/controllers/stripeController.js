@@ -1,4 +1,4 @@
-import { stripe } from "../stripe/stripe"
+import { stripe } from "../stripe/stripe.js"
 
 export const stripeController = async (req, res) => {
     const { id, amount, description } = req.body
