@@ -1,2 +1,2 @@
 import Stripe from 'stripe'
-export const stripe = new Stripe('sk_test_51N0TnVLDu8mChaQfaK7TJJweaepYa3gwBDBmiVzMF7OqGbVLiO4n5uCIxR6Xlc0zsKOhnbcmKs9W22Z9woIRu0j100cWaCm3c7')
+export const stripe = new Stripe(process.env.STRIPE_KEY)
