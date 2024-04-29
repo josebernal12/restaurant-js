@@ -16,7 +16,12 @@ const billSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  methodOfPayment: {
+    type: String,
+    required: true
+  },
+
 }, {
   timestamps: true
 })

@@ -1,9 +1,9 @@
 import { bestWaiter, generateBill, getBIllById, getBills, sells } from "../services/bill.js"
 
 export const generateBillController = async (req, res) => {
-  const { ticketId, userId } = req.body
+  const { ticketId, userId, methodOfPayment } = req.body
   const { id } = req.params
-  const bill = await generateBill(ticketId, id, userId)
+  const bill = await generateBill(ticketId, id, userId, methodOfPayment)
   if (bill.msg) {
     res.status(404).json(bill)
     return

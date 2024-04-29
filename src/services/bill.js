@@ -5,7 +5,7 @@ import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
 import moment from 'moment'; // Importa la librería moment.js para manejar fechas
 
-export const generateBill = async (ticketId, tableId, userId) => {
+export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     console.log(tableId)
     if (!tableId) {
@@ -23,7 +23,7 @@ export const generateBill = async (ticketId, tableId, userId) => {
     const allTickets = await ticketModel.find({ tableId })
 
     if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
-      const newBill = await billModel.create({ ticketId: allTickets, tableId, userId });
+      const newBill = await billModel.create({ ticketId: allTickets, tableId, userId, methodOfPayment });
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
       allTickets.forEach(async (ticket) => {
         await ticketModel.findByIdAndUpdate(ticket._id, { completed: true, tableId: null }, { new: true });
@@ -53,7 +53,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     const currentDate = moment();
 
     let startDate, endDate;
-    
+
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
       let billsFiltered = await billModel.find()
@@ -107,7 +107,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
         .sort({ createdAt: -1 });
 
       const totalBills = await billModel.countDocuments(query);
-      
+
       // Filtra las facturas por camarero si hay alguna coincidencia
       if (billsFiltered.length >= 1) {
         const billWaiter = billsFiltered.filter(bill => {
@@ -119,7 +119,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
           totalBills
         };
       }
-      
+
       return {
         billsFiltered: []
       };
