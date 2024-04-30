@@ -1,7 +1,7 @@
 import generateToken from "../helpers/generateToken.js";
 import { restorePassword } from "../services/auth.js";
 import crypto from 'crypto'
-import { deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
+import { createUser, deleteUser, getUserById, getUsers, searchUser, updateUser } from "../services/user.js";
 export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
@@ -91,3 +91,11 @@ export const obtainUserByToken = async (req, res) => {
   res.json(req.user)
 }
 
+export const createUserController = async (req, res) => {
+  const { name, apellido, email, password, confirmPassword } = req.body
+  const user = await createUser(name, apellido, email, password, confirmPassword)
+  if (user.msg) {
+    return res.status(404).json(user)
+  }
+  res.json(user)
+}

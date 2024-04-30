@@ -138,6 +138,24 @@ export const searchUser = async (name) => {
   }
 }
 
+export const createUser = async (name, apellido, email, password, confirmPassword) => {
+  try {
+    if (password !== confirmPassword) {
+      return {
+        msg: 'los password no coiciden'
+      }
+    }
+    const user = await userModel.create({ name, apellido, email, password })
+    if(!user) {
+      return {
+        msg : 'error al crear el usuario'
+      }
+    }
+    return user
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 
