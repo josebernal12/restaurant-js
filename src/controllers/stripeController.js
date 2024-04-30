@@ -17,8 +17,8 @@ export const stripeController = async (req, res) => {
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: 'payment',
-        success_url: "http://localhost:3000/success",
-        cancel_url: "http://localhost:3000/cancel",
+        success_url: "http://localhost:5173/#/home/sells",
+        cancel_url: "http://localhost:5173/#/home/sells",
     });
 
     return res.json({ id: session.id });
