@@ -8,7 +8,7 @@ export const stripeController = async (req, res) => {
             product_data: {
                 name: product.name,
             },
-            unit_amount: product.price * 100, // Multiplicamos por 100 para convertir el precio a centavos
+            unit_amount: product.price 
         },
         quantity: product.quantity,
     }));
