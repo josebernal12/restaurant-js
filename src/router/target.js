@@ -6,14 +6,15 @@ import {
   getTargetbyIdController,
   updateTargetController
 } from '../controllers/targetController.js'
+import { checkJwt } from '../middleware/permission.js'
 
 const router = Router()
 
-router.get('/', getAllTargetController)
-router.post('/', createTargetController)
-router.get('/:id', getTargetbyIdController)
-router.put('/update/:id', updateTargetController)
-router.delete('/delete/:id', deleteTargetController)
+router.get('/', [checkJwt], getAllTargetController)
+router.post('/', [checkJwt], createTargetController)
+router.get('/:id', [checkJwt], getTargetbyIdController)
+router.put('/update/:id', [checkJwt], updateTargetController)
+router.delete('/delete/:id', [checkJwt], deleteTargetController)
 
 
 export default router

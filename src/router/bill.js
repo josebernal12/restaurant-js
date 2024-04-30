@@ -6,18 +6,18 @@ import { designTicketController, getDesignTicketController } from '../controller
 import { stripeController } from '../controllers/stripeController.js'
 
 const router = Router()
-router.get('/', getBillsController)
-router.get('/best-waiter', bestWaiterController)
-router.get('/sells', sellsController)
-router.post('/designTicket', designTicketController)
-router.get('/getDesignTicket', getDesignTicketController)
-router.post('/checkout', stripeController)
+router.get('/', [checkJwt], getBillsController)
+router.get('/best-waiter', [checkJwt], bestWaiterController)
+router.get('/sells', [checkJwt], sellsController)
+router.post('/designTicket', [checkJwt], designTicketController)
+router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
+router.post('/checkout', [checkJwt], stripeController)
 router.get('/success', () => {
     res.send('listo')
 })
 router.get('/cancel', () => {
     console.log('error')
 })
-router.post('/:id', generateBillController)
-router.get('/:id', getBillByIdController)
+router.post('/:id', [checkJwt], generateBillController)
+router.get('/:id', [checkJwt], getBillByIdController)
 export default router
