@@ -1,12 +1,25 @@
-import { stripe } from "../stripe/stripe.js"
-
+import { stripe } from '../stripe/stripe.js'
 export const stripeController = async (req, res) => {
-    const products = req.body
+    const products = req.body;
+
+    const lineItems = products.map((product) => ({
+        price_data: {
+            currency: 'mxn',
+            product_data: {
+                name: product.name,
+            },
+            unit_amount: product.price * 100, // Multiplicamos por 100 para convertir el precio a centavos
+        },
+        quantity: product.quantity,
+    }));
+
     const session = await stripe.checkout.sessions.create({
-        line_items:products,
+        payment_method_types: ["card"],
+        line_items: lineItems,
         mode: 'payment',
-        success_url: 'http://localhost:8080/api/bill/success',
-        cancel_url: 'http://localhost:8080/api/bill/cancel',
-    })
-    return res.json(session)
-}
+        success_url: "http://localhost:3000/success",
+        cancel_url: "http://localhost:3000/cancel",
+    });
+
+    return res.json({ id: session.id });
+};
