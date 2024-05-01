@@ -19,19 +19,23 @@ export const register = async (name, lastName, email, password, confirmPassword,
         const hash = bcrypt.hashSync(password, saltRound)
         if (!rol) {
           const rolMember = await RolModel.findOne({ name: 'miembro' });
-          const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember })).populate('rol')
-          const token = generateToken(user.id)
+          const newUser = await userModel.create({ name, lastName, email, password: hash, rol: rolMember });
+          const populatedUser = await userModel.findById(newUser._id).populate('rol');
+          console.log(populatedUser);
+          const token = generateToken(newUser.id);
           return {
-            user,
+            user: populatedUser,
             token
-          }
+          };
         }
-        const user = (await userModel.create({ name, lastName, email, password: hash, rol })).populate('rol')
-        const token = generateToken(user.id)
+        const newUser = await userModel.create({ name, lastName, email, password: hash, rol });
+        const userId = await userModel.findById(newUser._id).populate('rol');
+        const token = generateToken(userId.id);
         return {
-          user,
+          userId,
           token
-        }
+        };
+        
       }
     } else {
       return {
