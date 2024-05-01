@@ -8,7 +8,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
   try {
     if (showAll === "1") {
       const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find().populate('rol')
+      const users = await userModel.find().populate('rol').select('-password')
       return {
         usersTotal,
         users
@@ -16,7 +16,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
     }
     if (quantity) {
       const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find().limit(quantity).populate('rol')
+      const users = await userModel.find().limit(quantity).populate('rol').select('-password')
       return {
         usersTotal,
         users
@@ -30,7 +30,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
         };
       }
       const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').exec();
+      const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').select('-password').exec();
       if (!users || users.length === 0) {
         return {
           users: []
@@ -42,7 +42,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
       };
     }
     const usersTotal = await userModel.countDocuments()
-    const users = await userModel.find(query).limit(perPage)
+    const users = await userModel.find(query).limit(perPage).select('-password')
       .skip(skip)
       .populate('rol')
       .exec();;
@@ -145,13 +145,26 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
         msg: 'los password no coiciden'
       }
     }
-    const user = await userModel.create({ name, apellido, email, password })
+    const user = await (await userModel.create({ name, apellido, email, password })).populate('rol')
     if(!user) {
       return {
         msg : 'error al crear el usuario'
       }
     }
-    return user
+    if (!rol) {
+      const rolMember = await RolModel.findOne({ name: 'miembro' });
+      const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember })).populate('rol')
+      const token = generateToken(user.id)
+      return {
+        user,
+        token
+      }
+    }
+    const userWithoutPassword = {
+      ...user.toObject(), // Convertir el objeto Mongoose a un objeto plano
+      password: undefined // Opcionalmente puedes utilizar null o eliminar esta línea si prefieres no incluir el campo
+    };
+    return userWithoutPassword
   } catch (error) {
     console.log(error)
   }
