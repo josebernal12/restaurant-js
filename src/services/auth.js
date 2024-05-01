@@ -20,7 +20,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
         if (!rol) {
           const rolMember = await RolModel.findOne({ name: 'miembro' });
           const newUser = await userModel.create({ name, lastName, email, password: hash, rol: rolMember });
-          const populatedUser = await userModel.findById(newUser._id).populate('rol');
+          const populatedUser = await userModel.findById(newUser._id).populate('rol').select('-password');
           console.log(populatedUser);
           const token = generateToken(newUser.id);
           return {
@@ -29,7 +29,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
           };
         }
         const newUser = await userModel.create({ name, lastName, email, password: hash, rol });
-        const userId = await userModel.findById(newUser._id).populate('rol');
+        const userId = await userModel.findById(newUser._id).populate('rol').select('-password');
         const token = generateToken(userId.id);
         return {
           userId,
