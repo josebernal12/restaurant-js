@@ -69,7 +69,14 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
         billsFiltered
       };
     }
-
+    if (quantity) {
+      const totalBills = await billModel.countDocuments()
+      const billsFiltered = await billModel.find().limit(quantity)
+      return {
+        totalBills,
+        billsFiltered
+      }
+    }
     // Establece las fechas de inicio y fin según los parámetros type, firstDate y secondDate
     if (type === 'week') {
       startDate = currentDate.clone().subtract(1, 'week').startOf('week');
