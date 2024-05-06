@@ -97,9 +97,7 @@ export const bestProductController = async (req, res) => {
 export const deleteManyProductsController = async (req, res) => {
   const { ids } = req.body
   const product = await deleteManyProducts(ids)
-  if(product.msg) {
-    return res.status(404).json(product)
-  }
+  
   res.json(product)
 
 }

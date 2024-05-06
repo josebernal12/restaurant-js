@@ -16,7 +16,7 @@ export const getUsers = async (query, page, showAll, quantity) => {
     }
     if (quantity) {
       const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find().limit(quantity).populate('rol').select('-password')
+      const users = await userModel.find(query).limit(quantity).skip(skip).populate('rol').select('-password')
       return {
         usersTotal,
         users
