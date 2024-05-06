@@ -21,7 +21,7 @@ export const inventary = async (name, quantity, page, showAll) => {
     // Si se solicita una cantidad específica de productos
     if (quantity) {
       const productTotal = await inventaryModel.countDocuments()
-      const products = await inventaryModel.find(query).limit(quantity).select('-image -description -price');
+      const products = await inventaryModel.find(query).limit(quantity).select('-image -description -price').skip(skip);
       return {
         productTotal,
         products

@@ -45,7 +45,7 @@ export const getProducts = async (name, page, showAll, quantity) => {
     }
     if (quantity) {
       const productTotal = await productModel.countDocuments()
-      const products = await productModel.find().limit(quantity)
+      const products = await productModel.find(name).limit(quantity).skip(skip)
       return {
         productTotal,
         products
@@ -53,7 +53,7 @@ export const getProducts = async (name, page, showAll, quantity) => {
     }
     if (name.name) {
       const productTotal = await productModel.countDocuments()
-      const products = await productModel.find(name)
+      const products = await productModel.find(name).skip(name)
       if (!products) {
         return {
           products: []
