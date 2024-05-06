@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   addProductController,
   bestProductController,
+  deleteManyProductsController,
   deleteProductController,
   getProductByIdController,
   getProductsController,
@@ -23,6 +24,7 @@ router.get('/bestSeller', [checkJwt],bestProductController)
 router.put('/update/:id', [checkJwt, updateProductPermission], updateProductController)
 router.delete('/delete/:id', [checkJwt, deleteProductPermission], deleteProductController)
 router.post('/search',[checkJwt], searchProductController)
+router.delete('delete-manyProducts', [checkJwt], deleteManyProductsController)
 router.get('/:id', [checkJwt, addProductPermission], getProductByIdController)
 
 export default router

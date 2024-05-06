@@ -1,6 +1,7 @@
 import {
   addProducts,
   bestProduct,
+  deleteManyProducts,
   deleteProduct,
   getProducts,
   getProductsById,
@@ -92,4 +93,13 @@ export const bestProductController = async (req, res) => {
   }
   const bill = await bestProduct(range)
   res.json(bill)
+}
+export const deleteManyProductsController = async (req, res) => {
+  const { ids } = req.body
+  const product = await deleteManyProducts(ids)
+  if(product.msg) {
+    return res.status(404).json(product)
+  }
+  res.json(product)
+
 }

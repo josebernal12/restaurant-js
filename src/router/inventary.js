@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createProductInventoryController,
+  deleteManyInventaryController,
   deleteProductInventoryController,
   getProducInventoryByIdController,
   inventaryController,
@@ -15,6 +16,7 @@ router.get('/', [checkJwt], inventaryController)
 router.post('/', [checkJwt], createProductInventoryController)
 router.put('/update/:id', [checkJwt], updateProductInventoryController)
 router.delete('/delete/:id', [checkJwt], deleteProductInventoryController)
+router.delete('/delete-manyInventary', [checkJwt], deleteManyInventaryController)
 router.get('/:id', [checkJwt], getProducInventoryByIdController)
 
 

@@ -114,3 +114,15 @@ export const getProductByIdInventory = async (id) => {
     console.log(error)
   }
 }
+
+
+export const deleteManyInventory = async (ids) => {
+  try {
+    ids.forEach(async (id) => {
+      const inventary = await inventaryModel.findByIdAndDelete(id, { new: true })
+      return inventary
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}

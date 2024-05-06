@@ -1,5 +1,6 @@
 import {
   createProductInventory,
+  deleteManyInventory,
   deleteProductInventory,
   getProductByIdInventory,
   inventary,
@@ -73,4 +74,15 @@ export const getProducInventoryByIdController = async (req, res) => {
     return
   }
   res.json(product)
+}
+
+
+export const deleteManyInventaryController = async (req, res) => {
+  const { ids } = req.body
+  const inventary = await deleteManyInventory(ids)
+  if(inventary.msg) {
+    return res.status(404).json(inventary)
+  }
+  res.json(inventary)
+
 }

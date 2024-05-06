@@ -282,3 +282,13 @@ export const bestProduct = async (range) => {
 
 
 
+export const deleteManyProducts = async (ids) => {
+  try {
+    ids.forEach(async (id) => {
+      const product = await productModel.findByIdAndDelete(id, { new: true })
+      return product
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}

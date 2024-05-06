@@ -146,9 +146,9 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
       }
     }
     const user = await (await userModel.create({ name, apellido, email, password })).populate('rol')
-    if(!user) {
+    if (!user) {
       return {
-        msg : 'error al crear el usuario'
+        msg: 'error al crear el usuario'
       }
     }
     if (!rol) {
@@ -170,5 +170,20 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
   }
 }
 
-
+export const deleteManyUsers = async (ids) => {
+  try {
+    ids.forEach(async (id) => {
+      const user = await userModel.findByIdAndDelete(id, { new: true })
+      if (!user) {
+        console.log(user)
+        return {
+          msg: 'error al eliminar el usuario'
+        }
+      }
+      return user
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
 
