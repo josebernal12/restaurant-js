@@ -1,7 +1,19 @@
 import { Router } from 'express'
 
 import { authGoogleController, changePasswordController, checkTokenEmailController, loginController, registerController, restorePasswordController } from '../controllers/authController.js'
-import { createUserController, deleteManyUsersController, deleteUserController, getUserByIdController, getUsersController, logoutController, obtainUserByToken, renewToken, updateUserController, userSearchController } from '../controllers/userController.js'
+import {
+    createUserController,
+    deleteManyUsersController,
+    deleteUserController,
+    getUserByIdController,
+    getUsersController,
+    logoutController,
+    obtainUserByToken,
+    renewToken,
+    updateUserController,
+    uploadExcelController,
+    userSearchController
+} from '../controllers/userController.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission } from '../middleware/permission.js'
 
@@ -23,4 +35,5 @@ router.post('/changePassword/:token', changePasswordController)
 router.post('/auth-google', authGoogleController)
 router.post('/create-user', createUserController)
 router.delete('/delete-manyUsers', [checkJwt], deleteManyUsersController)
+router.post('/upload-excel', [checkJwt], uploadExcelController)
 export default router

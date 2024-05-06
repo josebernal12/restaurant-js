@@ -1,15 +1,15 @@
 import generateToken from "../helpers/generateToken.js";
 import { restorePassword } from "../services/auth.js";
 import crypto from 'crypto'
-import { 
-  createUser, 
+import {
+  createUser,
   deleteManyUsers,
-   deleteUser, 
-   getUserById, 
-   getUsers, 
-   searchUser, 
-   updateUser 
-  } from "../services/user.js";
+  deleteUser,
+  getUserById,
+  getUsers,
+  searchUser,
+  updateUser
+} from "../services/user.js";
 export const getUsersController = async (req, res) => {
 
   const query = {}; // Inicializar el objeto de consulta
@@ -114,4 +114,17 @@ export const deleteManyUsersController = async (req, res) => {
   console.log(user)
   res.json(user)
 
+}
+
+
+export const uploadExcelController = async (req, res) => {
+  // Suponiendo que estás enviando el archivo Excel como un ArrayBuffer
+  const buffer = req.body.buffer;
+  const workbook = xlsx.read(buffer, { type: 'buffer' });
+
+  // Puedes procesar el workbook aquí y extraer los datos que necesitas
+  // Por ejemplo, puedes convertirlo a JSON
+  const jsonData = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+  res.json({ data: jsonData });
 }
