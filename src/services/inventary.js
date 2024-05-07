@@ -1,4 +1,5 @@
 import inventaryModel from "../model/Inventary.js";
+import productModel from "../model/ProductModel.js";
 
 export const inventary = async (name, quantity, page, showAll) => {
   try {
@@ -89,17 +90,37 @@ export const updateProductInventory = async (id, name, stock, max, min, unit) =>
 
 export const deleteProductInventory = async (id) => {
   try {
-    const product = await inventaryModel.findByIdAndDelete(id, { new: true })
-    if (!product) {
+    console.log(id)
+    // Buscar el inventario a eliminar
+    const deletedInventory = await inventaryModel.findByIdAndDelete(id);
+
+    // Si no se encuentra el inventario, retornar un mensaje
+    if (!deletedInventory) {
       return {
-        msg: 'no hay id con ese producto'
-      }
+        msg: 'No se encontró ningún modelo de inventario con ese ID.'
+      };
     }
-    return product
+
+    // Actualizar los documentos del modelo productModel
+    // Remover la referencia al inventario eliminado del campo recipe
+    await productModel.updateMany(
+      { "recipe._id": id },
+      { $pull: { recipe: { _id: id } } }
+    );
+
+    // Retornar un mensaje de éxito
+    return {
+      msg: `Se eliminó la referencia al inventario en  productos.`
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    // Retornar un mensaje de error en caso de que ocurra algún problema
+    return {
+      msg: 'Ocurrió un error al eliminar la referencia al inventario en los productos.'
+    };
   }
-}
+};
+
 
 export const getProductByIdInventory = async (id) => {
   try {
