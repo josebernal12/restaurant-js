@@ -8,12 +8,12 @@ export const addProducts = async (name, description, price, stock, category, ima
     const newProduct = await (await productModel.create({ name, description, price, stock, category, image, recipe })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
-      const difference = product.stock - value.stock 
-      if(difference  > 0) {
+      const difference = product.stock - value.stock
+      if (difference > 0) {
         await inventaryModel.findByIdAndUpdate(value._id, { $inc: { stock: - value.stock } })
-      }else{
+      } else {
         return {
-          msg : `no hay suficiente ${product.name} para el ${value.name} `
+          msg: `no hay suficiente ${product.name} para el ${value.name} `
         }
       }
     })
@@ -121,9 +121,9 @@ export const updateProduct = async (id, name, description, stock, price, categor
         if (value._id.toString() === product._id.toString()) {
           const stockDifference = value.stock - product.stock
           const inventary = await inventaryModel.findById(value._id)
-          
+
           if (inventary._id.toString() === value._id.toString()) {
-            await inventaryModel.findByIdAndUpdate(value._id, { stock: inventary.stock - stockDifference })
+            await inventaryModel.findByIdAndUpdate(value._id, { stock: inventary.stock - stockDifference }, { new: true })
           }
         }
       })

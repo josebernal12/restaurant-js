@@ -126,3 +126,20 @@ export const deleteManyInventory = async (ids) => {
     console.log(error)
   }
 }
+
+export const manyInventary = async (inventory) => {
+  try {
+    const inventariesArray = [];
+    for (const value of inventory) {
+      const inventaries = await inventaryModel.create(value);
+      if (!inventaries) {
+        return { inventaries: [] };
+      }
+      inventariesArray.push(inventaries);
+    }
+    return inventariesArray;
+  } catch (error) {
+    console.log(error);
+    throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
+  }
+};

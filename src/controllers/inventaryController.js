@@ -4,6 +4,7 @@ import {
   deleteProductInventory,
   getProductByIdInventory,
   inventary,
+  manyInventary,
   updateProductInventory
 } from "../services/inventary.js";
 
@@ -80,7 +81,19 @@ export const getProducInventoryByIdController = async (req, res) => {
 export const deleteManyInventaryController = async (req, res) => {
   const { ids } = req.body
   const inventary = await deleteManyInventory(ids)
- 
+
   res.json(inventary)
 
 }
+
+export const manyInventaryController = async (req, res) => {
+  const { inventory } = req.body;
+  try {
+    const inventaries = await manyInventary(inventory);
+    res.json(inventaries);
+  } catch (error) {
+    // Manejar el error aquí si es necesario
+    console.log(error);
+    res.status(500).json({ error: 'Ha ocurrido un error al procesar la solicitud.' });
+  }
+};
