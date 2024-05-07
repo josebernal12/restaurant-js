@@ -87,7 +87,7 @@ export const deleteManyInventaryController = async (req, res) => {
 }
 
 export const manyInventaryController = async (req, res) => {
-  const { inventory } = req.body;
+  const inventory = req.body;
   try {
     const inventaries = await manyInventary(inventory);
     res.json(inventaries);
