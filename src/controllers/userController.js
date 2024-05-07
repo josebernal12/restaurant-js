@@ -7,6 +7,7 @@ import {
   deleteUser,
   getUserById,
   getUsers,
+  manyUser,
   searchUser,
   updateUser
 } from "../services/user.js";
@@ -128,3 +129,15 @@ export const uploadExcelController = async (req, res) => {
 
   res.json({ data: jsonData });
 }
+
+export const manyUsersController = async (req, res) => {
+  const users = req.body;
+  try {
+    const user = await manyUser(users);
+    res.json(user);
+  } catch (error) {
+    // Manejar el error aquí si es necesario
+    console.log(error);
+    res.status(500).json({ error: 'Ha ocurrido un error al procesar la solicitud.' });
+  }
+};

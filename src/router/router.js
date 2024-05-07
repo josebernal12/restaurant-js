@@ -8,6 +8,7 @@ import {
     getUserByIdController,
     getUsersController,
     logoutController,
+    manyUsersController,
     obtainUserByToken,
     renewToken,
     updateUserController,
@@ -36,4 +37,5 @@ router.post('/auth-google', authGoogleController)
 router.post('/create-user', createUserController)
 router.delete('/delete-manyUsers', [checkJwt], deleteManyUsersController)
 router.post('/upload-excel', [checkJwt], uploadExcelController)
+router.post('/many-users', [checkJwt], manyUsersController)
 export default router

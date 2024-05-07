@@ -187,3 +187,23 @@ export const deleteManyUsers = async (ids) => {
   }
 }
 
+export const manyUser = async (users) => {
+  try {
+    const usersArray = [];
+    for (const value of users) {
+      const exist = await checkEmailInDB(value.email)
+      if (!exist) {
+        const user = await userModel.create(value);
+        if (!user) {
+          return { user: [] };
+        }
+        usersArray.push(user);
+      }
+
+    }
+    return usersArray;
+  } catch (error) {
+    console.log(error);
+    throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
+  }
+};
