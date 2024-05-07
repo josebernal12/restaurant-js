@@ -292,3 +292,20 @@ export const deleteManyProducts = async (ids) => {
     console.log(error)
   }
 }
+
+export const manyProduct = async (products) => {
+  try {
+    const productsArray = [];
+    for (const value of products) {
+      const product = await productModel.create(value);
+      if (!product) {
+        return { product: [] };
+      }
+      productsArray.push(product);
+    }
+    return productsArray;
+  } catch (error) {
+    console.log(error);
+    throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
+  }
+};

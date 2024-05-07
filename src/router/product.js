@@ -6,6 +6,7 @@ import {
   deleteProductController,
   getProductByIdController,
   getProductsController,
+  manyProductsController,
   searchProductController,
   updateProductController
 } from '../controllers/productController.js'
@@ -25,6 +26,7 @@ router.put('/update/:id', [checkJwt, updateProductPermission], updateProductCont
 router.delete('/delete/:id', [checkJwt, deleteProductPermission], deleteProductController)
 router.post('/search',[checkJwt], searchProductController)
 router.delete('/delete-manyProducts', [checkJwt], deleteManyProductsController)
+router.post('/many-products', manyProductsController)
 router.get('/:id', [checkJwt, addProductPermission], getProductByIdController)
 
 export default router

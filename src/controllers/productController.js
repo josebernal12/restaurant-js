@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getProducts,
   getProductsById,
+  manyProduct,
   searchProduct,
   updateProduct
 } from "../services/products.js"
@@ -101,3 +102,15 @@ export const deleteManyProductsController = async (req, res) => {
   res.json(product)
 
 }
+
+export const manyProductsController = async (req, res) => {
+  const { products } = req.body;
+  try {
+    const product = await manyProduct(products);
+    res.json(product);
+  } catch (error) {
+    // Manejar el error aquí si es necesario
+    console.log(error);
+    res.status(500).json({ error: 'Ha ocurrido un error al procesar la solicitud.' });
+  }
+};
