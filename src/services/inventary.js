@@ -73,9 +73,9 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
   }
 }
 
-export const updateProductInventory = async (id, name, stock, max, min) => {
+export const updateProductInventory = async (id, name, stock, max, min, unit) => {
   try {
-    const product = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min }, { new: true })
+    const product = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true })
     if (!product) {
       return {
         msg: 'no hay producto con ese id'
