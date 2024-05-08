@@ -7,7 +7,6 @@ import moment from 'moment'; // Importa la librería moment.js para manejar fech
 
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
-    console.log(tableId)
     if (!tableId) {
       return 'error al generar facturas (te falta datos por proporcionar)'
     }

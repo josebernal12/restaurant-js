@@ -252,29 +252,36 @@ export const bestProduct = async (range) => {
         }
       })
     });
+    let product;
+const productIds = Object.keys(soldProducts);
+const productsInfo = await Promise.all(productIds.map(async productId => {
+  product = await productModel.findById(productId);
+  if (!product) {
+    // Si el producto no existe en la base de datos, simplemente regresa null
+    return null;
+  }
+  // Si el producto existe, regresa su información
+  return { name: product.name, stock: soldProducts[productId].stock };
+}));
 
-    const productIds = Object.keys(soldProducts);
-    console.log(productIds)
-    const productsInfo = await Promise.all(productIds.map(async productId => {
-      const product = await productModel.findById(productId);
-      return { name: product.name, stock: soldProducts[productId].stock };
-    }));
+// Filtrar los productos que son null (productos no encontrados en la base de datos)
+const validProductsInfo = productsInfo.filter(product => product !== null);
 
-    // Ordenar los productos por la cantidad vendida (de mayor a menor)
-    const sortedProducts = productsInfo.sort((a, b) => b.stock - a.stock);
+// Ordenar los productos válidos por la cantidad vendida (de mayor a menor)
+const sortedProducts = validProductsInfo.sort((a, b) => b.stock - a.stock);
 
-    // Verificar si no hay productos disponibles
-    if (sortedProducts.length === 0) {
-      return {
-        products: []
-      }
-    }
+if (sortedProducts.length === 0) {
+  return {
+    products: []
+  };
+}
 
-    // Obtener solo los nombres de los productos más vendidos
-    const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
+// Obtener solo los nombres de los productos más vendidos
+const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
 
-    // Devolver los nombres y cantidades de los productos más vendidos
-    return { products };
+// Devolver los nombres y cantidades de los productos más vendidos
+return { products };
+
   } catch (error) {
     console.log(error);
     throw new Error('Ocurrió un error al obtener los productos más vendidos.');
