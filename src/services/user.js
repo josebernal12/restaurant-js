@@ -196,7 +196,7 @@ export const manyUser = async (users) => {
         const exist = await checkEmailInDB(value.email)
         console.log(value.name)
         if (!exist) {
-          const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember })
+          const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false })
           const populatedUser = await userModel.findById(value._id).populate('rol').select('-password');
           if (!user) {
             return { user: [] };
@@ -222,5 +222,18 @@ export const manyUser = async (users) => {
   } catch (error) {
     console.log(error);
     throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
+  }
+};
+
+export const usersWithoutPassword = async () => {
+  try {
+    const users = await userModel.find();
+    const usersWithoutPwd = users.filter(value => !value.password);
+    return usersWithoutPwd.map(value => ({
+      msg: `El usuario ${value.name} no tiene contraseña`
+    }));
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };

@@ -17,6 +17,10 @@ const userSchema = new Schema({
     type: String,
     require: true
   },
+  havePassword: {
+    type: Boolean,
+    default: true
+  },
   rol: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Rol',

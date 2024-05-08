@@ -13,7 +13,8 @@ import {
     renewToken,
     updateUserController,
     uploadExcelController,
-    userSearchController
+    userSearchController,
+    usersWithoutPasswordController
 } from '../controllers/userController.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission } from '../middleware/permission.js'
@@ -38,4 +39,5 @@ router.post('/create-user', createUserController)
 router.delete('/delete-manyUsers', [checkJwt], deleteManyUsersController)
 router.post('/upload-excel', [checkJwt], uploadExcelController)
 router.post('/many-users', [checkJwt], manyUsersController)
+router.get('/user-withoutPassword', usersWithoutPasswordController)
 export default router

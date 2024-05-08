@@ -9,7 +9,8 @@ import {
   getUsers,
   manyUser,
   searchUser,
-  updateUser
+  updateUser,
+  usersWithoutPassword
 } from "../services/user.js";
 export const getUsersController = async (req, res) => {
 
@@ -139,5 +140,14 @@ export const manyUsersController = async (req, res) => {
     // Manejar el error aquí si es necesario
     console.log(error);
     res.status(500).json({ error: 'Ha ocurrido un error al procesar la solicitud.' });
+  }
+};
+
+export const usersWithoutPasswordController = async (req, res) => {
+  try {
+    const users = await usersWithoutPassword();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener usuarios sin contraseña' });
   }
 };
