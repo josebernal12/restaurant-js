@@ -125,6 +125,7 @@ export const changePassword = async (password, passwordRepit, token) => {
     const hash = bcrypt.hashSync(password, saltRound)
     user.password = hash
     user.token = null
+    user.havePassword = true
     user.save()
     return user
   } catch (error) {
