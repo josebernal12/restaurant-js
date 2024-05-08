@@ -71,9 +71,9 @@ export const deleteProductController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
   const { id } = req.params
-  const { name, description, stock, price, category, recipe } = req.body
+  const { name, description, stock, price, category, discount, recipe } = req.body
 
-  const productUpdate = await updateProduct(id, name, description, price, stock, category, recipe)
+  const productUpdate = await updateProduct(id, name, description, price, stock, category, discount, recipe)
   if (productUpdate.msg) {
     res.status(404).json(productUpdate)
     return

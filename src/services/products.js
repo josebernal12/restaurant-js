@@ -239,6 +239,7 @@ export const bestProduct = async (range) => {
           value.products.forEach(product => {
             // Si el producto tiene un ID
             if (product._id) {
+              console.log(product)
               // Si el producto ya está en el objeto, aumenta la cantidad vendida
               if (soldProducts[product._id]) {
                 soldProducts[product._id].stock += product.stock;
