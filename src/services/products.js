@@ -3,9 +3,9 @@ import billModel from "../model/BillModel.js"
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 
-export const addProducts = async (name, description, price, stock, category, image, recipe) => {
+export const addProducts = async (name, description, price, stock, category, image, discount, recipe) => {
   try {
-    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, recipe })).populate('recipe')
+    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
       const difference = product.stock - value.stock
