@@ -108,10 +108,10 @@ export const deleteProduct = async (id) => {
   }
 }
 
-export const updateProduct = async (id, name, description, stock, price, category, recipe) => {
+export const updateProduct = async (id, name, description, stock, price, category, discount, recipe) => {
   try {
     const productsBefore = await productModel.findById(id)
-    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, recipe }, { new: true }).populate('recipe');
+    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, discount, recipe }, { new: true }).populate('recipe');
     if (!productUpdate) {
       return { msg: 'Error en la actualización' };
     }
