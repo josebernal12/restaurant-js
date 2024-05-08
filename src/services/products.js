@@ -253,7 +253,7 @@ export const bestProduct = async (range) => {
     });
 
     const productIds = Object.keys(soldProducts);
-
+    console.log(productIds)
     const productsInfo = await Promise.all(productIds.map(async productId => {
       const product = await productModel.findById(productId);
       return { name: product.name, stock: soldProducts[productId].stock };
