@@ -93,6 +93,8 @@ export const deleteProductInventory = async (id) => {
     console.log(id)
     // Buscar el inventario a eliminar
     const deletedInventory = await inventaryModel.findByIdAndDelete(id);
+    const inventaryTotal = await inventaryModel.countDocuments()
+
 
     // Si no se encuentra el inventario, retornar un mensaje
     if (!deletedInventory) {
@@ -110,7 +112,7 @@ export const deleteProductInventory = async (id) => {
 
     // Retornar un mensaje de éxito
     return {
-      msg: `Se eliminó la referencia al inventario en  productos.`
+      inventaryTotal
     };
   } catch (error) {
     console.log(error);
@@ -141,7 +143,9 @@ export const deleteManyInventory = async (ids) => {
   try {
     ids.forEach(async (id) => {
       const inventary = await inventaryModel.findByIdAndDelete(id, { new: true })
-      return inventary
+      const inventaryTotal = await inventaryModel.countDocuments()
+
+      return { inventary, inventaryTotal }
     })
   } catch (error) {
     console.log(error)
@@ -151,14 +155,17 @@ export const deleteManyInventory = async (ids) => {
 export const manyInventary = async (inventory) => {
   try {
     const inventariesArray = [];
+    let inventaryTotal;
     for (const value of inventory) {
       const inventaries = await inventaryModel.create(value);
+      inventaryTotal = await inventaryModel.countDocuments()
+
       if (!inventaries) {
         return { inventaries: [] };
       }
       inventariesArray.push(inventaries);
     }
-    return inventariesArray;
+    return { inventariesArray, inventaryTotal };
   } catch (error) {
     console.log(error);
     throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.

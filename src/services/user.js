@@ -82,12 +82,14 @@ export const getUserById = async (id) => {
 export const deleteUser = async (id) => {
   try {
     const user = await userModel.findByIdAndDelete(id)
+    const usersTotal = await userModel.countDocuments()
+
     if (!user) {
       return {
         msg: 'no hay ningun usuario con ese id'
       }
     }
-    return 'usuario eliminado'
+    return usersTotal
   } catch (error) {
     console.log(error)
   }
@@ -95,8 +97,8 @@ export const deleteUser = async (id) => {
 export const updateUser = async (id, name, lastName, email, rolId,) => {
   try {
     const user = await userModel.findById(id)
-    
-      
+
+
     if (user.email === email) {
       const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
       if (!userUpdate) {
@@ -109,7 +111,7 @@ export const updateUser = async (id, name, lastName, email, rolId,) => {
     }
     const exist = await checkEmailInDB(email)
     if (exist === null) {
-      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId}, { new: true })
+      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
       if (!userUpdate) {
         return {
           msg: 'error en la actualizacion'
@@ -176,13 +178,18 @@ export const deleteManyUsers = async (ids) => {
   try {
     ids.forEach(async (id) => {
       const user = await userModel.findByIdAndDelete(id, { new: true })
+      const usersTotal = await userModel.countDocuments()
+
       if (!user) {
         console.log(user)
         return {
           msg: 'error al eliminar el usuario'
         }
       }
-      return user
+      return {
+        user,
+        usersTotal
+      }
     })
   } catch (error) {
     console.log(error)
@@ -192,6 +199,7 @@ export const deleteManyUsers = async (ids) => {
 export const manyUser = async (users) => {
   try {
     const usersArray = [];
+    let usersTotal;
     if (!users.rol) {
       const rolMember = await RolModel.findOne({ name: 'miembro' });
       for (const value of users) {
@@ -200,13 +208,14 @@ export const manyUser = async (users) => {
         if (!exist) {
           const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false })
           const populatedUser = await userModel.findById(value._id).populate('rol').select('-password');
+          usersTotal = await userModel.countDocuments()
           if (!user) {
             return { user: [] };
           }
           usersArray.push(user);
         }
       }
-      return usersArray;
+      return { usersArray, usersTotal };
 
     }
     for (const value of users) {

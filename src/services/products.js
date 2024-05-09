@@ -97,12 +97,14 @@ export const getProductsById = async (id) => {
 export const deleteProduct = async (id) => {
   try {
     const product = await productModel.findByIdAndDelete(id)
+    const productTotal = await productModel.countDocuments()
+
     if (!product) {
       return {
         msg: 'no hay productos con ese id'
       }
     }
-    return product
+    return { product, productTotal }
   } catch (error) {
     console.log(error)
   }
@@ -253,34 +255,34 @@ export const bestProduct = async (range) => {
       })
     });
     let product;
-const productIds = Object.keys(soldProducts);
-const productsInfo = await Promise.all(productIds.map(async productId => {
-  product = await productModel.findById(productId);
-  if (!product) {
-    // Si el producto no existe en la base de datos, simplemente regresa null
-    return null;
-  }
-  // Si el producto existe, regresa su información
-  return { name: product.name, stock: soldProducts[productId].stock };
-}));
+    const productIds = Object.keys(soldProducts);
+    const productsInfo = await Promise.all(productIds.map(async productId => {
+      product = await productModel.findById(productId);
+      if (!product) {
+        // Si el producto no existe en la base de datos, simplemente regresa null
+        return null;
+      }
+      // Si el producto existe, regresa su información
+      return { name: product.name, stock: soldProducts[productId].stock };
+    }));
 
-// Filtrar los productos que son null (productos no encontrados en la base de datos)
-const validProductsInfo = productsInfo.filter(product => product !== null);
+    // Filtrar los productos que son null (productos no encontrados en la base de datos)
+    const validProductsInfo = productsInfo.filter(product => product !== null);
 
-// Ordenar los productos válidos por la cantidad vendida (de mayor a menor)
-const sortedProducts = validProductsInfo.sort((a, b) => b.stock - a.stock);
+    // Ordenar los productos válidos por la cantidad vendida (de mayor a menor)
+    const sortedProducts = validProductsInfo.sort((a, b) => b.stock - a.stock);
 
-if (sortedProducts.length === 0) {
-  return {
-    products: []
-  };
-}
+    if (sortedProducts.length === 0) {
+      return {
+        products: []
+      };
+    }
 
-// Obtener solo los nombres de los productos más vendidos
-const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
+    // Obtener solo los nombres de los productos más vendidos
+    const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
 
-// Devolver los nombres y cantidades de los productos más vendidos
-return { products };
+    // Devolver los nombres y cantidades de los productos más vendidos
+    return { products };
 
   } catch (error) {
     console.log(error);
@@ -294,7 +296,9 @@ export const deleteManyProducts = async (ids) => {
   try {
     ids.forEach(async (id) => {
       const product = await productModel.findByIdAndDelete(id, { new: true })
-      return product
+      const productTotal = await productModel.countDocuments()
+
+      return { product, productTotal }
     })
   } catch (error) {
     console.log(error)
@@ -304,14 +308,17 @@ export const deleteManyProducts = async (ids) => {
 export const manyProduct = async (products) => {
   try {
     const productsArray = [];
+    let productTotal;
     for (const value of products) {
       const product = await productModel.create(value);
+      productTotal = await productModel.countDocuments()
+
       if (!product) {
         return { product: [] };
       }
       productsArray.push(product);
     }
-    return productsArray;
+    return { productsArray, productTotal };
   } catch (error) {
     console.log(error);
     throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
