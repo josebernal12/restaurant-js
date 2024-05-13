@@ -7,6 +7,7 @@ const ticketSchema = new Schema({
       name: String,
       price: Number,
       stock: Number,
+      discount: Number,
       uid: {
         type: String,
         default: uid(16)
@@ -45,9 +46,7 @@ const ticketSchema = new Schema({
   waiter: {
     type: String
   },
-  discount: {
-    type: number
-  },
+
   status: {
     type: String,
   },
