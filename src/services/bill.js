@@ -201,7 +201,6 @@ export const bestWaiter = async (type) => {
         $lte: endDate
       }
     } : {};
-    console.log('entree primero')
     const bills = await billModel.find(query)
       .populate('ticketId')
       .populate('userId')

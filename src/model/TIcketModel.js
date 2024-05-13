@@ -45,6 +45,9 @@ const ticketSchema = new Schema({
   waiter: {
     type: String
   },
+  discount: {
+    type: number
+  },
   status: {
     type: String,
   },
