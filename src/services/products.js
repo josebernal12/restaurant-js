@@ -112,24 +112,53 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, name, description, stock, price, category, discount, recipe) => {
   try {
-    const productsBefore = await productModel.findById(id)
-    const productUpdate = await productModel.findByIdAndUpdate(id, { name, description, stock, price, category, discount, recipe }, { new: true }).populate('recipe');
+    // Obtener el producto antes de la actualización
+    const productsBefore = await productModel.findById(id).populate('recipe');
+    
+    // Actualizar el producto con la nueva información
+    const productUpdate = await productModel.findByIdAndUpdate(id, 
+      { name, description, stock, price, category, discount, recipe }, 
+      { new: true }).populate('recipe');
+    
     if (!productUpdate) {
       return { msg: 'Error en la actualización' };
     }
-    // Actualizar el inventario para cada ingrediente de la receta
-    productUpdate.recipe.forEach(value => {
-      productsBefore.recipe.forEach(async (product) => {
-        if (value._id.toString() === product._id.toString()) {
-          const stockDifference = value.stock - product.stock
-          const inventary = await inventaryModel.findById(value._id)
 
-          if (inventary._id.toString() === value._id.toString()) {
-            await inventaryModel.findByIdAndUpdate(value._id, { stock: inventary.stock - stockDifference }, { new: true })
-          }
-        }
-      })
-    })
+    // Crear un map de los ingredientes antes de la actualización para un acceso más rápido
+    const beforeRecipeMap = new Map(productsBefore.recipe.map(item => [item._id.toString(), item]));
+
+    // Iterar sobre los ingredientes en la receta actualizada
+    for (let value of productUpdate.recipe) {
+      if (beforeRecipeMap.has(value._id.toString())) {
+        // Si el ingrediente está en ambas recetas, ajustar el stock según la diferencia
+        const oldProduct = beforeRecipeMap.get(value._id.toString());
+        const stockDifference = value.stock - oldProduct.stock;
+        const inventary = await inventaryModel.findById(value._id);
+
+        await inventaryModel.findByIdAndUpdate(value._id, 
+          { stock: inventary.stock - stockDifference }, 
+          { new: true });
+        
+        // Eliminar el ingrediente del mapa para marcarlo como procesado
+        beforeRecipeMap.delete(value._id.toString());
+      } else {
+        // Si el ingrediente es nuevo en la receta, restar el stock del inventario
+        const inventary = await inventaryModel.findById(value._id);
+
+        await inventaryModel.findByIdAndUpdate(value._id, 
+          { stock: inventary.stock - value.stock }, 
+          { new: true });
+      }
+    }
+
+    // Los ingredientes restantes en beforeRecipeMap ya no están en la receta, restaurar su stock
+    for (let [key, oldProduct] of beforeRecipeMap) {
+      const inventary = await inventaryModel.findById(oldProduct._id);
+
+      await inventaryModel.findByIdAndUpdate(oldProduct._id, 
+        { stock: inventary.stock + oldProduct.stock }, 
+        { new: true });
+    }
 
     return productUpdate;
   } catch (error) {
@@ -137,7 +166,6 @@ export const updateProduct = async (id, name, description, stock, price, categor
     return { msg: 'Error en la actualización' };
   }
 };
-
 
 
 

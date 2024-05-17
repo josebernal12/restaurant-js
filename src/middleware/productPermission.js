@@ -18,7 +18,6 @@ export const addProductPermission = async (req, res, next) => {
 export const updateProductPermission = async (req, res, next) => {
   const user = req.user
     if (user) {
-    console.log(user)
     const rol = await RolModel.findById(user.rol)
     if (rol.permissions.actualizarProducto) {
       req.user = user

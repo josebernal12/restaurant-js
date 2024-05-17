@@ -10,7 +10,6 @@ export const isAdmin = async (req, res, next) => {
 
       const user = await userModel.findById(decoded.id)
       if (user) {
-        console.log(user)
         if (user.rol === 'admin') {
           req.user = user
           return next()
