@@ -74,19 +74,46 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
   }
 }
 
+
 export const updateProductInventory = async (id, name, stock, max, min, unit) => {
   try {
-    const product = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true })
-    if (!product) {
+    // Actualiza el inventario
+    const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true });
+
+    if (!updatedInventory) {
       return {
-        msg: 'no hay producto con ese id'
+        msg: 'No hay producto con ese id'
+      };
+    }
+
+    // Encuentra todos los productos que tienen este inventario en su receta
+    const productsToUpdate = await productModel.find({ 'recipe._id': id });
+    console.log(productsToUpdate)
+    // Actualiza el nombre del inventario en las recetas de esos productos
+    for (const product of productsToUpdate) {
+      let isModified = false;
+      for (const item of product.recipe) {
+        console.log(item)
+        if (item._id.toString() === id) {
+          console.log(name)
+          item.name = name;
+          isModified = true;
+        }
+      }
+      // Guarda el producto solo si hubo cambios
+      if (isModified) {
+        await product.save();
       }
     }
-    return product
+
+    return updatedInventory;
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Hubo un error al actualizar el inventario'
+    };
   }
-}
+};
 
 export const deleteProductInventory = async (id) => {
   try {
