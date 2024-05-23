@@ -13,7 +13,7 @@ export const designTicketController = async (req, res) => {
 
 export const getDesignTicketController = async (req, res) => {
     const bill = await getDesignTicket()
-    if (bill.msg) {
+    if (bill?.msg) {
         res.status(404).json(bill)
         return
     }
