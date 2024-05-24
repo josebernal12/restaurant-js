@@ -3,7 +3,7 @@ import { designTicket, getDesignTicket } from "../services/designTicket.js"
 export const designTicketController = async (req, res) => {
     const { name, email, address, phone, logo } = req.body
     const designModel = await designTicket(name, email, logo, address, phone)
-    if (designModel.msg) {
+    if (designModel?.msg) {
         res.status(404).json(designModel)
         return
     }

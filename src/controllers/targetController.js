@@ -9,7 +9,7 @@ import {
 export const createTargetController = async (req, res) => {
   const { targets } = req.body
   const target = await createTargets(targets)
-  if (target.msg) {
+  if (target?.msg) {
     res.status(404).json(target)
     return
   }
@@ -20,7 +20,7 @@ export const updateTargetController = async (req, res) => {
   const { targets } = req.body
   const { id } = req.params
   const target = await updateTargets(id, targets)
-  if (target.msg) {
+  if (target?.msg) {
     res.status(404).json(target)
     return
   }
@@ -30,7 +30,7 @@ export const updateTargetController = async (req, res) => {
 export const deleteTargetController = async (req, res) => {
   const { id } = req.params
   const target = await deleteTarget(id)
-  if (target.msg) {
+  if (target?.msg) {
     res.status(404).json(target)
     return
   }
@@ -39,7 +39,7 @@ export const deleteTargetController = async (req, res) => {
 
 export const getAllTargetController = async (req, res) => {
   const targets = await getAllTargets()
-  if (targets.msg) {
+  if (targets?.msg) {
     res.status(404).json(targets)
     return
   }
@@ -48,7 +48,7 @@ export const getAllTargetController = async (req, res) => {
 export const getTargetbyIdController = async (req, res) => {
   const { id } = req.params
   const target = await getTargetById(id)
-  if (target.msg) {
+  if (target?.msg) {
     res.status(404).json(target)
     return
   }

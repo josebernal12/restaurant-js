@@ -5,7 +5,7 @@ export const createTicketController = async (req, res) => {
   const { id } = req.params
 
   const ticket = await createTicket(products, subtotal, total, id, userId, waiter)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -17,7 +17,7 @@ export const updateTicketController = async (req, res) => {
   const { id } = req.params
   const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId)
 
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -30,7 +30,7 @@ export const getTicketsController = async (req, res) => {
     query.waiter = { $regex: req.query.waiter, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
   const tickets = await getTickets(query)
-  if (tickets.msg) {
+  if (tickets?.msg) {
     res.status(404).json(tickets)
     return
   }
@@ -42,7 +42,7 @@ export const getTicketsByIdController = async (req, res) => {
 
   const ticket = await getTicketById(id)
 
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -52,7 +52,7 @@ export const getTicketsByIdController = async (req, res) => {
 export const deleteTicketController = async (req, res) => {
   const { id } = req.params
   const ticket = await deleteTicket(id)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -63,7 +63,7 @@ export const cancelTicketController = async (req, res) => {
   const { id } = req.params
   const { tableId } = req.body
   const message = await cancelAccount(id, tableId)
-  if (message.msg) {
+  if (message?.msg) {
     res.status(404).json(message)
     return
   }
@@ -74,7 +74,7 @@ export const receivedTicketController = async (req, res) => {
   const { id } = req.params
 
   const ticket = await receivedTicket(id)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -84,7 +84,7 @@ export const finishedTicketController = async (req, res) => {
   const { id } = req.params
 
   const ticket = await finishedTicket(id)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -95,7 +95,7 @@ export const completedProductController = async (req, res) => {
   const { id } = req.params
   const { idProduct } = req.body
   const ticket = await completedProduct(id, idProduct)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }
@@ -105,7 +105,7 @@ export const completedProductController = async (req, res) => {
 export const completedAllProductTicketController = async (req, res) => {
   const { id } = req.params;
   const ticket = await completedAllProductTicket(id)
-  if (ticket.msg) {
+  if (ticket?.msg) {
     res.status(404).json(ticket)
     return
   }

@@ -9,7 +9,7 @@ import {
 export const createNoteController = async (req, res) => {
   const { note, userId, tableId } = req.body
   const newNote = await createNote(note, userId, tableId)
-  if (newNote.msg) {
+  if (newNote?.msg) {
     res.status(404).json(newNote)
     return
   }
@@ -20,7 +20,7 @@ export const updateNoteController = async (req, res) => {
   const { note, ticketId, userId } = req.body
 
   const noteUpdate = await updateNote(id, note, ticketId, userId)
-  if (noteUpdate.msg) {
+  if (noteUpdate?.msg) {
     res.status(404).json(noteUpdate)
     return
   }
@@ -30,7 +30,7 @@ export const deleteNoteController = async (req, res) => {
   const { id } = req.params
   const { idBody } = req.body
   const noteDeleted = await deleteNote(id, idBody)
-  if (noteDeleted.msg) {
+  if (noteDeleted?.msg) {
     res.status(404).json(noteDeleted)
     return
   }
@@ -39,7 +39,7 @@ export const deleteNoteController = async (req, res) => {
 
 export const getAllNotesController = async (req, res) => {
   const notes = await getAllNotes()
-  if (notes.msg) {
+  if (notes?.msg) {
     res.status(404).json(notes)
     return
   }
@@ -48,7 +48,7 @@ export const getAllNotesController = async (req, res) => {
 export const getNoteByIdController = async (req, res) => {
   const { id } = req.params
   const note = await getNoteById(id)
-  if (note.msg) {
+  if (note?.msg) {
     res.status(404).json(note)
     return
   }

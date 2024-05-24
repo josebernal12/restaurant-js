@@ -13,7 +13,7 @@ import {
 export const addProductController = async (req, res) => {
   const { name, description, price, stock, category, image, discount, recipe } = req.body
   const newProduct = await addProducts(name, description, price, stock, category, image, discount, recipe)
-  if (newProduct.msg) {
+  if (newProduct?.msg) {
     res.status(404).json(newProduct)
     return
   }
@@ -42,7 +42,7 @@ export const getProductsController = async (req, res) => {
     quantity = req.query.quantity // 'i' para hacer la búsqueda case-insensitive
   }
   const products = await getProducts(query, page, showAll, quantity)
-  if (products.msg) {
+  if (products?.msg) {
     res.status(404).json(products)
     return
   }
@@ -52,7 +52,7 @@ export const getProductsController = async (req, res) => {
 export const getProductByIdController = async (req, res) => {
   const { id } = req.params
   const product = await getProductsById(id)
-  if (product.msg) {
+  if (product?.msg) {
     res.status(404).json(product)
     return
   }
@@ -62,7 +62,7 @@ export const getProductByIdController = async (req, res) => {
 export const deleteProductController = async (req, res) => {
   const { id } = req.params
   const productDeleted = await deleteProduct(id)
-  if (productDeleted.msg) {
+  if (productDeleted?.msg) {
     res.status(404).json(productDeleted)
     return
   }
@@ -74,7 +74,7 @@ export const updateProductController = async (req, res) => {
   const { name, description, stock, price, category, discount, recipe } = req.body
 
   const productUpdate = await updateProduct(id, name, description, price, stock, category, discount, recipe)
-  if (productUpdate.msg) {
+  if (productUpdate?.msg) {
     res.status(404).json(productUpdate)
     return
   }
