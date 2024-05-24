@@ -70,7 +70,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     }
     if (quantity) {
       const totalBills = await billModel.countDocuments()
-      const billsFiltered = await billModel.find().limit(quantity)
+      const billsFiltered = await billModel.find().limit(quantity).populate('ticketId').populate('tableId').populate('userId')
       return {
         totalBills,
         billsFiltered
