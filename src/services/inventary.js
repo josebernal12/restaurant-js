@@ -117,7 +117,6 @@ export const updateProductInventory = async (id, name, stock, max, min, unit) =>
 
 export const deleteProductInventory = async (id) => {
   try {
-    console.log(id)
     // Buscar el inventario a eliminar
     const deletedInventory = await inventaryModel.findByIdAndDelete(id);
     const inventaryTotal = await inventaryModel.countDocuments()
@@ -171,7 +170,10 @@ export const deleteManyInventory = async (ids) => {
     ids.forEach(async (id) => {
       const inventary = await inventaryModel.findByIdAndDelete(id, { new: true })
       const inventaryTotal = await inventaryModel.countDocuments()
-
+      await productModel.updateMany(
+        { "recipe._id": id },
+        { $pull: { recipe: { _id: id } } }
+      );
       return { inventary, inventaryTotal }
     })
   } catch (error) {
