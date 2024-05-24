@@ -111,7 +111,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
         .limit(perPage)
         .skip(skip)
         .sort({ createdAt: -1 });
-      const totalBills = await billModel.countDocuments(query);
+      const totalBills = await billModel.countDocuments();
 
       // Filtra las facturas por camarero si hay alguna coincidencia
       if (billsFiltered.length >= 1) {
@@ -120,11 +120,10 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
           return bill.ticketId.some(val => val.waiter.includes(name));
 
         });
-        console.log(billWaiter)
-
+        const totalBill = billWaiter.length
         return {
-          billWaiter,
-          totalBills
+          billsFiltered: billWaiter,
+          totalBill
         };
       }
 
