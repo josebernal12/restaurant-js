@@ -84,7 +84,6 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
       startDate = currentDate.clone().startOf('week');
       endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Sábado de la semana actual
     } else if (firstDate && secondDate) {
-      console.log('enttreeee')
       startDate = moment(firstDate).startOf('day');
       endDate = moment(secondDate).endOf('day');
     }
@@ -328,3 +327,52 @@ export const sells = async (date) => {
     throw new Error('Error al calcular las ventas.');
   }
 };
+
+export const getBillLastWeek = async (type, page) => {
+  const perPage = 10;
+  const pageQuery = parseInt(page) || 1;
+  const skip = perPage * (pageQuery - 1);
+  let startDate, endDate;
+  const currentDate = moment();
+
+  try {
+    if (type === 'week') {
+      startDate = currentDate.clone().subtract(1, 'week').startOf('week');
+      endDate = currentDate.clone().subtract(1, 'week').endOf('week');
+    } else if (type === 'currentWeek') {
+      startDate = currentDate.clone().startOf('week');
+      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Sábado de la semana actual
+    }
+    let query = {};
+
+    if (startDate && endDate) {
+      query.createdAt = {
+        $gte: startDate.toDate(),
+        $lte: endDate.toDate()
+      };
+    }
+    // Realiza la búsqueda de facturas según la consulta definida
+    let billsFiltered = await billModel.find(query)
+      .populate('ticketId')
+      .populate('tableId')
+      .populate('userId')
+      .limit(perPage)
+      .skip(skip)
+      .sort({ createdAt: -1 });
+
+    const totalBills = await billModel.countDocuments(query);
+
+    if (!billsFiltered) {
+      return {
+        billsFiltered: []
+      };
+    }
+
+    return {
+      totalBills,
+      billsFiltered
+    };
+  } catch (error) {
+    console.log(error)
+  }
+}
