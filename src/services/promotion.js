@@ -1,4 +1,4 @@
-import promotionModel from "../model/Promotion"
+import promotionModel from "../model/Promotion.js"
 
 export const createPromotion = async (name, description, type) => {
   try {

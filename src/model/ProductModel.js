@@ -32,7 +32,8 @@ const productSchema = new Schema({
   },
   promotion: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'promotion'
+    ref: 'promotion',
+    default: false,
   },
   recipe: [{
     name: String,

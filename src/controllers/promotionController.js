@@ -1,4 +1,10 @@
-import { createPromotion, deletePromotion, getAllPromotion, getPromotionById, updatePromotion } from "../services/promotion"
+import { 
+  createPromotion, 
+  deletePromotion, 
+  getAllPromotion, 
+  getPromotionById, 
+  updatePromotion 
+} from "../services/promotion.js"
 
 export const createPromotionController = async (req, res) => {
   const { name, description, type } = req.body

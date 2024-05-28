@@ -1,12 +1,12 @@
 import { Router } from 'express'
-import { checkJwt } from '../middleware/permission'
+import { checkJwt } from '../middleware/permission.js'
 import {
   createPromotionController,
   deletePromotionController,
   getAllPromotionController,
   getPromotionByIdController,
   updatePromotionController
-} from '../controllers/promotionController'
+} from '../controllers/promotionController.js'
 
 const router = Router()
 
