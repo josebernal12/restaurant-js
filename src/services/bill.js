@@ -44,7 +44,7 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
 }
 
 
-export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate) => {
+export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate, tableId) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -52,7 +52,24 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     const currentDate = moment();
 
     let startDate, endDate;
+    if (tableId) {
+      console.log('entreee')
+      let billsFiltered = await billModel.find()
+        .populate('ticketId')
+        .populate('tableId')
+        .populate('userId')
+        .sort({ createdAt: -1 });
 
+      const bills = billsFiltered.filter(value => {
+        if (value.tableId.number === Number(tableId)) {
+          return value
+        }
+      })
+      return {
+        billsFiltered: bills,
+        totalBills: bills.length
+      }
+    }
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
       let billsFiltered = await billModel.find()
