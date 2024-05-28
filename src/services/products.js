@@ -3,9 +3,9 @@ import billModel from "../model/BillModel.js"
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 
-export const addProducts = async (name, description, price, stock, category, image, discount, recipe) => {
+export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion) => {
   try {
-    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe })).populate('recipe')
+    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe, promotion })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
       const difference = product.stock - value.stock
@@ -110,16 +110,16 @@ export const deleteProduct = async (id) => {
   }
 }
 
-export const updateProduct = async (id, name, description, stock, price, category, discount, recipe) => {
+export const updateProduct = async (id, name, description, stock, price, category, discount, recipe, promotion) => {
   try {
     // Obtener el producto antes de la actualización
     const productsBefore = await productModel.findById(id).populate('recipe');
-    
+
     // Actualizar el producto con la nueva información
-    const productUpdate = await productModel.findByIdAndUpdate(id, 
-      { name, description, stock, price, category, discount, recipe }, 
+    const productUpdate = await productModel.findByIdAndUpdate(id,
+      { name, description, stock, price, category, discount, recipe, promotion },
       { new: true }).populate('recipe');
-    
+
     if (!productUpdate) {
       return { msg: 'Error en la actualización' };
     }
@@ -135,18 +135,18 @@ export const updateProduct = async (id, name, description, stock, price, categor
         const stockDifference = value.stock - oldProduct.stock;
         const inventary = await inventaryModel.findById(value._id);
 
-        await inventaryModel.findByIdAndUpdate(value._id, 
-          { stock: inventary.stock - stockDifference }, 
+        await inventaryModel.findByIdAndUpdate(value._id,
+          { stock: inventary.stock - stockDifference },
           { new: true });
-        
+
         // Eliminar el ingrediente del mapa para marcarlo como procesado
         beforeRecipeMap.delete(value._id.toString());
       } else {
         // Si el ingrediente es nuevo en la receta, restar el stock del inventario
         const inventary = await inventaryModel.findById(value._id);
 
-        await inventaryModel.findByIdAndUpdate(value._id, 
-          { stock: inventary.stock - value.stock }, 
+        await inventaryModel.findByIdAndUpdate(value._id,
+          { stock: inventary.stock - value.stock },
           { new: true });
       }
     }
@@ -155,8 +155,8 @@ export const updateProduct = async (id, name, description, stock, price, categor
     for (let [key, oldProduct] of beforeRecipeMap) {
       const inventary = await inventaryModel.findById(oldProduct._id);
 
-      await inventaryModel.findByIdAndUpdate(oldProduct._id, 
-        { stock: inventary.stock + oldProduct.stock }, 
+      await inventaryModel.findByIdAndUpdate(oldProduct._id,
+        { stock: inventary.stock + oldProduct.stock },
         { new: true });
     }
 
@@ -352,3 +352,6 @@ export const manyProduct = async (products) => {
     throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
   }
 };
+
+
+

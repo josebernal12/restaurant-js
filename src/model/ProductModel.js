@@ -30,6 +30,10 @@ const productSchema = new Schema({
   image: {
     type: String,
   },
+  promotion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'promotion'
+  },
   recipe: [{
     name: String,
     stock: Number,

@@ -88,7 +88,6 @@ export const updateProductInventory = async (id, name, stock, max, min, unit) =>
 
     // Encuentra todos los productos que tienen este inventario en su receta
     const productsToUpdate = await productModel.find({ 'recipe._id': id });
-    console.log(productsToUpdate)
     // Actualiza el nombre del inventario en las recetas de esos productos
     for (const product of productsToUpdate) {
       let isModified = false;
