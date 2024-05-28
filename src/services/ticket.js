@@ -8,7 +8,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
     const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
-
+    const ticketAll = await ticketModel.find()
+    const folioArray = ticketAll.map(value => value?.folio)
     if (table) {
       let invalid = false; // Inicializamos la bandera como falsa
       for (const product of products) {
@@ -32,7 +33,19 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       }
 
       // await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
-      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter })
+      if (folioArray) {
+        const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio: folioArray.length + 1 })
+        if (!newTicket) {
+          return {
+            msg: 'Error al crear el ticket'
+          }
+        }
+        newTicket.status = 'proceso'
+        newTicket.save()
+        return newTicket;
+      }
+      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio })
+
       if (!newTicket) {
         return {
           msg: 'Error al crear el ticket'

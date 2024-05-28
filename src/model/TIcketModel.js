@@ -19,7 +19,10 @@ const ticketSchema = new Schema({
       recipe: [{
         type: Schema.Types.ObjectId,
         ref: 'Inventary'
-      }]
+      }],
+      folio: {
+        type: Number
+      }
 
     }
   ],
