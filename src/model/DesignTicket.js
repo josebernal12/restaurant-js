@@ -17,6 +17,9 @@ const designTicketSchema = new Schema({
     },
     phone: {
         type: String
+    },
+    measures: {
+        type: String
     }
 }, {
     timestamps: true
