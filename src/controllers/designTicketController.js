@@ -1,6 +1,6 @@
 import { designTicket, getDesignTicket } from "../services/designTicket.js"
 
-export const designTicketController = async (req, res) => {
+export const    designTicketController = async (req, res) => {
     const { name, email, address, phone, logo, measures } = req.body
     const designModel = await designTicket(name, email, logo, address, phone,measures)
     if (designModel?.msg) {

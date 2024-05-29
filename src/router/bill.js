@@ -8,7 +8,7 @@ const router = Router()
 router.get('/',  getBillsController)
 router.get('/best-waiter', [checkJwt], bestWaiterController)
 router.get('/sells', [checkJwt], sellsController)
-router.post('/designTicket', [checkJwt], designTicketController)
+router.post('/designTicket',  designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
 router.get('/type', getBillLastWeekController )
 router.get('/success', () => {

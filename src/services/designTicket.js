@@ -6,7 +6,7 @@ export const designTicket = async (name, email, logo, address, phone, measures) 
         await designModel.deleteMany();
 
         // Crear el nuevo diseño
-        const billModified = await designModel.create({ name, email, logo, address, phone });
+        const billModified = await designModel.create({ name, email, logo, address, phone, measures });
 
         if (!billModified) {
             return {
