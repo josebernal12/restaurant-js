@@ -4,12 +4,58 @@ mongoose.Promise = global.Promise;
 const { Schema } = mongoose;
 
 const permissionsSchema = new Schema({
-  eliminarUsuario: { type: Boolean, default: false },
-  agregarUsuario: { type: Boolean, default: false },
-  actualizarUsuario: { type: Boolean, default: false },
-  eliminarProducto: { type: Boolean, default: false },
-  agregarProducto: { type: Boolean, default: false },
-  actualizarProducto: { type: Boolean, default: false },
+  mesa: {
+    ver: {
+      type: Boolean,
+      default: false
+    },
+    crear: {
+      type: Boolean,
+      default: false
+    },
+    Eliminar: {
+      type: Boolean,
+      default: false
+    }
+  },
+  ticket: {
+    ver: {
+      type: Boolean,
+      default: false
+    },
+    pagar: {
+      type: Boolean,
+      default: false
+    },
+    descargar: {
+      type: Boolean,
+      default: false
+    },
+    imprimir: {
+      type: Boolean,
+      default: false
+    },
+  },
+  meta: {
+    ver: {
+      type: Boolean,
+      default: false
+    },
+    crear: {
+      type: Boolean,
+      default: false
+    }
+  },
+  order: {
+    ver: {
+      type: Boolean,
+      default: false
+    },
+    crear: {
+      type: Boolean,
+      default: false
+    }
+  },
 });
 
 const RolSchema = new Schema({
@@ -19,17 +65,17 @@ const RolSchema = new Schema({
   },
   permissions: {
     type: permissionsSchema,
-    default: {
-      eliminarUsuario: false,
-      agregarUsuario: false,
-      actualizarUsuario: false,
-      eliminarProducto: false,
-      agregarProducto: false,
-      actualizarProducto: false,
-    }
+    // default: {
+    //   eliminarUsuario: false,
+    //   agregarUsuario: false,
+    //   actualizarUsuario: false,
+    //   eliminarProducto: false,
+    //   agregarProducto: false,
+    //   actualizarProducto: false,
+    // }
   }
 });
 
-const RolModel =  mongoose.models.Rol || mongoose.model('Rol', RolSchema);
+const RolModel = mongoose.models.Rol || mongoose.model('Rol', RolSchema);
 
 export default RolModel;
