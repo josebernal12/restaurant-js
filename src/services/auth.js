@@ -32,10 +32,10 @@ export const register = async (name, lastName, email, password, confirmPassword,
         const userId = await userModel.findById(newUser._id).populate('rol').select('-password');
         const token = generateToken(userId.id);
         return {
-          userId,
+          user: userId,
           token
         };
-        
+
       }
     } else {
       return {
