@@ -52,24 +52,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     const currentDate = moment();
 
     let startDate, endDate;
-    if (tableId) {
-      console.log('entreee')
-      let billsFiltered = await billModel.find()
-        .populate('ticketId')
-        .populate('tableId')
-        .populate('userId')
-        .sort({ createdAt: -1 });
 
-      const bills = billsFiltered.filter(value => {
-        if (value.tableId.number === Number(tableId)) {
-          return value
-        }
-      })
-      return {
-        billsFiltered: bills,
-        totalBills: bills.length
-      }
-    }
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
       let billsFiltered = await billModel.find()
@@ -108,72 +91,41 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
       };
     }
 
-    // Realiza la búsqueda por nombre si se proporciona
-    if (name) {
-      const regex = new RegExp(name, 'i'); // Expresión regular insensible a mayúsculas y minúsculas
-      query['waiter'] = { $regex: regex };
-
-      let billsFiltered = await billModel.find()
-        .populate('ticketId')
-        .populate('tableId')
-        .populate('userId')
-        .limit(perPage)
-        .skip(skip)
-        .sort({ createdAt: -1 });
-      const totalBills = await billModel.countDocuments();
-
-      // Filtra las facturas por camarero si hay alguna coincidencia
-      if (billsFiltered.length >= 1) {
-        const billWaiter = billsFiltered.filter(bill => {
-          console.log(bill.ticketId)
-          return bill.ticketId.some(val => val.waiter.includes(name));
-
-        });
-        const totalBill = billWaiter.length
-        return {
-          billsFiltered: billWaiter,
-          totalBill
-        };
-      }
-
-      return {
-        billsFiltered: []
-      };
-    }
-
     // Realiza la búsqueda de facturas según la consulta definida
     let billsFiltered = await billModel.find(query)
       .populate('ticketId')
       .populate('tableId')
-      .populate('userId')
-      .limit(perPage)
-      .skip(skip)
-      .sort({ createdAt: -1 });
+      .populate('userId');
 
-    const totalBills = await billModel.countDocuments(query);
+    // Filtrar por cantidad si se proporciona
     if (quantity) {
-      const billsFiltered = await billModel.find(query).limit(quantity).populate('ticketId').populate('tableId').populate('userId')
-      return {
-        totalBills: billsFiltered.length,
-        billsFiltered
-      }
+      billsFiltered = billsFiltered.slice(0, quantity);
     }
-    if (!billsFiltered) {
-      return {
-        billsFiltered: []
-      };
+
+    // Filtrar por ID de mesa si se proporciona
+    if (tableId) {
+      billsFiltered = billsFiltered.filter(bill => bill.tableId.number === Number(tableId));
     }
+
+    // Filtrar por nombre de camarero si se proporciona
+    if (name) {
+      billsFiltered = billsFiltered.filter(bill => bill.ticketId.some(ticket => ticket.waiter.includes(name)));
+    }
+
+    const totalBills = billsFiltered.length;
+
+    // Paginar los resultados
+    const paginatedBills = billsFiltered.slice(skip, skip + perPage);
 
     return {
       totalBills,
-      billsFiltered
+      billsFiltered: paginatedBills
     };
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
-
 
 export const bestWaiter = async (type) => {
   try {
