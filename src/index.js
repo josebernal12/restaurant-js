@@ -14,6 +14,7 @@ import noteRouter from './router/note.js'
 import targetRouter from './router/target.js'
 import inventaryRouter from './router/inventary.js'
 import promotionRouter from './router/promotion.js'
+import categoryRouter from './router/category.js'
 const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
@@ -34,6 +35,7 @@ app.use('/api/note', noteRouter)
 app.use('/api/target', targetRouter)
 app.use('/api/inventory', inventaryRouter)
 app.use('/api/promotion', promotionRouter)
+app.use('/api/category', categoryRouter)
 const server = app.listen(port, () => {
   connectDB()
 
