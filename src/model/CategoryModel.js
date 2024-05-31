@@ -18,6 +18,10 @@ const categorySchema = new Schema({
   idFather: {
     type: String,
     default: null
+  },
+  path: {
+    type: String,
+    required: true
   }
 
 }, {
