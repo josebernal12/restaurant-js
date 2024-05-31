@@ -2,7 +2,9 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
 
 export const inventary = async (name, quantity, page, showAll) => {
+
   try {
+
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
@@ -56,6 +58,11 @@ export const inventary = async (name, quantity, page, showAll) => {
 
 export const createProductInventory = async (name, stock, max, min, unit) => {
   try {
+    if (!name || !stock) {
+      return {
+        msg: 'todos los campos son obligatorio'
+      }
+    }
     const exist = await inventaryModel.findOne({ name })
     if (exist) {
       return {
@@ -78,6 +85,11 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
 export const updateProductInventory = async (id, name, stock, max, min, unit) => {
   try {
     // Actualiza el inventario
+    if (!name || !stock) {
+      return {
+        msg: 'todos los campos son obligatorio'
+      }
+    }
     const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true });
 
     if (!updatedInventory) {

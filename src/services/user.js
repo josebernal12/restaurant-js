@@ -96,6 +96,12 @@ export const deleteUser = async (id) => {
 }
 export const updateUser = async (id, name, lastName, email, rolId,) => {
   try {
+
+    if (!name || !lastName || !email) {
+      return {
+        msg: 'todos los campos son necesarios'
+      }
+    }
     const user = await userModel.findById(id)
 
 
@@ -147,6 +153,11 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
     if (password !== confirmPassword) {
       return {
         msg: 'los password no coiciden'
+      }
+    }
+    if (!name || !apellido || !email) {
+      return {
+        msg: 'todos los campos son necesarios'
       }
     }
     const user = await (await userModel.create({ name, apellido, email, password })).populate('rol')

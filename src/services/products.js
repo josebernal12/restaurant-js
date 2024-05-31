@@ -5,6 +5,12 @@ import productModel from "../model/ProductModel.js"
 
 export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion) => {
   try {
+
+    if (!name || !description || !price || !stock || !category) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
     const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe, promotion })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
@@ -112,6 +118,11 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, name, description, stock, price, category, discount, recipe, promotion) => {
   try {
+    if (!name || !description || !price || !stock || !category) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
     // Obtener el producto antes de la actualización
     const productsBefore = await productModel.findById(id).populate('recipe');
 

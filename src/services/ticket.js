@@ -5,6 +5,11 @@ import productModel from "../model/ProductModel.js";
 
 export const createTicket = async (products, subTotal, total, tableId, userId, waiter) => {
   try {
+    if (!products || !subTotal || !total) {
+      return {
+        msg: 'todos los campos obligatorios'
+      }
+    }
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId)
     const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
@@ -71,6 +76,11 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
       return {
         msg: 'El ticket no existe'
       };
+    }
+    if (!products || !subTotal || !total) {
+      return {
+        msg: 'todos los campos obligatorios'
+      }
     }
 
     // Objeto para almacenar la diferencia de stock
