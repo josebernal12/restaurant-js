@@ -1,8 +1,8 @@
 import promotionModel from "../model/Promotion.js"
 
-export const createPromotion = async (name, description, type) => {
+export const createPromotion = async (name, description, type, date, time, discount) => {
   try {
-    const promotion = await promotionModel.create({ name, description, type })
+    const promotion = await promotionModel.create({ name, description, type, date, time, discount })
     if (!promotion) {
       return {
         msg: 'error al crear la promocion'
@@ -14,9 +14,9 @@ export const createPromotion = async (name, description, type) => {
   }
 }
 
-export const updatePromotion = async (id, name, description, type) => {
+export const updatePromotion = async (id, name, description, type, date, time, discount) => {
   try {
-    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, type }, { new: true })
+    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, type, date, time, discount }, { new: true })
     if (!promotion) {
       return {
         msg: 'error al actualizar'

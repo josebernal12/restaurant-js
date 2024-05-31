@@ -1,14 +1,14 @@
-import { 
-  createPromotion, 
-  deletePromotion, 
-  getAllPromotion, 
-  getPromotionById, 
-  updatePromotion 
+import {
+  createPromotion,
+  deletePromotion,
+  getAllPromotion,
+  getPromotionById,
+  updatePromotion
 } from "../services/promotion.js"
 
 export const createPromotionController = async (req, res) => {
-  const { name, description, type } = req.body
-  const promotion = await createPromotion(name, description, type)
+  const { name, description, type, date, time, discount } = req.body
+  const promotion = await createPromotion(name, description, type, date, time, discount)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }
@@ -16,9 +16,9 @@ export const createPromotionController = async (req, res) => {
 }
 
 export const updatePromotionController = async (req, res) => {
-  const { name, description, type } = req.body
+  const { name, description, type, date, time, discount } = req.body
   const { id } = req.params
-  const promotion = await updatePromotion(id, name, description, type)
+  const promotion = await updatePromotion(id, name, description, type, date, time, discount)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }
