@@ -2,7 +2,7 @@ import categoryModel from "../model/CategoryModel.js"
 
 export const createCategory = async (name, color, idFather, path) => {
     try {
-        if (!name || color || !idFather || !path) {
+        if (!name || color  || !path) {
             return {
                 msg: 'todos los campos son obligatorios'
             }
@@ -21,7 +21,7 @@ export const createCategory = async (name, color, idFather, path) => {
 
 export const updateCategory = async (id, name, color, idFather, path) => {
     try {
-        if (!name || color || !idFather || !path) {
+        if (!name || color  || !path) {
             return {
                 msg: 'todos los campos son obligatorios'
             }
