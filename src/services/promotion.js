@@ -2,6 +2,11 @@ import promotionModel from "../model/Promotion.js"
 
 export const createPromotion = async (name, description, type, date, time, discount) => {
   try {
+    if (!name || !description || !type) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
     const promotion = await promotionModel.create({ name, description, type, date, time, discount })
     if (!promotion) {
       return {
@@ -16,6 +21,11 @@ export const createPromotion = async (name, description, type, date, time, disco
 
 export const updatePromotion = async (id, name, description, type, date, time, discount) => {
   try {
+    if (!name || !description || !type) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
     const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, type, date, time, discount }, { new: true })
     if (!promotion) {
       return {

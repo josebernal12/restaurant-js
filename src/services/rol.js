@@ -2,6 +2,11 @@ import RolModel from '../model/RolModel.js'
 
 export const createRol = async (name, permissions) => {
   try {
+    if (!name || !permissions) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
     const newRol = await RolModel.create({ name, permissions })
     if (!newRol) {
       return 'error a la creacion del rol'
