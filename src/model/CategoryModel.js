@@ -16,7 +16,8 @@ const categorySchema = new Schema({
     required: true
   },
   idFather: {
-    type: String
+    type: String,
+    default: null
   }
 
 }, {
