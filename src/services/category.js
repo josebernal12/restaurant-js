@@ -1,8 +1,8 @@
 import categoryModel from "../model/CategoryModel.js"
 
-export const createCategory = async (name, description, color, idFather, path) => {
+export const createCategory = async (name, color, idFather, path) => {
     try {
-        const category = await categoryModel.create({ name, description, color, idFather, path })
+        const category = await categoryModel.create({ name, color, idFather, path })
         if (!category) {
             return {
                 msg: 'error al crear una categoria'
@@ -14,9 +14,9 @@ export const createCategory = async (name, description, color, idFather, path) =
     }
 }
 
-export const updateCategory = async (id, name, description, color, idFather, path) => {
+export const updateCategory = async (id, name, color, idFather, path) => {
     try {
-        const category = await categoryModel.findByIdAndUpdate(id, { name, description, color, idFather, path }, { new: true })
+        const category = await categoryModel.findByIdAndUpdate(id, { name, color, idFather, path }, { new: true })
         if (!category) {
             return {
                 msg: 'no hay categoria con ese id'

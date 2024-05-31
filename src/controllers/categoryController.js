@@ -8,8 +8,8 @@ import {
 
 export const createCategoryController = async (req, res) => {
 
-    const { name, description, color, idFather, path } = req.body
-    const category = await createCategory(name, description, color, idFather, path)
+    const { name, color, idFather, path } = req.body
+    const category = await createCategory(name, color, idFather, path)
     if (category?.msg) {
         return res.status(400).json(category)
     }
@@ -17,10 +17,10 @@ export const createCategoryController = async (req, res) => {
 }
 
 export const updateCategoryController = async (req, res) => {
-    const { name, description, color, idFather, path } = req.body
+    const { name, color, idFather, path } = req.body
     const { id } = req.params
 
-    const category = await updateCategory(id, name, description, color, idFather, path)
+    const category = await updateCategory(id, name, color, idFather, path)
     if (category?.msg) {
         return res.status(400).json(category)
     }
