@@ -308,7 +308,7 @@ export const sells = async (date) => {
       })
     });
 
-    return totalSales;
+    return { totalSales };
   } catch (error) {
     console.log(error);
     throw new Error('Error al calcular las ventas.');
@@ -514,19 +514,19 @@ export const productSell = async (name, date) => {
       })
       .populate('tableId')
       .populate('userId');
-      
-      let totalStock = 0;
 
-      // Filtrar las facturas y calcular la suma del stock
-      bills.forEach(bill => {
-        bill.ticketId.forEach(ticket => {
-          ticket.products.forEach(product => {
-            if (product.name.toLowerCase() === name.toLowerCase()) {
-              totalStock += product.stock;
-            }
-          });
+    let totalStock = 0;
+
+    // Filtrar las facturas y calcular la suma del stock
+    bills.forEach(bill => {
+      bill.ticketId.forEach(ticket => {
+        ticket.products.forEach(product => {
+          if (product.name.toLowerCase() === name.toLowerCase()) {
+            totalStock += product.stock;
+          }
         });
       });
+    });
     return {
       name,
       totalStock

@@ -16,18 +16,13 @@ import { designTicketController, getDesignTicketController } from '../controller
 const router = Router()
 router.get('/', getBillsController)
 router.get('/best-waiter', bestWaiterController)
-router.get('/sells', [checkJwt], sellsController)
+router.get('/sells', sellsController)
 router.post('/designTicket', designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
-router.get('/type', getBillLastWeekController)
-router.get('/user', userSellController)
-router.get('/product', productSellController)
-router.get('/success', () => {
-    res.send('listo')
-})
-router.get('/cancel', () => {
-    console.log('error')
-})
+router.get('/type', [checkJwt], getBillLastWeekController)
+router.get('/user', [checkJwt], userSellController)
+router.get('/product', [checkJwt], productSellController)
+
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)
 export default router
