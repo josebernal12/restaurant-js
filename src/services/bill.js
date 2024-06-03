@@ -439,7 +439,7 @@ export const userSell = async (name, date) => {
         ticket.waiterId && ticket.waiterId.name === name
       )
     );
-    return bills
+    return { bills, totalBills: bills.length }
   } catch (error) {
     console.log(error)
   }

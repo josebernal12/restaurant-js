@@ -20,7 +20,7 @@ router.get('/sells', sellsController)
 router.post('/designTicket', designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
 router.get('/type', [checkJwt], getBillLastWeekController)
-router.get('/user', [checkJwt], userSellController)
+router.get('/user', userSellController)
 router.get('/product', [checkJwt], productSellController)
 
 router.post('/:id', [checkJwt], generateBillController)
