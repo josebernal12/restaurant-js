@@ -5,7 +5,7 @@ import productModel from "../model/ProductModel.js";
 
 export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId) => {
   try {
-    if (!products || !subTotal || !total) {
+    if (!products || !total) {
       return {
         msg: 'todos los campos obligatorios'
       }
