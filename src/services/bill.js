@@ -25,7 +25,7 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
       const newBill = await billModel.create({ ticketId: allTickets, tableId, userId, methodOfPayment });
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
       allTickets.forEach(async (ticket) => {
-        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true, tableId: null }, { new: true });
+        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true}, { new: true });
       })
       if (!newBill) {
         return {
