@@ -1,4 +1,5 @@
 import RolModel from '../model/RolModel.js'
+import userModel from '../model/UserModel.js'
 
 export const createRol = async (name, permissions) => {
   try {
@@ -59,6 +60,12 @@ export const deleteRol = async (id) => {
       }
     }
     const rol = await RolModel.findByIdAndDelete(id)
+    const users = await userModel.find({ rol: id })
+    if (users) {
+      users.forEach(user => {
+        user.rol = null
+      })
+    }
     if (!rol) {
       return {
         msg: 'error al eliminar'
