@@ -434,13 +434,103 @@ export const userSell = async (name, date) => {
       .populate('tableId')
       .populate('userId');
 
-    console.log(bills)
-    bills = bills.filter(bill => 
-      bill.ticketId.some(ticket => 
-        ticket.waiterId && ticket.waiterId.name === 'david'
+    bills = bills.filter(bill =>
+      bill.ticketId.some(ticket =>
+        ticket.waiterId && ticket.waiterId.name === name
       )
     );
     return bills
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const productSell = async (name, date) => {
+  try {
+    let query = {}; // Inicializamos la consulta como vacía
+
+    if (date) {
+      // Si se proporciona un tipo de consulta, construimos la consulta según el tipo
+      switch (date) {
+        case 'month':
+          query = {
+            // Filtrar por mes
+            createdAt: {
+              $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+              $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+            }
+          };
+          break;
+        case 'year':
+          query = {
+            // Filtrar por año
+            createdAt: {
+              $gte: new Date(new Date().getFullYear(), 0, 1),
+              $lt: new Date(new Date().getFullYear() + 1, 0, 1)
+            }
+          };
+          break;
+        case 'week':
+          // Filtrar por semana
+          const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
+          const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
+
+          query = {
+            createdAt: {
+              $gte: startOfWeekDate,
+              $lt: endOfWeekDate
+            }
+          };
+          break;
+        case 'day':
+          // Filtrar por día (hoy)
+          const startOfDayDate = startOfDay(new Date());
+          const endOfDayDate = endOfDay(new Date());
+          query = {
+            createdAt: {
+              $gte: startOfDayDate,
+              $lt: endOfDayDate
+            }
+          };
+
+          // Verificar si hay ventas para el día actual
+          const bills = await billModel.find(query).populate('ticketId');
+          if (bills.length === 0) {
+            return 0; // No hay ventas para este día, devolver 0
+          }
+          break;
+        default:
+          break;
+      }
+    }
+    let bills = await billModel.find(query)
+      .populate({
+        path: 'ticketId',
+        populate: {
+          path: 'waiterId',
+          model: 'User' // Asegúrate de que 'User' es el modelo correcto
+        }
+      })
+      .populate('tableId')
+      .populate('userId');
+      
+      let totalStock = 0;
+
+      // Filtrar las facturas y calcular la suma del stock
+      bills.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product.name.toLowerCase() === name.toLowerCase()) {
+              totalStock += product.stock;
+            }
+          });
+        });
+      });
+    return {
+      name,
+      totalStock
+    }
   } catch (error) {
     console.log(error)
   }

@@ -6,6 +6,7 @@ import {
     getBillByIdController,
     getBillLastWeekController,
     getBillsController,
+    productSellController,
     sellsController,
     userSellController
 } from '../controllers/billController.js'
@@ -20,6 +21,7 @@ router.post('/designTicket', designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
 router.get('/type', getBillLastWeekController)
 router.get('/user', userSellController)
+router.get('/product', productSellController)
 router.get('/success', () => {
     res.send('listo')
 })
