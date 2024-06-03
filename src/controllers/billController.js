@@ -98,13 +98,19 @@ export const getBillLastWeekController = async (req, res) => {
   if (req.query.page) {
     page = req.query.page
   }
-  console.log(type)
   const response = await getBillLastWeek(type, page)
   res.json(response)
 }
 
 export const userSellController = async (req, res) => {
-
-  const users = await userSell()
+  let name;
+  let date;
+  if (req.query.name) {
+    name = req.query.name
+  }
+  if (req.query.date) {
+    date = req.query.date
+  }
+  const users = await userSell(name, date)
   res.json(users)
 }
