@@ -6,7 +6,7 @@ import { designTicketController, getDesignTicketController } from '../controller
 
 const router = Router()
 router.get('/', getBillsController)
-router.get('/best-waiter', [checkJwt], bestWaiterController)
+router.get('/best-waiter',  bestWaiterController)
 router.get('/sells', [checkJwt], sellsController)
 router.post('/designTicket', designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)

@@ -93,10 +93,17 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     // Realiza la búsqueda de facturas según la consulta definida
     let billsFiltered = await billModel.find(query)
-      .populate('ticketId')
+      .populate({
+        path: 'ticketId',
+        populate: {
+          path: 'waiterId',
+          model: 'User' // el nombre del modelo relacionado
+        }
+      })
       .populate('tableId')
       .populate('userId');
 
+   
     // Filtrar por cantidad si se proporciona
     if (quantity) {
       billsFiltered = billsFiltered.slice(0, quantity);
@@ -109,7 +116,11 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     // Filtrar por nombre de camarero si se proporciona
     if (name) {
-      billsFiltered = billsFiltered.filter(bill => bill.ticketId.some(ticket => ticket.waiter.includes(name)));
+      billsFiltered = billsFiltered.filter(bill => 
+        bill.ticketId.some(ticket => 
+          ticket.waiterId && ticket.waiterId.name.includes(name)
+        )
+      );
     }
 
     const totalBills = billsFiltered.length;
@@ -169,27 +180,34 @@ export const bestWaiter = async (type) => {
         $lte: endDate
       }
     } : {};
-    const bills = await billModel.find(query)
-      .populate('ticketId')
-      .populate('userId')
-      .populate('tableId');
+    let bills = await billModel.find(query)
+    .populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // el nombre del modelo relacionado
+      }
+    })
+    .populate('tableId')
+    .populate('userId');
 
     // Objeto para almacenar el conteo de camareros
     const waiterCount = {};
 
     // Iterar sobre las facturas y contar los camareros
     bills.forEach(bill => {
-      console.log(bill)
-      bill.ticketId.forEach(value => {
-        const waiterName = value.waiter;
-
-        // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
-        if (waiterCount[waiterName]) {
-          waiterCount[waiterName]++; // Incrementar el contador si ya existe
-        } else {
-          waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
+      bill.ticketId.forEach(ticket => {
+        const waiterName = ticket.waiterId?.name; // Accede al nombre del camarero
+    
+        if (waiterName) { // Asegúrate de que waiterName no sea undefined o null
+          // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
+          if (waiterCount[waiterName]) {
+            waiterCount[waiterName]++; // Incrementar el contador si ya existe
+          } else {
+            waiterCount[waiterName] = 1; // Inicializar el contador en 1 si es la primera vez que se encuentra este camarero
+          }
         }
-      })
+      });
     });
     const waiterArray = Object.keys(waiterCount).map(waiterName => {
       return { name: waiterName, sell: waiterCount[waiterName] };
