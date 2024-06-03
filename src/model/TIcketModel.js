@@ -49,7 +49,10 @@ const ticketSchema = new Schema({
   waiter: {
     type: String
   },
-
+  waiterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   status: {
     type: String,
   },

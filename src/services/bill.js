@@ -219,6 +219,7 @@ export const getBIllById = async (id) => {
 }
 
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
+import userModel from "../model/UserModel.js"
 
 export const sells = async (date) => {
   try {
@@ -340,6 +341,20 @@ export const getBillLastWeek = async (type, page) => {
       totalBills,
       billsFiltered
     };
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const userSell = async (name, date) => {
+  try {
+    const bills = await billModel.find().populate('ticketId').populate('tableId').populate('userId').populate('waiterId')
+    bills.filter(bill => {
+      bill.ticketId.filter(async (value) => {
+        console.log(value)
+      })
+    })
   } catch (error) {
     console.log(error)
   }

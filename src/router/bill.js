@@ -1,16 +1,17 @@
 
 import { Router } from 'express'
-import { bestWaiterController, generateBillController, getBillByIdController, getBillLastWeekController, getBillsController, sellsController } from '../controllers/billController.js'
+import { bestWaiterController, generateBillController, getBillByIdController, getBillLastWeekController, getBillsController, sellsController, userSellController } from '../controllers/billController.js'
 import { checkJwt } from '../middleware/permission.js'
 import { designTicketController, getDesignTicketController } from '../controllers/designTicketController.js'
 
 const router = Router()
-router.get('/',  getBillsController)
+router.get('/', getBillsController)
 router.get('/best-waiter', [checkJwt], bestWaiterController)
 router.get('/sells', [checkJwt], sellsController)
-router.post('/designTicket',  designTicketController)
+router.post('/designTicket', designTicketController)
 router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
-router.get('/type', getBillLastWeekController )
+router.get('/type', getBillLastWeekController)
+router.get('/user', userSellController)
 router.get('/success', () => {
     res.send('listo')
 })

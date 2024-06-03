@@ -30,3 +30,42 @@ export const getRol = async () => {
     console.log(error)
   }
 }
+
+export const updateRol = async (id, name, permissions) => {
+  try {
+    if (!id || !name || !permissions) {
+      return {
+        msg: 'todos los campos son obligatorios'
+      }
+    }
+    const rol = await RolModel.findByIdAndUpdate(id, { name, permissions }, { new: true })
+    if (!rol) {
+      return {
+        msg: 'error al actualizar'
+      }
+    }
+    return rol
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const deleteRol = async (id) => {
+  try {
+    if (!id) {
+      return {
+        msg: 'error al mandar el id'
+      }
+    }
+    const rol = await RolModel.findByIdAndDelete(id)
+    if (!rol) {
+      return {
+        msg: 'error al eliminar'
+      }
+    }
+    return rol
+  } catch (error) {
+    console.log(error)
+  }
+}

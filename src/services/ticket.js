@@ -3,7 +3,7 @@ import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js";
 
-export const createTicket = async (products, subTotal, total, tableId, userId, waiter) => {
+export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId) => {
   try {
     if (!products || !subTotal || !total) {
       return {
@@ -39,7 +39,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
 
       // await tableModel.findByIdAndUpdate(tableId, { available: false }, { new: true })
       if (folioArray) {
-        const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio: folioArray.length + 1 })
+        const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio: folioArray.length + 1, waiterId })
         if (!newTicket) {
           return {
             msg: 'Error al crear el ticket'
@@ -49,7 +49,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
         newTicket.save()
         return newTicket;
       }
-      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio })
+      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio, waiterId })
 
       if (!newTicket) {
         return {
@@ -68,7 +68,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     console.log(error)
   }
 }
-export const updateTicket = async (id, products, subTotal, total, tableId, userId) => {
+export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId) => {
   try {
     // Encontrar el ticket actual
     const ticket = await ticketModel.findById(id);
@@ -125,7 +125,7 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     }
 
     // Actualizar el ticket
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId }, { new: true });
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId,waiterId }, { new: true });
     if (!ticketUpdate) {
       return {
         msg: 'No se pudo actualizar el ticket'
