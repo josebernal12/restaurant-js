@@ -29,7 +29,7 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
       const newBill = await billModel.create({ ticketId: allTickets, tableId, userId, methodOfPayment });
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
       allTickets.forEach(async (ticket) => {
-        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true}, { new: true });
+        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true }, { new: true });
       })
       if (!newBill) {
         return {
@@ -369,7 +369,7 @@ export const getBillLastWeek = async (type, page) => {
 }
 
 
-export const userSell = async (name, date) => {
+export const userSell = async (id, name, date) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
 
@@ -440,8 +440,7 @@ export const userSell = async (name, date) => {
 
     bills = bills.filter(bill =>
       bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId.name === name
-      )
+        ticket.waiterId && ticket.waiterId._id.toString() === id)
     );
     return { bills, totalBills: bills.length }
   } catch (error) {
@@ -450,7 +449,7 @@ export const userSell = async (name, date) => {
 }
 
 
-export const productSell = async (name, date) => {
+export const productSell = async (id, name, date) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
 
@@ -525,7 +524,7 @@ export const productSell = async (name, date) => {
     bills.forEach(bill => {
       bill.ticketId.forEach(ticket => {
         ticket.products.forEach(product => {
-          if (product.name.toLowerCase() === name.toLowerCase()) {
+          if (product._id.toString() === id) {
             totalStock += product.stock;
           }
         });

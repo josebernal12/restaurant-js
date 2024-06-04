@@ -115,25 +115,27 @@ export const getBillLastWeekController = async (req, res) => {
 export const userSellController = async (req, res) => {
   let name;
   let date;
+  const { id } = req.params
   if (req.query.name) {
     name = req.query.name
   }
   if (req.query.date) {
     date = req.query.date
   }
-  const users = await userSell(name, date)
+  const users = await userSell(id, name, date)
   res.json(users)
 }
 export const productSellController = async (req, res) => {
   let name;
   let date;
+  const { id } = req.params
   if (req.query.name) {
     name = req.query.name
   }
   if (req.query.date) {
     date = req.query.date
   }
-  const users = await productSell(name, date)
+  const users = await productSell(id, name, date)
   res.json(users)
 }
 export const userSellByTableController = async (req, res) => {
@@ -146,6 +148,6 @@ export const userSellByTableController = async (req, res) => {
   if (req.query.date) {
     date = req.query.date
   }
-  const users = await userSellByTable(id,name, date)
+  const users = await userSellByTable(id, name, date)
   res.json(users)
 }
