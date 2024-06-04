@@ -73,7 +73,7 @@ export const userSellByTable = async (id, name, date) => {
                 return bill.ticketId.some(value => value.waiterId._id.toString() === id);
             }).map(bill => bill.tableId);
             
-        return userTables
+        return userTables.length 
     } catch (error) {
         console.log(error)
     }
