@@ -8,6 +8,7 @@ import {
     getBillsController,
     productSellController,
     sellsController,
+    userSellByTableController,
     userSellController
 } from '../controllers/billController.js'
 import { checkJwt } from '../middleware/permission.js'
@@ -22,6 +23,7 @@ router.get('/getDesignTicket', [checkJwt], getDesignTicketController)
 router.get('/type', [checkJwt], getBillLastWeekController)
 router.get('/user', userSellController)
 router.get('/product', [checkJwt], productSellController)
+router.get('/table/:id', userSellByTableController)
 
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)

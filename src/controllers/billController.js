@@ -1,4 +1,14 @@
-import { bestWaiter, generateBill, getBIllById, getBillLastWeek, getBills, productSell, sells, userSell } from "../services/bill.js"
+import {
+  bestWaiter,
+  generateBill,
+  getBIllById,
+  getBillLastWeek,
+  getBills,
+  productSell,
+  sells,
+  userSell
+} from "../services/bill.js"
+import { userSellByTable } from "../services/sells.js"
 
 export const generateBillController = async (req, res) => {
   const { ticketId, userId, methodOfPayment } = req.body
@@ -124,5 +134,18 @@ export const productSellController = async (req, res) => {
     date = req.query.date
   }
   const users = await productSell(name, date)
+  res.json(users)
+}
+export const userSellByTableController = async (req, res) => {
+  let name;
+  let date;
+  const { id } = req.params
+  if (req.query.name) {
+    name = req.query.name
+  }
+  if (req.query.date) {
+    date = req.query.date
+  }
+  const users = await userSellByTable(id,name, date)
   res.json(users)
 }

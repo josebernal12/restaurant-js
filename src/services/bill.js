@@ -3,6 +3,10 @@ import billModel from "../model/BillModel.js"
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
+//TODO QUITAR EL PASSWORD EN USERSELL
+//TODO REVISAR LO DE NOMBRE REPETIDOS PARA QUE TRAIGAN LOS 2
+//TODO AGREGAR EL DE LA MESA ENTRE EL MIERCOLES O VIERNES
+//TODO VE LO DEL HORARIO ENTRE EL MIERCOLES AL VIERNES
 import moment from 'moment'; // Importa la librería moment.js para manejar fechas
 
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
