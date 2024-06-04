@@ -6,6 +6,7 @@ import {
     getBillByIdController,
     getBillLastWeekController,
     getBillsController,
+    hourProductController,
     productSellController,
     sellsController,
     userSellByTableController,
@@ -24,6 +25,7 @@ router.get('/type', [checkJwt], getBillLastWeekController)
 router.get('/user/:id', userSellController)
 router.get('/product/:id',  productSellController)
 router.get('/table/:id', userSellByTableController)
+router.get('/hour/:id', hourProductController)
 
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)

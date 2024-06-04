@@ -1,4 +1,5 @@
 import billModel from "../model/BillModel.js";
+import productModel from "../model/ProductModel.js";
 
 export const userSellByTable = async (id, name, date) => {
     try {
@@ -69,12 +70,60 @@ export const userSellByTable = async (id, name, date) => {
             .populate('tableId')
             .populate('userId');
 
-            const userTables = bills.filter(bill => {
-                return bill.ticketId.some(value => value.waiterId._id.toString() === id);
-            }).map(bill => bill.tableId);
-            
-        return userTables.length 
+        const userTables = bills.filter(bill => {
+            return bill.ticketId.some(value => value.waiterId._id.toString() === id);
+        }).map(bill => bill.tableId);
+
+        return userTables.length
     } catch (error) {
         console.log(error)
     }
 }
+
+
+export const hourProduct = async (id) => {
+    try {
+        const bills = await billModel.find().populate('ticketId');
+        if (!bills || bills.length === 0) {
+            return {
+                product: [],
+                message: 'No se encontraron facturas.'
+            };
+        }
+
+        // Filtrar facturas que contienen el producto y extraer las horas de creación
+        const hours = bills.flatMap(bill => 
+            bill.ticketId.flatMap(ticket => 
+                ticket.products.filter(product => product._id.toString() === id).map(() => bill.createdAt.getHours())
+            )
+        );
+
+        if (hours.length === 0) {
+            return {
+                product: [],
+                message: 'No se encontraron ventas para el producto dado.'
+            };
+        }
+
+        // Contar las ventas por hora
+        const salesByHour = hours.reduce((acc, hour) => {
+            acc[hour] = (acc[hour] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Encontrar la hora con más ventas
+        const peakHour = Object.keys(salesByHour).reduce((a, b) => salesByHour[a] > salesByHour[b] ? a : b);
+        console.log(peakHour)
+        return {
+            product: id,
+            peakHour: parseInt(peakHour),
+            salesByHour
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            product: [],
+            message: 'Ocurrió un error al procesar las facturas.'
+        };
+    }
+};
