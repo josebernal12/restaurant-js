@@ -1,6 +1,7 @@
 import billModel from "../model/BillModel.js";
 import productModel from "../model/ProductModel.js";
 import userModel from "../model/UserModel.js";
+import { subDays, subWeeks, subMonths, subYears } from 'date-fns';
 
 export const userSellByTable = async (id, name, date) => {
     try {
@@ -91,9 +92,9 @@ export const userSellByTable = async (id, name, date) => {
 export const hourProduct = async (id) => {
     try {
         const [bills, product] = await Promise.all([
-            await billModel.find().populate('ticketId'),
-            await productModel.findById(id)
-        ])
+            billModel.find().populate('ticketId'),
+            productModel.findById(id)
+        ]);
 
         if (!bills || bills.length === 0) {
             return {
@@ -102,32 +103,61 @@ export const hourProduct = async (id) => {
             };
         }
 
-        // Filtrar facturas que contienen el producto y extraer las horas de creación
-        const hours = bills.flatMap(bill =>
-            bill.ticketId.flatMap(ticket =>
-                ticket.products.filter(product => product._id.toString() === id).map(() => bill.createdAt.getHours())
-            )
-        );
+        const now = new Date();
 
-        if (hours.length === 0) {
-            return {
-                product: [],
-                message: 'No se encontraron ventas para el producto dado.'
-            };
+        const filterBillsByTime = (bills, timePeriod) => {
+            return bills.filter(bill => bill.createdAt >= timePeriod);
+        };
+
+        const getHoursFromBills = (filteredBills) => {
+            return filteredBills.flatMap(bill =>
+                bill.ticketId.flatMap(ticket =>
+                    ticket.products.filter(product => product._id.toString() === id).map(() => bill.createdAt.getHours())
+                )
+            );
+        };
+
+        const calculateSalesByHour = (hours) => {
+            return hours.reduce((acc, hour) => {
+                acc[hour] = (acc[hour] || 0) + 1;
+                return acc;
+            }, {});
+        };
+
+        const getPeakHour = (salesByHour) => {
+            return Object.keys(salesByHour).reduce((a, b) => salesByHour[a] > salesByHour[b] ? a : b, 0);
+        };
+
+        const timeFrames = {
+            'lastDay': subDays(now, 1),
+            'lastWeek': subWeeks(now, 1),
+            'lastMonth': subMonths(now, 1),
+            'lastYear': subYears(now, 1)
+        };
+
+        const result = {};
+
+        for (const [key, timePeriod] of Object.entries(timeFrames)) {
+            const filteredBills = filterBillsByTime(bills, timePeriod);
+            const hours = getHoursFromBills(filteredBills);
+            if (hours.length === 0) {
+                result[key] = {
+                    peakHour: null,
+                    salesByHour: {}
+                };
+            } else {
+                const salesByHour = calculateSalesByHour(hours);
+                const peakHour = getPeakHour(salesByHour);
+                result[key] = {
+                    peakHour: parseInt(peakHour),
+                    salesByHour
+                };
+            }
         }
 
-        // Contar las ventas por hora
-        const salesByHour = hours.reduce((acc, hour) => {
-            acc[hour] = (acc[hour] || 0) + 1;
-            return acc;
-        }, {});
-
-        // Encontrar la hora con más ventas
-        const peakHour = Object.keys(salesByHour).reduce((a, b) => salesByHour[a] > salesByHour[b] ? a : b);
         return {
             product: product.name,
-            peakHour: parseInt(peakHour),
-            salesByHour
+            timeFrames: result
         };
     } catch (error) {
         console.error(error);
