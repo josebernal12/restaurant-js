@@ -62,9 +62,13 @@ export const deleteRol = async (id) => {
     const rol = await RolModel.findByIdAndDelete(id)
     const users = await userModel.find({ rol: id })
     if (users) {
+      const userRol = await RolModel.findOne({ name: 'miembro' });
+      console.log(userRol)
       users.forEach(user => {
-        user.rol = null
+        user.rol = userRol._id;
+        user.save()
       })
+      
     }
     if (!rol) {
       return {

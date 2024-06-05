@@ -167,3 +167,155 @@ export const hourProduct = async (id) => {
         };
     }
 };
+
+export const inventarySell = async (id) => {
+    try {
+  
+      const year = {
+        // Filtrar por año
+        createdAt: {
+          $gte: new Date(new Date().getFullYear(), 0, 1),
+          $lt: new Date(new Date().getFullYear() + 1, 0, 1)
+        }
+      };
+      const month = {
+        // Filtrar por mes
+        createdAt: {
+          $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+        }
+      };
+      const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
+      const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
+  
+      const week = {
+        createdAt: {
+          $gte: startOfWeekDate,
+          $lt: endOfWeekDate
+        }
+      };
+      const startOfDayDate = startOfDay(new Date());
+      const endOfDayDate = endOfDay(new Date());
+      const day = {
+        createdAt: {
+          $gte: startOfDayDate,
+          $lt: endOfDayDate
+        }
+      };
+      let [valorAño, valorMes, valorSemana, valorDia, valorTodos, product] = await Promise.all([
+        billModel.find(year).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        })
+          .populate('tableId')
+          .populate('userId'),
+        billModel.find(month).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        })
+          .populate('tableId')
+          .populate('userId'),
+        billModel.find(week).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        })
+          .populate('tableId')
+          .populate('userId'),
+        billModel.find(day).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        })
+          .populate('tableId')
+          .populate('userId'),
+        billModel.find().populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        })
+          .populate('tableId')
+          .populate('userId'),
+  
+        productModel.findById(id)
+  
+      ]);
+  
+      let totalAño = 0;
+      let totalMes = 0;
+      let totalSemana = 0;
+      let totalDia = 0;
+      let totalStock = 0;
+      valorAño.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product._id.toString() === id) {
+              totalAño += product.stock;
+            }
+          });
+        });
+      });
+      valorMes.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product._id.toString() === id) {
+              totalMes += product.stock;
+            }
+          });
+        });
+      });
+      valorSemana.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product._id.toString() === id) {
+              totalSemana += product.stock;
+            }
+          });
+        });
+      });
+      valorDia.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product._id.toString() === id) {
+              totalDia += product.stock;
+            }
+          });
+        });
+      });
+      valorTodos.forEach(bill => {
+        bill.ticketId.forEach(ticket => {
+          ticket.products.forEach(product => {
+            if (product._id.toString() === id) {
+              totalStock += product.stock;
+            }
+          });
+        });
+      });
+  
+      return {
+        valorAño: totalAño,
+        valorMes: totalMes,
+        valorSemana: totalSemana,
+        valorDia: totalDia,
+        valorTodos: totalStock,
+        name: product.name,
+      }
+  
+  
+  
+    } catch (error) {
+      console.log(error)
+    }
+  }

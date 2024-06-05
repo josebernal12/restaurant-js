@@ -12,5 +12,5 @@ const router = Router()
 router.post('/', [checkJwt], createRolController)
 router.get('/', [checkJwt], getRolController)
 router.put('/update/:id', [checkJwt], updateRolController)
-router.delete('/delete/:id', [checkJwt], deleteRolController)
+router.delete('/delete/:id',  deleteRolController)
 export default router

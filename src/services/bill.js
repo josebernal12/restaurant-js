@@ -582,6 +582,7 @@ export const productSell = async (id, name, date) => {
       bill.ticketId.forEach(ticket => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
+            console.log(product);
             totalAño += product.stock;
           }
         });
@@ -591,6 +592,8 @@ export const productSell = async (id, name, date) => {
       bill.ticketId.forEach(ticket => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
+            console.log(product);
+
             totalMes += product.stock;
           }
         });
@@ -601,6 +604,8 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalSemana += product.stock;
+            console.log(product);
+
           }
         });
       });
@@ -610,6 +615,8 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalDia += product.stock;
+            console.log(product);
+
           }
         });
       });
@@ -619,6 +626,8 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalStock += product.stock;
+            console.log(product);
+
           }
         });
       });
