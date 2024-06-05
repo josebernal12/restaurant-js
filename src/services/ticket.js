@@ -169,7 +169,7 @@ export const getTickets = async (name) => {
       return tickets
 
     }
-    const tickets = await ticketModel.find()
+    const tickets = await ticketModel.find().populate('waiterId')
     if (!tickets) {
       return {
         tickets: []
@@ -314,7 +314,7 @@ export const completedAllProductTicket = async (id) => {
 
 export const joinAllProductsTicket = async (tableId) => {
   try {
-    const ticket = await ticketModel.find({ tableId })
+    const ticket = await ticketModel.find({ tableId }).populate('ticketId')
     if (!ticket) {
       return {
         msg: 'no hay ticket en esa mesa'
