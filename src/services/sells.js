@@ -1,5 +1,6 @@
 import billModel from "../model/BillModel.js";
 import productModel from "../model/ProductModel.js";
+import userModel from "../model/UserModel.js";
 
 export const userSellByTable = async (id, name, date) => {
     try {
@@ -59,22 +60,28 @@ export const userSellByTable = async (id, name, date) => {
                     break;
             }
         }
-        let bills = await billModel.find(query)
-            .populate({
-                path: 'ticketId',
-                populate: [
-                    { path: 'waiterId', model: 'User' },
-                    { path: 'tableId', model: 'table' } // Asegúrate de que 'Table' es el modelo correcto
-                ]
-            })
-            .populate('tableId')
-            .populate('userId');
+        const [bills, user] = await Promise.all([
+            billModel.find(query)
+                .populate({
+                    path: 'ticketId',
+                    populate: [
+                        { path: 'waiterId', model: 'User' },
+                        { path: 'tableId', model: 'table' } // Asegúrate de que 'Table' es el modelo correcto
+                    ]
+                })
+                .populate('tableId')
+                .populate('userId'),
+            userModel.findById(id)
+        ])
 
         const userTables = bills.filter(bill => {
             return bill.ticketId.some(value => value.waiterId._id.toString() === id);
         }).map(bill => bill.tableId);
 
-        return userTables.length
+        return {
+            name: user.name,
+            tables: userTables.length
+        }
     } catch (error) {
         console.log(error)
     }
@@ -83,7 +90,11 @@ export const userSellByTable = async (id, name, date) => {
 
 export const hourProduct = async (id) => {
     try {
-        const bills = await billModel.find().populate('ticketId');
+        const [bills, product] = await Promise.all([
+            await billModel.find().populate('ticketId'),
+            await productModel.findById(id)
+        ])
+
         if (!bills || bills.length === 0) {
             return {
                 product: [],
@@ -92,8 +103,8 @@ export const hourProduct = async (id) => {
         }
 
         // Filtrar facturas que contienen el producto y extraer las horas de creación
-        const hours = bills.flatMap(bill => 
-            bill.ticketId.flatMap(ticket => 
+        const hours = bills.flatMap(bill =>
+            bill.ticketId.flatMap(ticket =>
                 ticket.products.filter(product => product._id.toString() === id).map(() => bill.createdAt.getHours())
             )
         );
@@ -113,9 +124,8 @@ export const hourProduct = async (id) => {
 
         // Encontrar la hora con más ventas
         const peakHour = Object.keys(salesByHour).reduce((a, b) => salesByHour[a] > salesByHour[b] ? a : b);
-        console.log(peakHour)
         return {
-            product: id,
+            product: product.name,
             peakHour: parseInt(peakHour),
             salesByHour
         };
