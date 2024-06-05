@@ -185,7 +185,7 @@ export const getTickets = async (name) => {
 export const getTicketById = async (id) => {
   try {
 
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id).populate('waiterId')
     if (!ticket) {
       return {
         msg: 'no hay ticket con ese id'
@@ -243,7 +243,7 @@ export const cancelAccount = async (id, tableId) => {
 
 export const receivedTicket = async (id) => {
   try {
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id).populate('waiterId')
     if (!ticket) {
       return {
         msg: 'no hay ticket con ese id'
@@ -259,7 +259,7 @@ export const receivedTicket = async (id) => {
 
 export const finishedTicket = async (id) => {
   try {
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id).populate('waiterId')
     if (!ticket) {
       return {
         msg: 'no hay tickets con ese id'
@@ -275,7 +275,7 @@ export const finishedTicket = async (id) => {
 
 export const completedProduct = async (id, idProduct) => {
   try {
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id).populate('waiterId')
     if (!ticket) {
       return {
         msg: 'no hay id con ese tikcet'
@@ -295,7 +295,7 @@ export const completedProduct = async (id, idProduct) => {
 
 export const completedAllProductTicket = async (id) => {
   try {
-    const ticket = await ticketModel.findById(id)
+    const ticket = await ticketModel.findById(id).populate('waiterId')
     if (!ticket) {
       return {
         msg: 'no hay id con ese tikcet'
@@ -326,7 +326,7 @@ export const joinAllProductsTicket = async (tableId) => {
   }
 }
 export const getAllTickets = async () => {
-  const tickets = await ticketModel.find();
+  const tickets = await ticketModel.find().populate('waiterId');
 
   if (!tickets || tickets.length === 0) {
     return {
