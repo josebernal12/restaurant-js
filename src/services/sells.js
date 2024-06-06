@@ -4,6 +4,7 @@ import productModel from "../model/ProductModel.js";
 import userModel from "../model/UserModel.js";
 import { subDays, subWeeks, subMonths, subYears } from 'date-fns';
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
+import moment2 from 'moment-timezone'
 
 export const userSellByTable = async (id, name, date) => {
   try {
@@ -44,8 +45,10 @@ export const userSellByTable = async (id, name, date) => {
           break;
         case 'day':
           // Filtrar por día (hoy)
-          const startOfDayDate = startOfDay(new Date());
-          const endOfDayDate = endOfDay(new Date());
+          const timeZone = 'America/Mazatlan';
+          const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
+          const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
+          
           query = {
             createdAt: {
               $gte: startOfDayDate,
@@ -196,8 +199,10 @@ export const inventorySell = async (id) => {
         $lt: endOfWeekDate
       }
     };
-    const startOfDayDate = startOfDay(new Date());
-    const endOfDayDate = endOfDay(new Date());
+      const timeZone = 'America/Mazatlan';
+    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
+    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
+    
     const day = {
       createdAt: {
         $gte: startOfDayDate,

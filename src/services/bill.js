@@ -3,12 +3,8 @@ import billModel from "../model/BillModel.js"
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
-//TODO QUITAR EL PASSWORD EN USERSELL
-//TODO REVISAR LO DE NOMBRE REPETIDOS PARA QUE TRAIGAN LOS 2
-//TODO AGREGAR EL DE LA MESA ENTRE EL MIERCOLES O VIERNES
-//TODO VE LO DEL HORARIO ENTRE EL MIERCOLES AL VIERNES
 import moment from 'moment'; // Importa la librería moment.js para manejar fechas
-
+import moment2 from 'moment-timezone'
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     if (!tableId) {
@@ -395,8 +391,10 @@ export const userSell = async (id, name, date) => {
         $lt: endOfWeekDate
       }
     };
-    const startOfDayDate = startOfDay(new Date());
-    const endOfDayDate = endOfDay(new Date());
+    const timeZone = 'America/Mazatlan';
+    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
+    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
+    
     const day = {
       createdAt: {
         $gte: startOfDayDate,
@@ -514,8 +512,10 @@ export const productSell = async (id, name, date) => {
         $lt: endOfWeekDate
       }
     };
-    const startOfDayDate = startOfDay(new Date());
-    const endOfDayDate = endOfDay(new Date());
+    const timeZone = 'America/Mazatlan';
+    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
+    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
+    
     const day = {
       createdAt: {
         $gte: startOfDayDate,

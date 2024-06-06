@@ -2,6 +2,7 @@
 import billModel from "../model/BillModel.js"
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
+import moment from 'moment-timezone'
 
 export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion) => {
   try {
@@ -224,12 +225,10 @@ export const bestProduct = async (range) => {
 
       switch (range) {
         case TimeRange.DAY:
-          // Rango para el día actual
-          const today = new Date();
-          startDate = new Date(today);
-          startDate.setHours(0, 0, 0, 0); // Comienzo del día
-          endDate = new Date(today);
-          endDate.setHours(23, 59, 59, 999); // Fin del día
+          // Rango para el día actual en la zona horaria de Mazatlán
+          const timeZone = 'America/Mazatlan';
+          const startDate = moment.tz(timeZone).startOf('day').toDate();
+          const endDate = moment.tz(timeZone).endOf('day').toDate();
           break;
         case TimeRange.WEEK:
           // Rango para la semana actual
