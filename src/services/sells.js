@@ -331,9 +331,53 @@ export const productSellAll = async () => {
         productModel.find()
       ]
     )
-
-    
-
+    let totalAño = 0;
+    let totalMes = 0;
+    let totalSemana = 0;
+    let totalDia = 0;
+    let totalStock = 0;
+    valorAño.forEach(bill => {
+      bill.ticketId.some(ticket => {
+        ticket.products.some(product => {
+          totalAño += product.stock
+        })
+      })
+    })
+    valorMes.forEach(bill => {
+      bill.ticketId.some(ticket => {
+        ticket.products.some(product => {
+          totalMes += product.stock
+        })
+      })
+    })
+    valorSemana.forEach(bill => {
+      bill.ticketId.some(ticket => {
+        ticket.products.some(product => {
+          totalSemana += product.stock
+        })
+      })
+    })
+    valorDia.forEach(bill => {
+      bill.ticketId.some(ticket => {
+        ticket.products.some(product => {
+          totalDia += product.stock
+        })
+      })
+    })
+    valorTodos.forEach(bill => {
+      bill.ticketId.some(ticket => {
+        ticket.products.some(product => {
+          totalStock += product.stock
+        })
+      })
+    })
+    return {
+      totalAño,
+      totalMes,
+      totalSemana,
+      totalDia,
+      totalStock,
+    }
   } catch (error) {
     console.log(error)
   }

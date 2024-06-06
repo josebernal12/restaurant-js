@@ -21,6 +21,9 @@ const billSchema = new Schema({
     type: String,
     required: true
   },
+  folio: {
+    type: Number
+  }
 
 }, {
   timestamps: true

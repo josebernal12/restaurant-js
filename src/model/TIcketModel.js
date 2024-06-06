@@ -24,10 +24,6 @@ const ticketSchema = new Schema({
         min: Number,        
         
       }],
-      folio: {
-        type: Number
-      }
-
     }
   ],
   subTotal: {

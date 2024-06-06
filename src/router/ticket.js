@@ -17,9 +17,9 @@ import {
 
 const router = Router()
 
-router.post('/:id', [checkJwt], createTicketController)
+router.post('/:id',  createTicketController)
 router.put('/update/:id', [checkJwt], updateTicketController)
-router.get('/', [checkJwt], getTicketsController)
+router.get('/',  getTicketsController)
 router.delete('/delete/:id', [checkJwt], deleteTicketController)
 router.delete('/cancel/:id',  cancelTicketController)
 router.put('/received/:id', [checkJwt], receivedTicketController)

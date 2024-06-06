@@ -215,7 +215,6 @@ export const manyUser = async (users) => {
       const rolMember = await RolModel.findOne({ name: 'miembro' });
       for (const value of users) {
         const exist = await checkEmailInDB(value.email)
-        console.log(value.name)
         if (!exist) {
           const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false })
           const populatedUser = await userModel.findById(value._id).populate('rol').select('-password');

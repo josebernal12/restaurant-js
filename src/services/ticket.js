@@ -3,70 +3,82 @@ import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js";
 
+
 export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId) => {
   try {
     if (!products || !total) {
       return {
-        msg: 'todos los campos obligatorios'
-      }
+        msg: 'Todos los campos son obligatorios'
+      };
     }
+
     const tableObjectId = mongoose.Types.ObjectId(tableId);
-    const table = await tableModel.findById(tableObjectId)
-    const existTicket = await ticketModel.findOne({ tableId: tableObjectId })
-    const ticketAll = await ticketModel.find()
-    const folioArray = ticketAll.map(value => value?.folio)
-    if (table) {
-      let invalid = false; // Inicializamos la bandera como falsa
-      for (const product of products) {
-        const productUpdate = await productModel.findById(product._id)
-        const newStock = productUpdate.stock - product.stock;
-        if (newStock < 0) {
-          invalid = true; // Establecemos la bandera como verdadera si encontramos un producto con cantidad inválida
-          break; // Salimos del bucle ya que no es necesario seguir verificando los demás productos
-        }
-      }
+    const table = await tableModel.findById(tableObjectId);
 
-      if (invalid) {
-        return {
-          msg: 'La cantidad de al menos uno de los productos supera el stock disponible'
-        };
-      }
-
-      // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto
-      for (const product of products) {
-        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
-      }
-
-      if (folioArray) {
-        const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio: folioArray.length + 1, waiterId })
-        if (!newTicket) {
-          return {
-            msg: 'Error al crear el ticket'
-          }
-        }
-        newTicket.status = 'proceso'
-        newTicket.save()
-        return newTicket;
-      }
-      const newTicket = await ticketModel.create({ products, subTotal, total, tableId, userId, waiter, folio, waiterId })
-
-      if (!newTicket) {
-        return {
-          msg: 'Error al crear el ticket'
-        }
-      }
-      newTicket.status = 'proceso'
-      newTicket.save()
-      return newTicket;
+    if (!table) {
+      return {
+        msg: 'No existen mesas con ese ID'
+      };
     }
 
-    return {
-      msg: 'No existen mesas con ese ID'
+    let invalid = false; // Inicializamos la bandera como falsa
+
+    // Verificación del stock de productos
+    for (const product of products) {
+      const productUpdate = await productModel.findById(product._id);
+      if (!productUpdate) {
+        invalid = true;
+        break;
+      }
+      const newStock = productUpdate.stock - product.stock;
+      if (newStock < 0) {
+        invalid = true; // Establecemos la bandera como verdadera si encontramos un producto con cantidad inválida
+        break; // Salimos del bucle ya que no es necesario seguir verificando los demás productos
+      }
     }
+
+    if (invalid) {
+      return {
+        msg: 'La cantidad de al menos uno de los productos supera el stock disponible'
+      };
+    }
+
+    // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto
+    for (const product of products) {
+      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
+    }
+
+   
+    // Crear el nuevo ticket
+    const newTicket = await ticketModel.create({
+      products,
+      subTotal,
+      total,
+      tableId,
+      userId,
+      waiter,
+      waiterId
+    });
+
+    if (!newTicket) {
+      return {
+        msg: 'Error al crear el ticket'
+      };
+    }
+
+    newTicket.status = 'proceso';
+    await newTicket.save();
+
+    return newTicket;
+
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Ocurrió un error al crear el ticket'
+    };
   }
-}
+};
+
 export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId) => {
   try {
     // Encontrar el ticket actual
@@ -124,7 +136,7 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     }
 
     // Actualizar el ticket
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId,waiterId }, { new: true });
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId, waiterId }, { new: true });
     if (!ticketUpdate) {
       return {
         msg: 'No se pudo actualizar el ticket'

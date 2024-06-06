@@ -7,41 +7,70 @@ import moment from 'moment'; // Importa la librería moment.js para manejar fech
 import moment2 from 'moment-timezone'
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
-    if (!tableId) {
-      return 'error al generar facturas (te falta datos por proporcionar)'
+    // Verificación de campos obligatorios
+    if (!ticketId || !tableId || !userId || !methodOfPayment) {
+      return 'Error al generar factura: faltan datos por proporcionar';
     }
+
     const tableObjectId = mongoose.Types.ObjectId(tableId);
 
     const table = await tableModel.findById(tableObjectId);
     if (!table) {
       return {
-        msg: 'la mesa con ese id no existe'
-      }
+        msg: 'La mesa con ese ID no existe'
+      };
     }
-    const ticket = await ticketModel.findById(ticketId)
-    const allTickets = await ticketModel.find({ tableId })
 
+    const ticket = await ticketModel.findById(ticketId);
+    if (!ticket) {
+      return {
+        msg: 'El ticket con ese ID no existe'
+      };
+    }
+
+    const allTickets = await ticketModel.find({ tableId });
+
+    // Obtener el último folio y calcular el nuevo folio
+    const lastBill = await billModel.findOne().sort({ folio: -1 });
+    const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
+
+    // Verificación de tickets coincidentes con la mesa
     if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
-      const newBill = await billModel.create({ ticketId: allTickets, tableId, userId, methodOfPayment });
+      const newBill = await billModel.create({
+        ticketId: allTickets.map(ticket => ticket._id),
+        tableId,
+        userId,
+        methodOfPayment,
+        folio: newFolio
+      });
+
+      // Actualización del estado de la mesa
       await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
-      allTickets.forEach(async (ticket) => {
+
+      // Actualización del estado de los tickets a completados
+      await Promise.all(allTickets.map(async (ticket) => {
         await ticketModel.findByIdAndUpdate(ticket._id, { completed: true }, { new: true });
-      })
+      }));
+
       if (!newBill) {
         return {
-          msg: 'error al generar la factura'
-        }
+          msg: 'Error al generar la factura'
+        };
       }
-      return newBill
-    }
-    return {
-      msg: 'el ticket no coincide con la mesa'
+      return newBill;
     }
 
+    return {
+      msg: 'El ticket no coincide con la mesa'
+    };
+
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Ocurrió un error al generar la factura'
+    };
   }
-}
+};
 
 
 export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate, tableId) => {
