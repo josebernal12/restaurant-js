@@ -8,7 +8,7 @@ import {
   sells,
   userSell
 } from "../services/bill.js"
-import { hourProduct, inventorySell, userSellByTable } from "../services/sells.js"
+import { billSell, hourProduct, inventorySell, userSellByTable } from "../services/sells.js"
 
 export const generateBillController = async (req, res) => {
   const { ticketId, userId, methodOfPayment } = req.body
@@ -159,6 +159,10 @@ export const hourProductController = async (req, res) => {
 }
 export const inventorySellController = async (req, res) => {
   const { id } = req.params
-  const product = await inventorySell(id)
-  res.json(product)
+  const inventory = await inventorySell(id)
+  res.json(inventory)
+}
+export const billSellController = async (req, res) => {
+  const bill = await billSell()
+  res.json(bill)
 }

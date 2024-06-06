@@ -238,6 +238,7 @@ export const getBIllById = async (id) => {
 
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
 import userModel from "../model/UserModel.js"
+import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
 
 export const sells = async (date) => {
   try {
@@ -365,92 +366,11 @@ export const getBillLastWeek = async (type, page) => {
 }
 
 
-export const userSell = async (id, name, date) => {
+export const userSell = async (id) => {
   try {
 
-    const year = {
-      // Filtrar por año
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), 0, 1),
-        $lt: new Date(new Date().getFullYear() + 1, 0, 1)
-      }
-    };
-    const month = {
-      // Filtrar por mes
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-      }
-    };
-    const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
-    const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
-
-    const week = {
-      createdAt: {
-        $gte: startOfWeekDate,
-        $lt: endOfWeekDate
-      }
-    };
-    const timeZone = 'America/Mazatlan';
-    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
-    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
-    
-    const day = {
-      createdAt: {
-        $gte: startOfDayDate,
-        $lt: endOfDayDate
-      }
-    };
-    let [valorAño, valorMes, valorSemana, valorDia, valorTodos, user] = await Promise.all([
-      billModel.find(year).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(month).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(week).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(day).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find().populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      userModel.findById(id)
-    ]);
-
-
+    const { year, month, week, day } = searchByDate();
+    let { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, userModel, id)
 
     valorAño = valorAño.filter(bill =>
       bill.ticketId.some(ticket =>
@@ -478,7 +398,7 @@ export const userSell = async (id, name, date) => {
       valorSemana: valorSemana.length,
       valorDia: valorDia.length,
       valorTodos: valorTodos.length,
-      name: user.name,
+      name: name.name,
     }
   } catch (error) {
     console.log(error)
@@ -486,92 +406,12 @@ export const userSell = async (id, name, date) => {
 }
 
 
-export const productSell = async (id, name, date) => {
+export const productSell = async (id) => {
   try {
 
-    const year = {
-      // Filtrar por año
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), 0, 1),
-        $lt: new Date(new Date().getFullYear() + 1, 0, 1)
-      }
-    };
-    const month = {
-      // Filtrar por mes
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-      }
-    };
-    const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
-    const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
+    const { year, month, week, day } = searchByDate();
 
-    const week = {
-      createdAt: {
-        $gte: startOfWeekDate,
-        $lt: endOfWeekDate
-      }
-    };
-    const timeZone = 'America/Mazatlan';
-    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
-    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
-    
-    const day = {
-      createdAt: {
-        $gte: startOfDayDate,
-        $lt: endOfDayDate
-      }
-    };
-    let [valorAño, valorMes, valorSemana, valorDia, valorTodos, product] = await Promise.all([
-      billModel.find(year).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(month).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(week).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(day).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find().populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-
-      productModel.findById(id)
-
-    ]);
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, productModel, id)
 
     let totalAño = 0;
     let totalMes = 0;
@@ -582,7 +422,6 @@ export const productSell = async (id, name, date) => {
       bill.ticketId.forEach(ticket => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
-            console.log(product);
             totalAño += product.stock;
           }
         });
@@ -592,8 +431,6 @@ export const productSell = async (id, name, date) => {
       bill.ticketId.forEach(ticket => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
-            console.log(product);
-
             totalMes += product.stock;
           }
         });
@@ -604,7 +441,6 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalSemana += product.stock;
-            console.log(product);
 
           }
         });
@@ -615,7 +451,6 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalDia += product.stock;
-            console.log(product);
 
           }
         });
@@ -626,7 +461,6 @@ export const productSell = async (id, name, date) => {
         ticket.products.forEach(product => {
           if (product._id.toString() === id) {
             totalStock += product.stock;
-            console.log(product);
 
           }
         });
@@ -639,7 +473,7 @@ export const productSell = async (id, name, date) => {
       valorSemana: totalSemana,
       valorDia: totalDia,
       valorTodos: totalStock,
-      name: product.name,
+      name: name.name,
     }
 
 

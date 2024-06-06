@@ -1,3 +1,4 @@
+import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js";
 import billModel from "../model/BillModel.js";
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
@@ -48,7 +49,7 @@ export const userSellByTable = async (id, name, date) => {
           const timeZone = 'America/Mazatlan';
           const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
           const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
-          
+
           query = {
             createdAt: {
               $gte: startOfDayDate,
@@ -176,96 +177,16 @@ export const hourProduct = async (id) => {
 export const inventorySell = async (id) => {
   try {
 
-    const year = {
-      // Filtrar por año
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), 0, 1),
-        $lt: new Date(new Date().getFullYear() + 1, 0, 1)
-      }
-    };
-    const month = {
-      // Filtrar por mes
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-      }
-    };
-    const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
-    const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
+    const { year, month, week, day } = searchByDate();
 
-    const week = {
-      createdAt: {
-        $gte: startOfWeekDate,
-        $lt: endOfWeekDate
-      }
-    };
-      const timeZone = 'America/Mazatlan';
-    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
-    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
-    
-    const day = {
-      createdAt: {
-        $gte: startOfDayDate,
-        $lt: endOfDayDate
-      }
-    };
-    let [valorAño, valorMes, valorSemana, valorDia, valorTodos, inventory] = await Promise.all([
-      billModel.find(year).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(month).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(week).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find(day).populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      billModel.find().populate({
-        path: 'ticketId',
-        populate: {
-          path: 'waiterId',
-          model: 'User' // Asegúrate de que 'User' es el modelo correcto
-        }
-      })
-        .populate('tableId')
-        .populate('userId'),
-      inventaryModel.findById(id)
-    ]);
-
-
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, inventaryModel, id)
 
     let totalAño = 0;
     let totalMes = 0;
     let totalSemana = 0;
     let totalDia = 0;
     let totalStock = 0;
-     valorAño.forEach(bill =>
+    valorAño.forEach(bill =>
       bill.ticketId.some(ticket => {
         ticket.products.some(value => {
           value.recipe.some(recipe => {
@@ -277,7 +198,7 @@ export const inventorySell = async (id) => {
         });
       })
     );
-     valorMes.forEach(bill =>
+    valorMes.forEach(bill =>
       bill.ticketId.some(ticket => {
         ticket.products.some(value => {
           value.recipe.some(recipe => {
@@ -289,7 +210,7 @@ export const inventorySell = async (id) => {
         });
       })
     );
-     valorSemana.forEach(bill =>
+    valorSemana.forEach(bill =>
       bill.ticketId.some(ticket => {
         ticket.products.some(value => {
           value.recipe.some(recipe => {
@@ -301,7 +222,7 @@ export const inventorySell = async (id) => {
         });
       })
     );
-     valorDia.forEach(bill =>
+    valorDia.forEach(bill =>
       bill.ticketId.some(ticket => {
         ticket.products.some(value => {
           value.recipe.some(recipe => {
@@ -332,7 +253,29 @@ export const inventorySell = async (id) => {
       valorSemana: totalSemana,
       valorDia: totalDia,
       valorTodos: totalStock,
-      name: inventory.name,
+      name: name.name,
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const billSell = async () => {
+  try {
+    const { year, month, week, day } = searchByDate();
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos } = await searchByDatabase(year, month, week, day)
+    let totalAño = valorAño.length;
+    let totalMes = valorMes.length;
+    let totalSemana = valorSemana.length;
+    let totalDia = valorDia.length;
+    let totalStock = valorTodos.length;
+
+    return {
+      totalAño,
+      totalMes,
+      totalSemana,
+      totalDia,
+      totalStock,
     }
   } catch (error) {
     console.log(error)
