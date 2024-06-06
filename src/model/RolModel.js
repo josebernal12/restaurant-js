@@ -5,24 +5,16 @@ const { Schema } = mongoose;
 
 const permissionsSchema = new Schema({
   mesa: {
-    ver: {
-      type: Boolean,
-      default: false
-    },
     crear: {
       type: Boolean,
       default: false
     },
-    Eliminar: {
+    eliminar: {
       type: Boolean,
       default: false
     }
   },
   ticket: {
-    ver: {
-      type: Boolean,
-      default: false
-    },
     pagar: {
       type: Boolean,
       default: false
@@ -37,17 +29,13 @@ const permissionsSchema = new Schema({
     },
   },
   meta: {
-    ver: {
-      type: Boolean,
-      default: false
-    },
     crear: {
       type: Boolean,
       default: false
     }
   },
   order: {
-    ver: {
+    cancelar: {
       type: Boolean,
       default: false
     },

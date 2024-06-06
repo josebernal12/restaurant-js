@@ -281,3 +281,60 @@ export const billSell = async () => {
     console.log(error)
   }
 }
+
+
+export const productSellAll = async () => {
+  try {
+    const { year, month, week, day } = searchByDate();
+
+    const [valorAño, valorMes, valorSemana, valorDia, valorTodos, products] = await Promise.all(
+      [
+        billModel.find(year).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        }).populate('tableId').populate('userId'),
+
+        billModel.find(month).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        }).populate('tableId').populate('userId'),
+
+        billModel.find(week).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        }).populate('tableId').populate('userId'),
+
+        billModel.find(day).populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        }).populate('tableId').populate('userId'),
+
+        billModel.find().populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // Asegúrate de que 'User' es el modelo correcto
+          }
+        }).populate('tableId').populate('userId'),
+        productModel.find()
+      ]
+    )
+
+    
+
+  } catch (error) {
+    console.log(error)
+  }
+}

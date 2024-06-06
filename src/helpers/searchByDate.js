@@ -44,63 +44,62 @@ export const searchByDate = () => {
     }
 }
 
+
 export const searchByDatabase = async (year, month, week, day, database, id) => {
-    let [valorAño, valorMes, valorSemana, valorDia, valorTodos, name] = await Promise.all([
-        billModel.find(year).populate({
-            path: 'ticketId',
-            populate: {
-                path: 'waiterId',
-                model: 'User' // Asegúrate de que 'User' es el modelo correcto
-            }
-        })
-            .populate('tableId')
-            .populate('userId'),
-        billModel.find(month).populate({
-            path: 'ticketId',
-            populate: {
-                path: 'waiterId',
-                model: 'User' // Asegúrate de que 'User' es el modelo correcto
-            }
-        })
-            .populate('tableId')
-            .populate('userId'),
-        billModel.find(week).populate({
-            path: 'ticketId',
-            populate: {
-                path: 'waiterId',
-                model: 'User' // Asegúrate de que 'User' es el modelo correcto
-            }
-        })
-            .populate('tableId')
-            .populate('userId'),
-        billModel.find(day).populate({
-            path: 'ticketId',
-            populate: {
-                path: 'waiterId',
-                model: 'User' // Asegúrate de que 'User' es el modelo correcto
-            }
-        })
-            .populate('tableId')
-            .populate('userId'),
-        billModel.find().populate({
-            path: 'ticketId',
-            populate: {
-                path: 'waiterId',
-                model: 'User' // Asegúrate de que 'User' es el modelo correcto
-            }
-        })
-            .populate('tableId')
-            .populate('userId'),
+  const billQueries = [
+    billModel.find(year).populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // Asegúrate de que 'User' es el modelo correcto
+      }
+    }).populate('tableId').populate('userId'),
+    
+    billModel.find(month).populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // Asegúrate de que 'User' es el modelo correcto
+      }
+    }).populate('tableId').populate('userId'),
+    
+    billModel.find(week).populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // Asegúrate de que 'User' es el modelo correcto
+      }
+    }).populate('tableId').populate('userId'),
+    
+    billModel.find(day).populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // Asegúrate de que 'User' es el modelo correcto
+      }
+    }).populate('tableId').populate('userId'),
+    
+    billModel.find().populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // Asegúrate de que 'User' es el modelo correcto
+      }
+    }).populate('tableId').populate('userId')
+  ];
 
-        database.findById(id)
-    ]);
-    return {
-        valorAño,
-        valorMes,
-        valorSemana,
-        valorDia,
-        valorTodos,
-        name
-    }
+  if (database) {
+    billQueries.push(database.findById(id));
+  }
 
-}
+  const results = await Promise.all(billQueries);
+
+  return {
+    valorAño: results[0],
+    valorMes: results[1],
+    valorSemana: results[2],
+    valorDia: results[3],
+    valorTodos: results[4],
+    name: database ? results[5] : null
+  };
+};

@@ -10,7 +10,7 @@ import { checkJwt } from '../middleware/permission.js'
 const router = Router()
 
 router.post('/', [checkJwt], createRolController)
-router.get('/', [checkJwt], getRolController)
+router.get('/', getRolController)
 router.put('/update/:id', [checkJwt], updateRolController)
 router.delete('/delete/:id',  deleteRolController)
 export default router

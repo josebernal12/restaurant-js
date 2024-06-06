@@ -30,6 +30,7 @@ router.get('/table/:id', userSellByTableController)
 router.get('/hour/:id', hourProductController)
 router.get('/inventory/:id', inventorySellController)
 router.get('/bill', billSellController)
+router.get('/products', billSellController)
 
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)

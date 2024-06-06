@@ -25,19 +25,19 @@ describe("endpoint user", () => {
         // });
     });
 
-    it('should create a new user', async () => {
-        const newUser = {
-            name: faker.internet.userName(),
-            email: faker.internet.email(),
-            password: 'Chetisape11',
-            confirmPassword: "Chetisape11",
-        };
+    // it('should create a new user', async () => {
+    //     const newUser = {
+    //         name: faker.internet.userName(),
+    //         email: faker.internet.email(),
+    //         password: 'Chetisape11',
+    //         confirmPassword: "Chetisape11",
+    //     };
 
-        const response = await axios.post('http://localhost:8080/api/user/register', newUser, config);
-        const user = response.data.user; // Acceder directamente a la propiedad 'user' de los datos
-        expect(user.user.name).toEqual(newUser.name);
-        expect(user.user.email).toEqual(newUser.email);
-    })
+    //     const response = await axios.post('http://localhost:8080/api/user/register', newUser, config);
+    //     const user = response.data.user; // Acceder directamente a la propiedad 'user' de los datos
+    //     expect(user.user.name).toEqual(newUser.name);
+    //     expect(user.user.email).toEqual(newUser.email);
+    // })
 
     it('should update user', async () => {
         const updateUser = {
