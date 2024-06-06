@@ -21,7 +21,7 @@ const router = Router()
 
 router.get('/', [checkJwt],getProductsController)
 router.post('/', [checkJwt], addProductController)
-router.get('/bestSeller', [checkJwt],bestProductController)
+router.get('/bestSeller', bestProductController)
 router.put('/update/:id', [checkJwt], updateProductController)
 router.delete('/delete/:id', [checkJwt], deleteProductController)
 router.post('/search',[checkJwt], searchProductController)

@@ -227,8 +227,8 @@ export const bestProduct = async (range) => {
         case TimeRange.DAY:
           // Rango para el día actual en la zona horaria de Mazatlán
           const timeZone = 'America/Mazatlan';
-          const startDate = moment.tz(timeZone).startOf('day').toDate();
-          const endDate = moment.tz(timeZone).endOf('day').toDate();
+          startDate = moment.tz(timeZone).startOf('day').toDate();
+          endDate = moment.tz(timeZone).endOf('day').toDate();
           break;
         case TimeRange.WEEK:
           // Rango para la semana actual
