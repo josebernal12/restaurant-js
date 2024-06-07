@@ -52,11 +52,11 @@ export const login = async (email, password) => {
     const user = await checkEmailInDB(email);
 
     if (!user) {
-      console.log('entree-1');
       return 'email o password no son correctos';
     }
 
-    const match = bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password);
+    console.log(match);
     if (match) {
       // Crear un nuevo objeto user sin la contraseña
       const userWithoutPassword = {

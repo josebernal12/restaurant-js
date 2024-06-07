@@ -8,7 +8,7 @@ import moment2 from 'moment-timezone'
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     // Verificación de campos obligatorios
-    if (!ticketId || !tableId || !userId || !methodOfPayment) {
+    if (!ticketId || !tableId ||  !methodOfPayment) {
       return 'Error al generar factura: faltan datos por proporcionar';
     }
 
