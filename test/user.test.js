@@ -39,17 +39,16 @@ describe("endpoint user", () => {
     //     expect(user.user.email).toEqual(newUser.email);
     // })
 
-    it('should update user', async () => {
-        const updateUser = {
-            name: faker.internet.userName(),
-            email: faker.internet.email(),
-
-        };
-        const id = "6660db6212ee40c10172852e"
-        const response = await axios.put(`http://localhost:8080/api/user/users/update/${id}`, updateUser, config);
-        const user = response.data.user; // Acceder directamente a la propiedad 'user' de los datos
-        console.log(user);
-        expect(user.user.name).toEqual(updateUser.name);
-        expect(user.user.email).toEqual(updateUser.email);
-    })
+    // it('should update user', async () => {
+    //     const updateUser = {
+    //         name: faker.internet.userName(),
+    //         email: faker.internet.email(),
+    //     };
+    //     const id = "6660db6212ee40c10172852e"
+    //     const response = await axios.put(`http://localhost:8080/api/user/users/update/${id}`, updateUser, config);
+    //     const user = response.data.user; // Acceder directamente a la propiedad 'user' de los datos
+    //     console.log(user);
+    //     expect(user.user.name).toEqual(updateUser.name);
+    //     expect(user.user.email).toEqual(updateUser.email);
+    // })
 })

@@ -1,13 +1,13 @@
 import promotionModel from "../model/Promotion.js"
 
-export const createPromotion = async (name, description, type, date, time, discount) => {
+export const createPromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.create({ name, description, type, date, time, discount })
+    const promotion = await promotionModel.create({ name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image })
     if (!promotion) {
       return {
         msg: 'error al crear la promocion'
@@ -19,14 +19,14 @@ export const createPromotion = async (name, description, type, date, time, disco
   }
 }
 
-export const updatePromotion = async (id, name, description, type, date, time, discount) => {
+export const updatePromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, type, date, time, discount }, { new: true })
+    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image }, { new: true })
     if (!promotion) {
       return {
         msg: 'error al actualizar'

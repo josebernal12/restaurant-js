@@ -1,0 +1,1 @@
+cuando cree una promocion (name,days,starthours,endhours,startDate,endDate,type,discount(optional),active(default=false))

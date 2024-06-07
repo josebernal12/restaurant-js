@@ -11,20 +11,37 @@ const promotionSchema = new Schema({
     type: String,
     required: true
   },
+  days: [
+    {
+      type: String,
+    }
+  ],
+  startHour: {
+    type: String,
+  },
+  endHour: {
+    type: String,
+  },
+  startDate: {
+    type: Date,
+  },
+  endDate: {
+    type: Date,
+  },
   type: {
     type: String,
     required: true
   },
-  date: {
-    type: Date,
-    required: true 
-  },
-  time: {
-    type: String,
-    required: true
-  },
-  discount :{
+  discount: {
     type: Number,
+  },
+  active: {
+    type: Boolean,
+    default: true
+  },
+  image: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true
