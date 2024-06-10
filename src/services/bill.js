@@ -4,7 +4,9 @@ import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js"
 import moment from 'moment'; // Importa la librería moment.js para manejar fechas
-import moment2 from 'moment-timezone'
+import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
+import userModel from "../model/UserModel.js"
+import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     // Verificación de campos obligatorios
@@ -265,9 +267,6 @@ export const getBIllById = async (id) => {
   }
 }
 
-import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
-import userModel from "../model/UserModel.js"
-import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
 
 export const sells = async (date) => {
   try {
