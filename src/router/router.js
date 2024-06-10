@@ -21,7 +21,7 @@ import { addUserPermission, checkJwt, deleteUserPermission, updateUserPermission
 
 const router = Router()
 
-router.get('/users', [checkJwt], getUsersController)
+router.get('/users',  getUsersController)
 router.get('/users/:id', [checkJwt], getUserByIdController)
 router.put('/users/update/:id', [checkJwt], updateUserController)
 router.delete('/users/delete/:id', [checkJwt], deleteUserController)

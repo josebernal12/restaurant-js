@@ -35,57 +35,29 @@ export const addProducts = async (name, description, price, stock, category, ima
   }
 }
 
-export const getProducts = async (name, page, showAll, quantity) => {
+export const getProducts = async (query, page, showAll, limit, skip) => {
   try {
+    const productTotal = await productModel.countDocuments(query);
 
-    const perPage = 10;
-    const pageQuery = parseInt(page) || 1;
-    const skip = perPage * (pageQuery - 1);
-
+    let products;
     if (showAll === "1") {
-      const productTotal = await productModel.countDocuments()
-      const products = await productModel.find()
-      return {
-        productTotal,
-        products
-      }
+      products = await productModel.find(query).populate('category');
+    } else {
+      products = await productModel.find(query)
+        .limit(limit)
+        .skip(skip)
+        .populate('category');
     }
-    if (quantity) {
-      const productTotal = await productModel.countDocuments()
-      const products = await productModel.find(name).limit(quantity).skip(skip)
-      return {
-        productTotal,
-        products
-      }
-    }
-    if (name.name) {
-      const productTotal = await productModel.countDocuments()
-      const products = await productModel.find(name).skip(name)
-      if (!products) {
-        return {
-          products: []
-        }
-      }
-      return {
-        products,
-        productTotal
-      }
-    }
-    const productTotal = await productModel.countDocuments()
-    const products = await productModel.find(name).limit(perPage).skip(skip).exec()
-    if (!products) {
-      return {
-        msg: 'no hay productos'
-      }
-    }
+
     return {
       products,
       productTotal
-    }
+    };
   } catch (error) {
-    console.log(error)
+    console.error(error);
+    throw new Error('Error retrieving products from the database');
   }
-}
+};
 
 export const getProductsById = async (id) => {
   try {

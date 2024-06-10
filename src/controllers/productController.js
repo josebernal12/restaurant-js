@@ -1,3 +1,4 @@
+import categoryModel from "../model/CategoryModel.js"
 import {
   addProducts,
   bestProduct,
@@ -9,7 +10,7 @@ import {
   searchProduct,
   updateProduct
 } from "../services/products.js"
-
+import mongoose from "mongoose"
 export const addProductController = async (req, res) => {
   const { name, description, price, stock, category, image, discount, recipe, promotion, iva } = req.body
   const newProduct = await addProducts(name, description, price, stock, category, image, discount, recipe, promotion, iva)
@@ -21,33 +22,43 @@ export const addProductController = async (req, res) => {
 
 }
 
+
 export const getProductsController = async (req, res) => {
-  const query = {}; // Inicializar el objeto de consulta
-  let page;
-  let showAll;
-  let quantity;
-  if (req.query.name) {
-    query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+  const query = {};
+  const { name, category, page, showAll, quantity } = req.query;
+
+  if (name) {
+    query.name = { $regex: name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
-  if (req.query.category) {
-    query.category = { $regex: req.query.category, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
+
+  if (category) {
+    try {
+      const categoryDoc = await categoryModel.findOne({ name: { $regex: category, $options: 'i' } });
+      if (categoryDoc) {
+        query.category = categoryDoc._id;
+      } else {
+        return res.status(404).json({ category: [] });
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: 'Server error' });
+    }
   }
-  if (req.query.page) {
-    page = req.query.page // 'i' para hacer la búsqueda case-insensitive
+
+  const pageNumber = parseInt(page) || 1;
+  const limit = parseInt(quantity) || 10;
+  const skip = (pageNumber - 1) * limit;
+
+  try {
+    const products = await getProducts(query, pageNumber, showAll, limit, skip);
+    if (!products.products.length) {
+      return res.status(404).json({ msg: 'No products found' });
+    }
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Server error' });
   }
-  if (req.query.showAll) {
-    showAll = req.query.showAll // 'i' para hacer la búsqueda case-insensitive
-  }
-  if (req.query.quantity) {
-    quantity = req.query.quantity // 'i' para hacer la búsqueda case-insensitive
-  }
-  const products = await getProducts(query, page, showAll, quantity)
-  if (products?.msg) {
-    res.status(404).json(products)
-    return
-  }
-  res.json(products)
-}
+};
 
 export const getProductByIdController = async (req, res) => {
   const { id } = req.params

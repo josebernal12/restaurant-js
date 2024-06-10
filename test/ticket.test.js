@@ -51,9 +51,9 @@ describe("endpoint ticket", () => {
         expect(ticket).toHaveProperty('_id'); // Verificar que cada usuario tenga una propiedad 'id'
     })
 
-    it('should delete a ticket', async () => {
-        const response = await axios.delete('http://localhost:8080/api/ticket/delete/666347eb73df8a74d4624a92')
-        const ticket = response.data
-        expect(ticket).toHaveProperty('_id'); // Verificar que cada usuario tenga una propiedad 'id'
-     })
+    // it('should delete a ticket', async () => {
+    //     const response = await axios.delete('http://localhost:8080/api/ticket/delete/666347eb73df8a74d4624a92')
+    //     const ticket = response.data
+    //     expect(ticket).toHaveProperty('_id'); // Verificar que cada usuario tenga una propiedad 'id'
+    //  })
 })

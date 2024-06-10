@@ -43,7 +43,13 @@ const promotionSchema = new Schema({
   image: {
     type: String,
     default: null
-  }
+  },
+  products: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+    }
+  ]
 }, {
   timestamps: true
 })
