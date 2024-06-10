@@ -19,7 +19,7 @@ export const createPromotion = async (name, description, days, startHour, endHou
   }
 }
 
-export const updatePromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image) => {
+export const updatePromotion = async (id, name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image) => {
   try {
     if (!name || !description || !type) {
       return {

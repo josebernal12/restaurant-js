@@ -35,6 +35,9 @@ const productSchema = new Schema({
     ref: 'promotion',
     default: false,
   },
+  iva: {
+    type: Number,
+  },
   recipe: [{
     name: String,
     stock: Number,

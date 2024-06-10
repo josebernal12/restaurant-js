@@ -4,7 +4,7 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 import moment from 'moment-timezone'
 
-export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion) => {
+export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion, iva) => {
   try {
 
     if (!name || !description || !price || !stock || !category) {
@@ -12,7 +12,7 @@ export const addProducts = async (name, description, price, stock, category, ima
         msg: 'todos los campos son obligatorios'
       }
     }
-    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe, promotion })).populate('recipe')
+    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe, promotion, iva })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
       const difference = product.stock - value.stock
@@ -117,7 +117,7 @@ export const deleteProduct = async (id) => {
   }
 }
 
-export const updateProduct = async (id, name, description, stock, price, category, discount, recipe, promotion) => {
+export const updateProduct = async (id, name, description, stock, price, category, discount, recipe, promotion, iva) => {
   try {
     if (!name || !description || !price || !stock || !category) {
       return {
@@ -129,7 +129,7 @@ export const updateProduct = async (id, name, description, stock, price, categor
 
     // Actualizar el producto con la nueva información
     const productUpdate = await productModel.findByIdAndUpdate(id,
-      { name, description, stock, price, category, discount, recipe, promotion },
+      { name, description, stock, price, category, discount, recipe, promotion, iva },
       { new: true }).populate('recipe');
 
     if (!productUpdate) {

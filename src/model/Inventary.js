@@ -20,7 +20,14 @@ const inventarySchema = new Schema({
     required: true
   }, 
   unit : {
-    type: String
+    name: {
+      type: String,
+      required: true
+    },
+    clave: {
+      type: String,
+      required: true
+    }
   }
 }, {
   timestamps: true

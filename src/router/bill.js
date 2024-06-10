@@ -13,7 +13,8 @@ import {
     userSellController,
     inventorySellController,
     billSellController,
-    productsSellAllController
+    productsSellAllController,
+    billSellByQuerysController
 } from '../controllers/billController.js'
 import { checkJwt } from '../middleware/permission.js'
 import { designTicketController, getDesignTicketController } from '../controllers/designTicketController.js'
@@ -32,6 +33,7 @@ router.get('/hour/:id', hourProductController)
 router.get('/inventory/:id', inventorySellController)
 router.get('/bill', billSellController)
 router.get('/products', productsSellAllController)
+router.get('/bill/query', billSellByQuerysController) //
 
 router.post('/:id', generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)

@@ -13,7 +13,9 @@ const promotionSchema = new Schema({
   },
   days: [
     {
-      type: String,
+      name: {
+        type: String,
+      }
     }
   ],
   startHour: {
@@ -34,6 +36,7 @@ const promotionSchema = new Schema({
   },
   discount: {
     type: Number,
+    default: null
   },
   active: {
     type: Boolean,

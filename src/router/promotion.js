@@ -11,8 +11,8 @@ import {
 const router = Router()
 
 router.get('/', [checkJwt], getAllPromotionController)
-router.post('/', [checkJwt], createPromotionController)
-router.put('/update/:id', [checkJwt], updatePromotionController)
+router.post('/',  createPromotionController)
+router.put('/update/:id',  updatePromotionController)
 router.delete('/delete/:id', [checkJwt], deletePromotionController)
 router.get('/:id', [checkJwt], getPromotionByIdController)
 
