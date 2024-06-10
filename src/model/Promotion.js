@@ -13,9 +13,7 @@ const promotionSchema = new Schema({
   },
   days: [
     {
-      name: {
-        type: String,
-      }
+      type: String
     }
   ],
   startHour: {
