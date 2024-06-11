@@ -44,7 +44,7 @@ const promotionSchema = new Schema({
     type: String,
     default: null
   },
-  products: [
+  productsId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',

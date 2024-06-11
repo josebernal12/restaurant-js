@@ -1,13 +1,13 @@
 import promotionModel from "../model/Promotion.js"
 
-export const createPromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products) => {
+export const createPromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.create({ name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products })
+    const promotion = await promotionModel.create({ name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId })
     if (!promotion) {
       return {
         msg: 'error al crear la promocion'

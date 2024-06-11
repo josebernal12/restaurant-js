@@ -14,7 +14,7 @@ const router = Router()
 
 
 router.get('/', [checkJwt], inventaryController)
-router.post('/', [checkJwt], createProductInventoryController)
+router.post('/',  createProductInventoryController)
 router.put('/update/:id', [checkJwt], updateProductInventoryController)
 router.delete('/delete/:id', [checkJwt], deleteProductInventoryController)
 router.delete('/delete-manyInventary', [checkJwt], deleteManyInventaryController)

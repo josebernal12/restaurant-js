@@ -7,8 +7,8 @@ import {
 } from "../services/promotion.js"
 
 export const createPromotionController = async (req, res) => {
-  const { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products } = req.body
-  const promotion = await createPromotion(name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products)
+  const { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId } = req.body
+  const promotion = await createPromotion(name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }
@@ -16,9 +16,9 @@ export const createPromotionController = async (req, res) => {
 }
 
 export const updatePromotionController = async (req, res) => {
-  const { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products } = req.body
+  const { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId } = req.body
   const { id } = req.params
-  const promotion = await updatePromotion(id, name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products)
+  const promotion = await updatePromotion(id, name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }

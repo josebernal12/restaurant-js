@@ -20,7 +20,7 @@ import { checkJwt } from '../middleware/permission.js'
 import { designTicketController, getDesignTicketController } from '../controllers/designTicketController.js'
 
 const router = Router()
-router.get('/', [checkJwt], getBillsController)
+router.get('/',  getBillsController)
 router.get('/best-waiter', [checkJwt], bestWaiterController)
 router.get('/sells', [checkJwt], sellsController)
 router.post('/designTicket', [checkJwt], designTicketController)
