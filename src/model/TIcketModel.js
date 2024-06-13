@@ -19,10 +19,17 @@ const ticketSchema = new Schema({
       recipe: [{
         name: String,
         stock: Number,
-        unit: String,
-        max: Number,
-        min: Number,        
-        
+        unit: {
+          name: {
+            type: String
+          },
+          clave: {
+            type: String
+          }
+        },
+        // max: Number,
+        // min: Number,        
+
       }],
     }
   ],
@@ -56,7 +63,13 @@ const ticketSchema = new Schema({
   status: {
     type: String,
   },
-
+  promotion: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'promotion',
+      default: false,
+    }
+  ]
 }, {
   timestamps: true
 })

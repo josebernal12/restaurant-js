@@ -1,10 +1,24 @@
-import { cancelAccount, completedAllProductTicket, completedProduct, createTicket, deleteTicket, finishedTicket, getAllTickets, getTicketById, getTickets, joinAllProductsTicket, newUpdateTicket, receivedTicket, updateTicket } from "../services/ticket.js"
+import {
+  cancelAccount,
+  completedAllProductTicket,
+  completedProduct,
+  createTicket,
+  deleteTicket,
+  finishedTicket,
+  getAllTickets,
+  getTicketById,
+  getTickets,
+  joinAllProductsTicket,
+  newUpdateTicket,
+  receivedTicket,
+  updateTicket
+} from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
-  const { products, subtotal, total, userId, waiter, waiterId } = req.body
+  const { products, subtotal, total, userId, waiter, waiterId, promotion } = req.body
   const { id } = req.params
 
-  const ticket = await createTicket(products, subtotal, total, id, userId, waiter, waiterId)
+  const ticket = await createTicket(products, subtotal, total, id, userId, waiter, waiterId, promotion)
   if (ticket?.msg) {
     res.status(404).json(ticket)
     return
@@ -13,9 +27,10 @@ export const createTicketController = async (req, res) => {
 }
 
 export const updateTicketController = async (req, res) => {
-  const { products, subTotal, total, tableId, userId } = req.body
+  const { products, subTotal, total, tableId, userId, waiterId, promotion } = req.body
   const { id } = req.params
-  const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId, waiterId)
+
+  const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId, waiterId, promotion)
 
   if (ticket?.msg) {
     res.status(404).json(ticket)

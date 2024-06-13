@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 import ticketModel from "../model/TIcketModel.js"
 import tableModel from "../model/TableModel.js"
 import productModel from "../model/ProductModel.js";
+import promotionModel from "../model/Promotion.js";
+import inventaryModel from "../model/Inventary.js";
 
-
-export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId) => {
+export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId, promotion) => {
   try {
     if (!products || !total) {
       return {
@@ -23,6 +24,22 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
 
     let invalid = false; // Inicializamos la bandera como falsa
 
+    if (promotion) {
+      if (promotion.length > 0) {
+        for (const value of promotion) {
+          const promotion = await promotionModel.findById(value);
+          for (const product of promotion.productsId) {
+            const promoProduct = await productModel.findById(product);
+            for (const recipe of promoProduct.recipe) {
+              if (recipe._id) {
+                await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Verificación del stock de productos
     for (const product of products) {
       const productUpdate = await productModel.findById(product._id);
@@ -30,11 +47,16 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
         invalid = true;
         break;
       }
-      const newStock = productUpdate.stock - product.stock;
-      if (newStock < 0) {
-        invalid = true; // Establecemos la bandera como verdadera si encontramos un producto con cantidad inválida
-        break; // Salimos del bucle ya que no es necesario seguir verificando los demás productos
+
+      for (const recipe of product.recipe) {
+        const inventoryItem = await inventaryModel.findById(recipe._id);
+        if (inventoryItem.stock < recipe.stock) {
+          invalid = true;
+          break;
+        }
       }
+
+      if (invalid) break;
     }
 
     if (invalid) {
@@ -43,12 +65,15 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       };
     }
 
-    // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto
+    // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto y su receta
     for (const product of products) {
       await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
+
+      for (const recipe of product.recipe) {
+        await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+      }
     }
 
-   
     // Crear el nuevo ticket
     const newTicket = await ticketModel.create({
       products,
@@ -57,7 +82,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       tableId,
       userId,
       waiter,
-      waiterId
+      waiterId,
+      promotion
     });
 
     if (!newTicket) {
@@ -78,8 +104,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     };
   }
 };
-
-export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId) => {
+export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId, promotion) => {
   try {
     // Encontrar el ticket actual
     const ticket = await ticketModel.findById(id);
@@ -90,8 +115,8 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     }
     if (!products || !subTotal || !total) {
       return {
-        msg: 'todos los campos obligatorios'
-      }
+        msg: 'Todos los campos son obligatorios'
+      };
     }
 
     // Objeto para almacenar la diferencia de stock
@@ -122,6 +147,32 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
       }
     }
 
+    // Verificación del stock para los productos en la promoción
+    let invalid = false;
+    if (promotion.length > 0) {
+      for (const value of promotion) {
+        const promotionItem = await promotionModel.findById(value);
+        for (const product of promotionItem.productsId) {
+          const promoProduct = await productModel.findById(product);
+          for (const recipe of promoProduct.recipe) {
+            const inventoryItem = await inventaryModel.findById(recipe._id);
+            if (inventoryItem.stock < recipe.stock) {
+              invalid = true;
+              break;
+            }
+          }
+          if (invalid) break;
+        }
+        if (invalid) break;
+      }
+    }
+
+    if (invalid) {
+      return {
+        msg: 'La cantidad de al menos uno de los productos de la promoción supera el stock disponible'
+      };
+    }
+
     // Agregar nuevos productos al ticket
     for (const productId in stockDifference) {
       if (stockDifference[productId] > 0) {
@@ -133,10 +184,31 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     // Actualizar el stock de los productos
     for (const productId in stockDifference) {
       await productModel.findByIdAndUpdate(productId, { $inc: { stock: -stockDifference[productId] } });
+
+      // Actualizar el stock de los ingredientes en la receta del producto
+      const product = products.find(p => p._id.toString() === productId);
+      for (const recipe of product.recipe) {
+        await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+      }
+    }
+
+    // Actualizar el stock de los productos de la promoción
+    if (promotion.length > 0) {
+      for (const value of promotion) {
+        const promotionItem = await promotionModel.findById(value);
+        for (const product of promotionItem.productsId) {
+          const promoProduct = await productModel.findById(product);
+          for (const recipe of promoProduct.recipe) {
+            if (recipe._id) {
+              await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+            }
+          }
+        }
+      }
     }
 
     // Actualizar el ticket
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId, waiterId }, { new: true });
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId, waiterId, promotion }, { new: true });
     if (!ticketUpdate) {
       return {
         msg: 'No se pudo actualizar el ticket'
@@ -244,6 +316,20 @@ export const cancelAccount = async (id, tableId) => {
     }
     for (const product of ticketCancel.products) {
       await productModel.findByIdAndUpdate(product._id, { $inc: { stock: + product.stock } });
+    }
+    for (const product of ticketCancel.products) {
+      product.recipe.forEach(async (recipe) => {
+        await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: +recipe.stock } })
+      })
+    }
+    for (const promotion of ticketCancel.promotion) {
+      const promotions = await promotionModel.findById(promotion)
+      promotions.productsId.forEach(async (product) => {
+        const products = await productModel.findById(product)
+        products.recipe.forEach(async (recipe) => {
+          await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: +recipe.stock } })
+        });
+      })
     }
 
     return 'producto cancelado'
