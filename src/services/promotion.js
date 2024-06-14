@@ -1,13 +1,13 @@
 import promotionModel from "../model/Promotion.js"
 
-export const createPromotion = async (name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId) => {
+export const createPromotion = async (name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.create({ name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId })
+    const promotion = await promotionModel.create({ name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId })
     if (!promotion) {
       return {
         msg: 'error al crear la promocion'
@@ -19,14 +19,14 @@ export const createPromotion = async (name, description, days, startHour, endHou
   }
 }
 
-export const updatePromotion = async (id, name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, products) => {
+export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, days, startHour, endHour, startDate, endDate, type, discount, active, image , products}, { new: true })
+    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products }, { new: true })
     if (!promotion) {
       return {
         msg: 'error al actualizar'

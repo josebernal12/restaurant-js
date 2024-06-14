@@ -1,6 +1,8 @@
 import express from 'express'
 import 'dotenv/config'
 import cors from 'cors'
+import morgan from 'morgan'
+import compression from 'compression'
 import { Server, Socket } from 'socket.io'
 import userRouter from './router/router.js'
 import { connectDB } from './database/database.js'
@@ -25,6 +27,8 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(morgan('combined'))
+app.use(compression())
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
 app.use('/api/rol', rolRouter)
