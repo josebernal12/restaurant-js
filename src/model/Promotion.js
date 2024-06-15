@@ -13,7 +13,6 @@ const promotionSchema = new Schema({
   },
   price: {
     type: Number,
-    required: true
   },
   days: [
     {

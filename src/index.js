@@ -18,6 +18,7 @@ import inventaryRouter from './router/inventary.js'
 import promotionRouter from './router/promotion.js'
 import categoryRouter from './router/category.js'
 import questionsRouter from './router/questions.js'
+import { client } from './helpers/redis.js'
 const app = express()
 const port = process.env.PORT || 3000
 const corsOptions = {
@@ -29,6 +30,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(morgan('combined'))
 app.use(compression())
+client.connect(console.log('connected redis'))
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
 app.use('/api/rol', rolRouter)
