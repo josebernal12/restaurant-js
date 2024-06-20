@@ -37,7 +37,7 @@ export const getProductsController = async (req, res) => {
       if (categoryDoc) {
         query.category = categoryDoc._id;
       } else {
-        return res.status(404).json({ category: [] });
+        return res.status(200).json({ category: [] });
       }
     } catch (error) {
       return res.status(500).json({ msg: 'Server error' });
@@ -51,7 +51,7 @@ export const getProductsController = async (req, res) => {
   try {
     const products = await getProducts(query, pageNumber, showAll, limit, skip);
     if (!products.products.length) {
-      return res.status(404).json({ products: []});
+      return res.status(200).json({ products: []});
     }
     res.json(products);
   } catch (error) {
