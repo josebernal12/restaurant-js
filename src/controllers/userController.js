@@ -1,7 +1,5 @@
 import generateToken from "../helpers/generateToken.js";
-import { restorePassword } from "../services/auth.js";
-import crypto from 'crypto'
-import { client } from '../helpers/redis.js';
+
 import {
   createUser,
   deleteManyUsers,
@@ -41,27 +39,8 @@ export const getUsersController = async (req, res) => {
     quantity = req.query.quantity
   }
 
-  let saveResult
-  console.log(client.isReady)
-  if (client.isReady) {
-    saveResult = await client.get('users')
-    console.log('entre')
-  }
-  if (saveResult) {
-    console.log('entre2')
-    return res.json(JSON.parse(saveResult))
-  } else {
-    console.log('cache miss')
-    saveResult = await getUsers(query, page, showAll, quantity)
-
-    if (client.isReady) {
-      console.log('entre 3')
-      client.setEx('users', 10, JSON.stringify(saveResult))
-
-
-    }
-  }
-  res.json(saveResult)
+  const response = await getUsers(query, page, showAll, quantity)
+  res.json(response)
 }
 
 export const getUserByIdController = async (req, res) => {
