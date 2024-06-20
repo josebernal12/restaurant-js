@@ -51,7 +51,7 @@ export const getProductsController = async (req, res) => {
   try {
     const products = await getProducts(query, pageNumber, showAll, limit, skip);
     if (!products.products.length) {
-      return res.status(404).json({ msg: 'No products found' });
+      return res.status(404).json({ products: []});
     }
     res.json(products);
   } catch (error) {
