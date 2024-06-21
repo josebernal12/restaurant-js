@@ -40,14 +40,26 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       }
     }
 
+
     // Verificación del stock de productos
     for (const product of products) {
+      // if (product.type === true) {
+      //   const promotion = await promotionModel.findById(product._id);
+      //   for (const product of promotion.productsId) {
+      //     const promoProduct = await productModel.findById(product);
+      //     for (const recipe of promoProduct.recipe) {
+      //       if (recipe._id) {
+      //         await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+      //       }
+      //     }
+      //   }
+      // }
       const productUpdate = await productModel.findById(product._id);
-      if (!productUpdate) {
-        invalid = true;
-        break;
-      }
-
+      // if (!productUpdate) {
+      //   invalid = true;
+      //   break;
+      // }
+      
       for (const recipe of product.recipe) {
         const inventoryItem = await inventaryModel.findById(recipe._id);
         if (inventoryItem.stock < recipe.stock) {

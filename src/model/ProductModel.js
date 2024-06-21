@@ -30,13 +30,17 @@ const productSchema = new Schema({
   image: {
     type: String,
   },
-  promotion: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'promotion',
-    default: false,
-  },
+  // promotion: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'promotion',
+  //   default: false,
+  // },
   iva: {
     type: Number,
+  },
+  promotion: {
+    type: Boolean,
+    required: true
   },
   recipe: [{
     name: String,
