@@ -4,15 +4,15 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 import moment from 'moment-timezone'
 
-export const addProducts = async (name, description, price, stock, category, image, discount, recipe, promotion, iva) => {
+export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva) => {
   try {
 
-    if (!name || !description || !price || !stock || !category) {
+    if (!name || !description || !price  || !category) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const newProduct = await (await productModel.create({ name, description, price, stock, category, image, discount, recipe, promotion, iva })).populate('recipe')
+    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
       const difference = product.stock - value.stock
@@ -89,9 +89,9 @@ export const deleteProduct = async (id) => {
   }
 }
 
-export const updateProduct = async (id, name, description, stock, price, category, discount, recipe, promotion, iva) => {
+export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva) => {
   try {
-    if (!name || !description || !price || !stock || !category) {
+    if (!name || !description || !price  || !category) {
       return {
         msg: 'todos los campos son obligatorios'
       }
@@ -251,7 +251,6 @@ export const bestProduct = async (range) => {
           value.products.forEach(product => {
             // Si el producto tiene un ID
             if (product._id) {
-              console.log(product)
               // Si el producto ya está en el objeto, aumenta la cantidad vendida
               if (soldProducts[product._id]) {
                 soldProducts[product._id].stock += product.stock;

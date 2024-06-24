@@ -9,7 +9,7 @@ import { isAdmin } from '../middleware/isAdmin.js'
 import { checkJwt } from '../middleware/permission.js'
 const router = Router()
 
-router.post('/', [checkJwt], createRolController)
+router.post('/',createRolController)
 router.get('/', [checkJwt], getRolController)
 router.put('/update/:id', [checkJwt], updateRolController)
 router.delete('/delete/:id',  deleteRolController)

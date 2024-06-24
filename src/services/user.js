@@ -117,7 +117,7 @@ export const updateUser = async (id, name, lastName, email, rol) => {
     }
     const exist = await checkEmailInDB(email)
     if (exist === null) {
-      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol: rolId }, { new: true })
+      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol }, { new: true })
       if (!userUpdate) {
         return {
           msg: 'error en la actualizacion'
