@@ -85,11 +85,7 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
 export const updateProductInventory = async (id, name, stock, max, min, unit) => {
   try {
     // Actualiza el inventario
-    if (!name || !stock) {
-      return {
-        msg: 'todos los campos son obligatorio'
-      }
-    }
+   
     const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true });
 
     if (!updatedInventory) {
@@ -104,9 +100,7 @@ export const updateProductInventory = async (id, name, stock, max, min, unit) =>
     for (const product of productsToUpdate) {
       let isModified = false;
       for (const item of product.recipe) {
-        console.log(item)
         if (item._id.toString() === id) {
-          console.log(name)
           item.name = name;
           isModified = true;
         }
