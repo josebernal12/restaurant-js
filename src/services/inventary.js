@@ -58,11 +58,7 @@ export const inventary = async (name, quantity, page, showAll) => {
 
 export const createProductInventory = async (name, stock, max, min, unit) => {
   try {
-    if (!name || !stock) {
-      return {
-        msg: 'todos los campos son obligatorio'
-      }
-    }
+   
     const exist = await inventaryModel.findOne({ name })
     if (exist) {
       return {
