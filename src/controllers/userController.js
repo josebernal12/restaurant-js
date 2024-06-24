@@ -64,10 +64,10 @@ export const deleteUserController = async (req, res) => {
 }
 
 export const updateUserController = async (req, res) => {
-  const { name, lastName, email, rolId } = req.body
+  const { name, lastName, email, rol } = req.body
   const { id } = req.params
 
-  const user = await updateUser(id, name, lastName, email, rolId)
+  const user = await updateUser(id, name, lastName, email, rol)
   if (user?.msg) {
     res.status(404).json(user)
     return

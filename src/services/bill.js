@@ -10,13 +10,14 @@ import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     // Verificación de campos obligatorios
-    if (!ticketId || !tableId ||  !methodOfPayment) {
+    if ( !tableId ||  !methodOfPayment) {
       return 'Error al generar factura: faltan datos por proporcionar';
     }
 
     const tableObjectId = mongoose.Types.ObjectId(tableId);
-
-    const table = await tableModel.findById(tableObjectId);
+    console.log(tableId)
+    const table = await tableModel.findById(tableId);
+    console.log(table)
     if (!table) {
       return {
         msg: 'La mesa con ese ID no existe'
