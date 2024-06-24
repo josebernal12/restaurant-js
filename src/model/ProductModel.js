@@ -35,10 +35,7 @@ const productSchema = new Schema({
   iva: {
     type: Number,
   },
-  promotion: {
-    type: Boolean,
-    required: true
-  },
+
   recipe: [{
     name: String,
     stock: Number,
