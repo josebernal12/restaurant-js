@@ -61,7 +61,7 @@ export const getProducts = async (query, page, showAll, limit, skip) => {
 
 export const getProductsById = async (id) => {
   try {
-    const product = await productModel.findById(id)
+    const product = await productModel.findById(id).populate('category');
     if (!product) {
       return {
         msg: 'no hay productos con ese id'
