@@ -19,7 +19,8 @@ const designTicketSchema = new Schema({
         type: String
     },
     measures: {
-        type: String
+        type: String,
+        default: '60'
     }
 }, {
     timestamps: true
