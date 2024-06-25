@@ -12,7 +12,12 @@ export const addProducts = async (name, description, price, category, image, dis
         msg: 'todos los campos son obligatorios'
       }
     }
-    
+    const exist = await productModel.findOne({ name })
+    if (exist) {
+      return {
+        msg: 'ya existe un producto con ese nombre'
+      }
+    }
     const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
@@ -95,6 +100,12 @@ export const updateProduct = async (id, name, description, price, category, disc
     if (!name || !description || !price || !category) {
       return {
         msg: 'todos los campos son obligatorios'
+      }
+    }
+    const exist = await productModel.findOne({ name })
+    if (exist) {
+      return {
+        msg: 'ya existe un producto con ese nombre'
       }
     }
     // Obtener el producto antes de la actualización
