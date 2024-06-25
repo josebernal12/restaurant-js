@@ -21,11 +21,7 @@ export const createPromotion = async (name, description, price, days, startHour,
 
 export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products) => {
   try {
-    if (!name || !description || !type) {
-      return {
-        msg: 'todos los campos son obligatorios'
-      }
-    }
+
     const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products }, { new: true })
     if (!promotion) {
       return {
