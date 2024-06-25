@@ -7,11 +7,12 @@ import moment from 'moment-timezone'
 export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva) => {
   try {
 
-    if (!name || !description || !price  || !category) {
+    if (!name || !description || !price) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
+    
     const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
@@ -91,7 +92,7 @@ export const deleteProduct = async (id) => {
 
 export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva) => {
   try {
-    if (!name || !description || !price  || !category) {
+    if (!name || !description || !price || !category) {
       return {
         msg: 'todos los campos son obligatorios'
       }

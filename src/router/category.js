@@ -10,7 +10,7 @@ import {
 const router = Router()
 
 router.get('/', [checkJwt], getAllCategoryController)
-router.post('/',  [checkJwt],createCategoryController)
+router.post('/',  createCategoryController)
 router.put('/update/:id', [checkJwt], updateCategoryController)
 router.delete('/delete/:id', [checkJwt], deleteCategoryController)
 router.get('/:id', [checkJwt], getCategoryByIdController)

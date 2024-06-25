@@ -10,7 +10,7 @@ import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
 export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
   try {
     // Verificación de campos obligatorios
-    if ( !tableId ||  !methodOfPayment) {
+    if (!tableId || !methodOfPayment) {
       return 'Error al generar factura: faltan datos por proporcionar';
     }
 
@@ -88,9 +88,15 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
       let billsFiltered = await billModel.find()
-        .populate('ticketId')
         .populate('tableId')
         .populate('userId')
+        .populate({
+          path: 'ticketId',
+          populate: {
+            path: 'waiterId',
+            model: 'User' // el nombre del modelo relacionado
+          }
+        })
         .sort({ createdAt: -1 });
 
       const totalBills = await billModel.countDocuments();
@@ -254,7 +260,13 @@ export const bestWaiter = async (type) => {
 
 export const getBIllById = async (id) => {
   try {
-    const bill = await billModel.findById(id).populate('ticketId').populate('tableId').populate('userId')
+    const bill = await billModel.findById(id).populate('tableId').populate('userId').populate({
+      path: 'ticketId',
+      populate: {
+        path: 'waiterId',
+        model: 'User' // el nombre del modelo relacionado
+      }
+    })
 
     if (!bill) {
       return {
