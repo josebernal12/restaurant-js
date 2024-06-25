@@ -102,7 +102,7 @@ export const updateProduct = async (id, name, description, price, category, disc
 
     // Actualizar el producto con la nueva información
     const productUpdate = await productModel.findByIdAndUpdate(id,
-      { name, description, stock, price, category, discount, recipe, promotion, iva },
+      { name, description, price, category, discount, recipe, promotion, iva },
       { new: true }).populate('recipe');
 
     if (!productUpdate) {
