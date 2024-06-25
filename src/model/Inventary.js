@@ -24,10 +24,6 @@ const inventarySchema = new Schema({
       type: String,
       required: true
     },
-    clave: {
-      type: String,
-      required: true
-    }
   }
 }, {
   timestamps: true
