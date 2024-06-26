@@ -59,7 +59,7 @@ export const deleteCategory = async (id) => {
             { idFather: idFather }
         );
 
-        return { msg: 'Categoría eliminada y subcategorías reasignadas' };
+        return { message: 'Categoría eliminada y subcategorías reasignadas' };
     } catch (error) {
         console.log(error);
         return { msg: 'Error al eliminar la categoría' };
