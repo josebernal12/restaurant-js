@@ -7,12 +7,7 @@ export const createCategory = async (name, color, idFather, path) => {
                 msg: 'todos los campos son obligatorios'
             }
         }
-        const exist = await categoryModel.findOne({ name })
-        if (exist) {
-            return {
-                msg: 'ya existe una categoria con ese nombre'
-            }
-        }
+       
         const category = await categoryModel.create({ name, color, idFather, path })
         if (!category) {
             return {
@@ -32,12 +27,7 @@ export const updateCategory = async (id, name, color, idFather, path) => {
                 msg: 'todos los campos son obligatorios'
             }
         }
-        const exist = await categoryModel.findOne({ name })
-        if (exist) {
-            return {
-                msg: 'ya existe una categoria con ese nombre'
-            }
-        }
+       
         const category = await categoryModel.findByIdAndUpdate(id, { name, color, idFather, path }, { new: true })
         if (!category) {
             return {
