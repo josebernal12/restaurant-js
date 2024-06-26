@@ -40,7 +40,7 @@ export const updateCategory = async (id, name, color, idFather, path) => {
     }
 }
 
-export const deleteCategoryAndReassignSubcategories = async (id) => {
+export const deleteCategory = async (id) => {
     try {
         // Encontrar la categoría a eliminar
         const category = await categoryModel.findById(id);
