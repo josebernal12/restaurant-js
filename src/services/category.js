@@ -50,20 +50,31 @@ export const updateCategory = async (id, name, color, idFather, path) => {
     }
 }
 
-export const deleteCategory = async (id) => {
+export const deleteCategoryAndReassignSubcategories = async (id) => {
     try {
-        const category = await categoryModel.findByIdAndDelete(id, { new: true })
+        // Encontrar la categoría a eliminar
+        const category = await categoryModel.findById(id);
         if (!category) {
-            return {
-                msg: 'no hay categoria con ese id'
-            }
+            return { msg: 'no hay categoria con ese id' };
         }
-        return category
-    } catch (error) {
-        console.log(error)
-    }
-}
 
+        const idFather = category.idFather;
+
+        // Eliminar la categoría
+        await categoryModel.findByIdAndDelete(id);
+
+        // Reasignar subcategorías
+        await categoryModel.updateMany(
+            { idFather: id },
+            { idFather: idFather }
+        );
+
+        return { msg: 'Categoría eliminada y subcategorías reasignadas' };
+    } catch (error) {
+        console.log(error);
+        return { msg: 'Error al eliminar la categoría' };
+    }
+};
 export const getAllCategory = async () => {
     try {
         const category = await categoryModel.find()
