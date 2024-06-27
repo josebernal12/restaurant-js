@@ -266,7 +266,6 @@ export const tokenIsValid = (token) => {
     if (!token) {
       return false
     }
-
     const decoded = jwt.verify(token, process.env.KEYSECRET);
 
     if (decoded.id) {
