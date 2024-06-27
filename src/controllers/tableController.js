@@ -17,7 +17,8 @@ export const createTableController = async (req, res) => {
 }
 
 export const getTablesController = async (req, res) => {
-  const tables = await getTables()
+  const { number } = req.query
+  const tables = await getTables(number)
   res.json(tables)
 }
 

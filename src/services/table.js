@@ -32,8 +32,15 @@ export const createTable = async (available, quantity) => {
 
 
 
-export const getTables = async () => {
+export const getTables = async (number) => {
   try {
+    if (number) {
+      const table = await tableModel.find({ number })
+      if (!table) {
+        return 'no hay mesas con ese id'
+      }
+      return table
+    }
     const table = await tableModel.find()
     if (!table) {
       return 'no hay mesas'
