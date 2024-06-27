@@ -141,7 +141,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
       .populate('tableId')
       .populate('userId');
 
-
+     
     // Filtrar por cantidad si se proporciona
     if (quantity) {
       billsFiltered = billsFiltered.slice(0, quantity);
@@ -162,10 +162,10 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     }
 
     const totalBills = billsFiltered.length;
-
+    
     // Paginar los resultados
     const paginatedBills = billsFiltered.slice(skip, skip + perPage);
-
+    
     return {
       totalBills,
       billsFiltered: paginatedBills

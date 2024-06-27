@@ -11,6 +11,7 @@ import {
     manyUsersController,
     obtainUserByToken,
     renewToken,
+    tokenIsValidController,
     updateUserController,
     uploadExcelController,
     userSearchController,
@@ -40,4 +41,5 @@ router.delete('/delete-manyUsers', [checkJwt], deleteManyUsersController)
 router.post('/upload-excel', [checkJwt], uploadExcelController)
 router.post('/many-users', [checkJwt], manyUsersController)
 router.get('/user-withoutPassword', usersWithoutPasswordController)
+router.get('/tokenValid/:token', tokenIsValidController)
 export default router

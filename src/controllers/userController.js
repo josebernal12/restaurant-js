@@ -8,6 +8,7 @@ import {
   getUsers,
   manyUser,
   searchUser,
+  tokenIsValid,
   updateUser,
   usersWithoutPassword
 } from "../services/user.js";
@@ -147,3 +148,14 @@ export const usersWithoutPasswordController = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener usuarios sin contraseña' });
   }
 };
+
+
+export const tokenIsValidController = async(req, res) => {
+  const { token } = req.params;
+  console.log(token);
+  const response = await tokenIsValid(token);
+  if (response.msg) {
+    return res.status(401).json(response);
+  }
+  res.json(response);
+}

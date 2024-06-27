@@ -1,6 +1,7 @@
 import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 import RolModel from '../model/RolModel.js'
+import jwt from 'jsonwebtoken'
 export const getUsers = async (query, page, showAll, quantity) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
@@ -259,3 +260,22 @@ export const usersWithoutPassword = async () => {
   }
 };
 
+
+export const tokenIsValid = (token) => {
+  try {
+    if (!token) {
+      return false
+    }
+
+    const decoded = jwt.verify(token, process.env.KEYSECRET);
+
+    if (decoded.id) {
+      return true
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
