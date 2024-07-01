@@ -15,9 +15,7 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
     }
 
     const tableObjectId = mongoose.Types.ObjectId(tableId);
-    console.log(tableId)
     const table = await tableModel.findById(tableId);
-    console.log(table)
     if (!table) {
       return {
         msg: 'La mesa con ese ID no existe'

@@ -69,7 +69,10 @@ const ticketSchema = new Schema({
       ref: 'promotion',
       default: false,
     }
-  ]
+  ],
+  folio: {
+    type: Number
+  }
 }, {
   timestamps: true
 })

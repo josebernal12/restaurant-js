@@ -40,7 +40,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       }
     }
 
-
+    const lastBill = await ticketModel.findOne().sort({ folio: -1 });
+    const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
     // Verificación del stock de productos
     for (const product of products) {
       // if (product.type === true) {
@@ -95,7 +96,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       userId,
       waiter,
       waiterId,
-      promotion
+      promotion,
+      folio: newFolio
     });
 
     if (!newTicket) {
