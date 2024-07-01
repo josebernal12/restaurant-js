@@ -35,26 +35,20 @@ export const createTable = async (available, quantity) => {
 export const getTables = async (number) => {
   try {
     if (isNaN(number)) {
-      return {
-        table: []
-      }
+      return []
     }
     if (number) {
       const table = await tableModel.find({ number })
       if (!table) {
         return 'no hay mesas con ese id'
       }
-      return {table}
+      return table
     }
     const table = await tableModel.find()
     if (!table) {
-      return {
-        table: []
-      }
+      return []
     }
-    return {
-      table
-    }
+    return table
   } catch (error) {
     console.log(error)
   }
