@@ -139,7 +139,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
       .populate('tableId')
       .populate('userId');
 
-     
+
     // Filtrar por cantidad si se proporciona
     if (quantity) {
       billsFiltered = billsFiltered.slice(0, quantity);
@@ -160,10 +160,10 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     }
 
     const totalBills = billsFiltered.length;
-    
+
     // Paginar los resultados
     const paginatedBills = billsFiltered.slice(skip, skip + perPage);
-    
+
     return {
       totalBills,
       billsFiltered: paginatedBills
@@ -521,3 +521,76 @@ export const productSell = async (id) => {
     console.log(error)
   }
 }
+export const generateMultipleBills = async (tickets, tableId, userId, methodOfPayment) => {
+  try {
+    // Verificación de campos obligatorios
+    if (!tableId || !methodOfPayment || !tickets || !Array.isArray(tickets) || tickets.length === 0) {
+      return 'Error al generar facturas: faltan datos por proporcionar o el array de tickets está vacío';
+    }
+
+    const tableObjectId = mongoose.Types.ObjectId(tableId);
+    const table = await tableModel.findById(tableObjectId);
+    if (!table) {
+      return {
+        msg: 'La mesa con ese ID no existe'
+      };
+    }
+
+    const createdBills = [];
+    for (const ticketId of tickets) {
+      const ticket = await ticketModel.findById(ticketId);
+      if (!ticket) {
+        return {
+          msg: `El ticket con el ID ${ticketId} no existe`
+        };
+      }
+      const lastBill = await billModel.findOne().sort({ folio: -1 });
+      const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
+      const newBill = await billModel.create({
+        ticketId,
+        tableId,
+        userId,
+        methodOfPayment,
+        folio: newFolio
+      });
+      // const allTickets = await ticketModel.find({ tableId });
+
+      // Obtener el último folio y calcular el nuevo folio
+
+
+      // Verificación de tickets coincidentes con la mesa
+      // if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
+      //   const newBill = await billModel.create({
+      //     ticketId: allTickets.map(ticket => ticket._id),
+      //     tableId,
+      //     userId,
+      //     methodOfPayment,
+      //     folio: newFolio
+      //   });
+
+      // Actualización del estado de la mesa
+      await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
+      await ticketModel.findByIdAndUpdate(ticket._id, { completed: true }, { new: true });
+
+      // Actualización del estado de los tickets a completados
+      // await Promise.all(allTickets.map(async (ticket) => {
+      // }));
+
+      if (!newBill) {
+        return {
+          msg: `Error al generar la factura para el ticket con el ID ${ticketId}`
+        };
+      }
+      createdBills.push(newBill);
+
+    }
+
+    return createdBills;
+
+  } catch (error) {
+    console.log(error);
+    return {
+      msg: 'Ocurrió un error al generar las facturas'
+    };
+  }
+};

@@ -1,6 +1,7 @@
 import {
   bestWaiter,
   generateBill,
+  generateMultipleBills,
   getBIllById,
   getBillLastWeek,
   getBills,
@@ -177,5 +178,13 @@ export const billSellByQuerysController = async (req, res) => {
     date = req.query.date
   }
   const bills = await billSellByQuery(date)
+  res.json(bills)
+}
+
+export const createMultipleBillsController = async (req, res) => {
+  const { tickets, userId, methodOfPayment, tableId } = req.body
+
+  const bills = await generateMultipleBills(tickets, tableId, userId, methodOfPayment)
+
   res.json(bills)
 }

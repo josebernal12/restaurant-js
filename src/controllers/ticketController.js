@@ -2,6 +2,7 @@ import {
   cancelAccount,
   completedAllProductTicket,
   completedProduct,
+  createMultipleTickets,
   createTicket,
   deleteTicket,
   finishedTicket,
@@ -145,4 +146,12 @@ export const getAllTicketsController = async (req, res) => {
     return
   }
   res.json(tickets)
+}
+
+export const createMultipleTicketsControlller = async (req, res) => {
+  const { tickets } = req.body
+
+  const response = await createMultipleTickets(tickets)
+
+  res.json(response)
 }

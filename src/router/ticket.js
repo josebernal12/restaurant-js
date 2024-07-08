@@ -4,6 +4,7 @@ import {
   cancelTicketController,
   completedAllProductTicketController,
   completedProductController,
+  createMultipleTicketsControlller,
   createTicketController,
   deleteTicketController,
   finishedTicketController,
@@ -26,8 +27,9 @@ router.put('/received/:id', [checkJwt], receivedTicketController)
 router.put('/finished/:id', [checkJwt], finishedTicketController)
 router.put('/completed/:id', [checkJwt], completedProductController)
 router.put('/complete-all/:id', [checkJwt], completedAllProductTicketController)
-router.get('/join-product/:id', [checkJwt], joinAllProductsTicketController)
+router.get('/join-product/:id',  joinAllProductsTicketController)
 router.get('/tickets', [checkJwt], getAllTicketsController)
+router.post('/create/multiple-tickets', createMultipleTicketsControlller)
 router.get('/:id', [checkJwt], getTicketsByIdController)
 
 export default router

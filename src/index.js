@@ -3,6 +3,7 @@ import 'dotenv/config'
 import cors from 'cors'
 import morgan from 'morgan'
 import compression from 'compression'
+import { rateLimit } from 'express-rate-limit';
 import { Server, Socket } from 'socket.io'
 import userRouter from './router/router.js'
 import { connectDB } from './database/database.js'
@@ -18,6 +19,7 @@ import inventaryRouter from './router/inventary.js'
 import promotionRouter from './router/promotion.js'
 import categoryRouter from './router/category.js'
 import questionsRouter from './router/questions.js'
+
 const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
@@ -29,6 +31,19 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(morgan('combined'))
 app.use(compression())
+
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	// store: ... , // Redis, Memcached, etc. See below.
+})
+
+// Apply the rate limiting middleware to all requests.
+app.use(limiter)
+
+
 app.use('/api/user', userRouter)
 app.use('/api/product', productRouter)
 app.use('/api/rol', rolRouter)

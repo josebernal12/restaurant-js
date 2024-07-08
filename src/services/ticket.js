@@ -60,7 +60,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       //   invalid = true;
       //   break;
       // }
-      
+
       for (const recipe of product.recipe) {
         const inventoryItem = await inventaryModel.findById(recipe._id);
         if (inventoryItem.stock < recipe.stock) {
@@ -390,7 +390,7 @@ export const completedProduct = async (id, idProduct) => {
     const ticket = await ticketModel.findById(id)
     if (!ticket) {
       return {
-        msg: 'no hay id con ese tikcet'
+        msg: 'no hay id con ese ticket'
       }
     }
     ticket.products.forEach(product => {
@@ -466,5 +466,115 @@ export const getAllTickets = async () => {
 };
 
 
+export const createMultipleTickets = async (tickets) => {
+  try {
+    if (!tickets || !Array.isArray(tickets) || tickets.length === 0) {
+      return {
+        msg: 'El array de tickets es obligatorio y no puede estar vacío'
+      };
+    }
+    const createdTickets = [];
+    for (const ticket of tickets) {
+      const { products, subTotal, total, tableId, userId, waiter, waiterId, promotion } = ticket;
+      if (!products || !total) {
+        return {
+          msg: 'Todos los campos son obligatorios en cada ticket'
+        };
+      }
+
+
+      const tableObjectId = mongoose.Types.ObjectId(tableId);
+      const table = await tableModel.findById(tableObjectId);
+
+      if (!table) {
+        return {
+          msg: `No existen mesas con el ID ${tableId}`
+        };
+      }
+
+      let invalid = false;
+
+      if (promotion) {
+        if (promotion.length > 0) {
+          for (const value of promotion) {
+            const promotionDoc = await promotionModel.findById(value);
+            for (const product of promotionDoc.productsId) {
+              const promoProduct = await productModel.findById(product);
+              for (const recipe of promoProduct.recipe) {
+                if (recipe._id) {
+                  await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const lastBill = await ticketModel.findOne().sort({ folio: -1 });
+      const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
+
+      for (const product of products) {
+        const productUpdate = await productModel.findById(product._id);
+
+        for (const recipe of product.recipe) {
+          console.log(recipe)
+          const inventoryItem = await inventaryModel.findById(recipe._id);
+          console.log(inventoryItem)
+          if (inventoryItem.stock < recipe.stock) {
+            invalid = true;
+            break;
+          }
+        }
+
+        if (invalid) break;
+      }
+
+      if (invalid) {
+        return {
+          msg: 'La cantidad de al menos uno de los productos supera el stock disponible'
+        };
+      }
+
+      for (const product of products) {
+        await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
+
+        for (const recipe of product.recipe) {
+          await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+        }
+      }
+
+      const newTicket = await ticketModel.create({
+        products,
+        subTotal,
+        total,
+        tableId,
+        userId,
+        waiter,
+        waiterId,
+        promotion,
+        folio: newFolio
+      });
+
+      if (!newTicket) {
+        return {
+          msg: 'Error al crear uno de los tickets'
+        };
+      }
+
+      newTicket.status = 'proceso';
+      await newTicket.save();
+
+      createdTickets.push(newTicket);
+    }
+
+    return createdTickets;
+
+  } catch (error) {
+    console.log(error);
+    return {
+      msg: 'Ocurrió un error al crear los tickets'
+    };
+  }
+};
 
 
