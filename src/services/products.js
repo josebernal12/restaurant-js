@@ -102,12 +102,17 @@ export const updateProduct = async (id, name, description, price, category, disc
         msg: 'todos los campos son obligatorios'
       }
     }
-    const exist = await productModel.findOne({ name })
+    const exist = await productModel.findOne({
+      name,
+      _id: { $ne: id } // Excluye el producto actual de la búsqueda
+    });
+
     if (exist) {
       return {
         msg: 'ya existe un producto con ese nombre'
-      }
+      };
     }
+
     // Obtener el producto antes de la actualización
     const productsBefore = await productModel.findById(id).populate('recipe');
 
