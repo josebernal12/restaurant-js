@@ -395,10 +395,10 @@ export const completedProduct = async (id, idProduct) => {
     }
     ticket.products.forEach(product => {
       if (product._id.toString() === idProduct.toString()) {
-        product.completed = !product.completed
+        product.completed = true
       }
     })
-    ticket.save()
+    await ticket.save()
     return ticket
   } catch (error) {
     console.log(error)
