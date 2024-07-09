@@ -80,7 +80,10 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
 
 export const updateProductInventory = async (id, name, stock, max, min, unit) => {
   try {
-    const exist = await inventaryModel.findOne({ name })
+    const exist = await inventaryModel.findOne({
+      name,
+      _id: { $ne: id } // Excluye el producto actual de la búsqueda
+    });
     if (exist) {
       return {
         msg: 'ya existe un producto con ese nombre'
