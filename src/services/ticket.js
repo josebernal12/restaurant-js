@@ -378,7 +378,7 @@ export const finishedTicket = async (id) => {
       }
     }
     ticket.status = 'finalizado'
-    ticket.save()
+    await ticket.save()
     return ticket
   } catch (error) {
     console.log(error)
@@ -416,7 +416,7 @@ export const completedAllProductTicket = async (id) => {
     ticket.products.forEach(product => {
       product.completed = true
     })
-    ticket.save()
+    await ticket.save()
     return ticket
   } catch (error) {
     console.log(error)

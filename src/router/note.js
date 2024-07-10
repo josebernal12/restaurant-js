@@ -4,7 +4,7 @@ import { checkJwt } from '../middleware/permission.js'
 
 const router = Router()
 
-router.post('/', [checkJwt], createNoteController)
+router.post('/',  createNoteController)
 router.get('/', [checkJwt], getAllNotesController)
 router.get('/:id', [checkJwt], getNoteByIdController)
 router.put('/update/:id', [checkJwt], updateNoteController)
