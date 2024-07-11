@@ -19,7 +19,7 @@ import inventaryRouter from './router/inventary.js'
 import promotionRouter from './router/promotion.js'
 import categoryRouter from './router/category.js'
 import questionsRouter from './router/questions.js'
-
+import suppliersRouter from './router/suppliers.js'
 const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
@@ -57,6 +57,7 @@ app.use('/api/inventory', inventaryRouter)
 app.use('/api/promotion', promotionRouter)
 app.use('/api/category', categoryRouter)
 app.use('/api/questions', questionsRouter)
+app.use('/api/supplier', suppliersRouter)
 const server = app.listen(port, () => {
   connectDB()
 
