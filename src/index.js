@@ -100,4 +100,7 @@ io.on('connection', (socket) => {
   socket.on('eliminar nota', nota => {
     io.emit('nota eliminada', nota)
   })
+  socket.on('borrar mesa', mesa => {
+    io.emit('mesa eliminada', mesa)
+  })
 })
