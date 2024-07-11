@@ -426,17 +426,24 @@ export const completedAllProductTicket = async (id) => {
 
 export const joinAllProductsTicket = async (tableId) => {
   try {
-    const ticket = await ticketModel.find({ tableId }).populate('waiterId')
+    const ticket = await ticketModel.find({ tableId })
+      .populate({
+        path: 'waiterId',
+        select: '-password' // Exclude the password field
+      });
+
     if (!ticket) {
       return {
         msg: 'no hay ticket en esa mesa'
       }
     }
-    return ticket
+
+    return ticket;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
+
 export const getAllTickets = async () => {
   const tickets = await ticketModel.find().populate('waiterId')
 
