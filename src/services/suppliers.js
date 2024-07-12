@@ -1,4 +1,4 @@
-import supplierModel from "../model/suppliers.js"
+import supplierModel from "../model/Suppliers.js"
 
 export const createSupplier = async (name, address, phone, email) => {
     try {
