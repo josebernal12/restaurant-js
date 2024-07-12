@@ -15,11 +15,11 @@ import {
     billSellController,
     productsSellAllController,
     billSellByQuerysController,
-    createMultipleBillsController
+    createMultipleBillsController,
+    sellsCategoryController
 } from '../controllers/billController.js'
 import { checkJwt } from '../middleware/permission.js'
 import { designTicketController, getDesignTicketController } from '../controllers/designTicketController.js'
-import { createMultipleTicketsControlller } from '../controllers/ticketController.js'
 
 const router = Router()
 router.get('/',  getBillsController)
@@ -37,6 +37,7 @@ router.get('/bill',  billSellController)
 router.get('/products', [checkJwt], productsSellAllController)
 router.get('/bill/query', [checkJwt], billSellByQuerysController) //
 router.post('/create/multiple-bills', createMultipleBillsController)
+router.get('/sells-category', sellsCategoryController)
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)
 export default router

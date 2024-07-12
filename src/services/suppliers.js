@@ -62,14 +62,17 @@ export const deleteSupplier = async (id) => {
     }
 }
 
-export const getSuppliers = async (query, showAll, quantity) => {
+export const getSuppliers = async (query, showAll, quantity, page) => {
+    const perPage = 10;
+    const pageQuery = parseInt(page) || 1;
+    const skip = perPage * (pageQuery - 1);
     try {
         let suppliers;
 
         if (showAll === 'true') {
             suppliers = await supplierModel.find();
         } else {
-            suppliers = await supplierModel.find(query).limit(quantity);
+            suppliers = await supplierModel.find(query).limit(quantity).skip(skip);
         }
 
         if (!suppliers.length) {

@@ -70,7 +70,8 @@ export const getSuppliersController = async (req, res) => {
 
     const showAll = req.query.showAll
     const quantity = req.query.quantity
-    const supplier = await getSuppliers(query, showAll, quantity)
+    const page = req.query.page
+    const supplier = await getSuppliers(query, showAll, quantity, page)
 
     if (supplier?.msg) {
         return res.status(400).json(supplier)
