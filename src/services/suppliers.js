@@ -95,7 +95,8 @@ export const createMultipleSuppliers = async (suppliers) => {
             const newSuppliers = await supplierModel.create(supplier)
             supplierArray.push(newSuppliers)
         })
-        return supplierArray
+        const suppliersTotal = await supplierModel.countDocuments()
+        return { supplierArray, suppliersTotal }
     } catch (error) {
         console.log(error)
     }

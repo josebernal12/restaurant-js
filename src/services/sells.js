@@ -457,3 +457,15 @@ export const billSellByQuery = async (date) => {
     console.log(error)
   }
 }
+
+
+export const sellsCategory = async () => {
+  try {
+    const bills = await billModel.find().populate('ticketId')
+    bills.products((product) => {
+      
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
