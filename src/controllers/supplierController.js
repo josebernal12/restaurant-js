@@ -92,7 +92,7 @@ export const createMultipleSuppliersController = async (req, res) => {
 }
 
 export const deleteMultipleSuppliersController = async (req, res) => {
-    const ids = req.body
+    const {ids} = req.body
 
     const supplier = await deleteMultipleSuppliers(ids)
     if (supplier?.msg) {
