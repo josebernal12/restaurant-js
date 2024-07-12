@@ -1,5 +1,7 @@
 import {
+    createMultipleSuppliers,
     createSupplier,
+    deleteMultipleSuppliers,
     deleteSupplier,
     getSupplierById,
     getSuppliers,
@@ -70,6 +72,28 @@ export const getSuppliersController = async (req, res) => {
     const quantity = req.query.quantity
     const supplier = await getSuppliers(query, showAll, quantity)
 
+    if (supplier?.msg) {
+        return res.status(400).json(supplier)
+    }
+    res.json(supplier)
+}
+
+export const createMultipleSuppliersController = async (req, res) => {
+    const { suppliers } = req.body
+
+    const newSuppliers = await createMultipleSuppliers(suppliers)
+
+
+    if (newSuppliers?.msg) {
+        return res.status(400).json(newSuppliers)
+    }
+    res.json(newSuppliers)
+}
+
+export const deleteMultipleSuppliersController = async (req, res) => {
+    const { ids } = req.body
+
+    const supplier = await deleteMultipleSuppliers(ids)
     if (supplier?.msg) {
         return res.status(400).json(supplier)
     }

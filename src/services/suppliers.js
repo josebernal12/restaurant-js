@@ -1,4 +1,4 @@
-import supplierModel from "../model/Suppliers.js"
+import supplierModel from "../model/suppliers.js"
 
 export const createSupplier = async (name, address, phone, email) => {
     try {
@@ -69,7 +69,7 @@ export const getSuppliers = async (query, showAll, quantity) => {
         if (showAll === 'true') {
             suppliers = await supplierModel.find();
         } else {
-            suppliers = await supplierModel.find(query);
+            suppliers = await supplierModel.find(query).limit(quantity);
         }
 
         if (!suppliers.length) {
