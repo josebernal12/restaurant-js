@@ -7,8 +7,9 @@ import {
 } from "../services/suppliers.js"
 
 export const createSupplierController = async (req, res) => {
-    const { name, address, phone } = req.body
-    const supplier = await createSupplier(name, address, phone)
+    const { name, address, phone, email } = req.body
+
+    const supplier = await createSupplier(name, address, phone, email)
     if (supplier?.msg) {
         return res.status(400).json(supplier)
     }
@@ -47,7 +48,27 @@ export const deleteSupplierController = async (req, res) => {
 }
 
 export const getSuppliersController = async (req, res) => {
-    const supplier = await getSuppliers()
+    let query = {};
+    const { name, phone, address, email } = req.query;
+
+
+    if (name) {
+        query.name = { $regex: name, $options: 'i' }; // Búsqueda parcial y case insensitive
+    }
+    if (phone) {
+        query.phone = { $regex: phone, $options: 'i' };
+    }
+    if (address) {
+        query.address = { $regex: address, $options: 'i' };
+    }
+    if (email) {
+        query.email = { $regex: email, $options: 'i' };
+    }
+
+
+    const showAll = req.query.showAll
+    const quantity = req.query.quantity
+    const supplier = await getSuppliers(query, showAll, quantity)
 
     if (supplier?.msg) {
         return res.status(400).json(supplier)

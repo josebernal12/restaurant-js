@@ -1,13 +1,13 @@
 import supplierModel from "../model/Suppliers.js"
 
-export const createSupplier = async (name, address, phone) => {
+export const createSupplier = async (name, address, phone, email) => {
     try {
         if (!name) {
             return {
                 msg: 'error, name is required'
             }
         }
-        const supplier = await supplierModel.create({ name, address, phone })
+        const supplier = await supplierModel.create({ name, address, phone, email })
         if (!supplier) {
             return {
                 msg: 'error creating supplier'
@@ -62,15 +62,53 @@ export const deleteSupplier = async (id) => {
     }
 }
 
-export const getSuppliers = async (name, phone, address) => {
+export const getSuppliers = async (query, showAll, quantity) => {
     try {
-        const supplier = await supplierModel.find()
-        if (!supplier) {
-            return {
-                msg: 'error finding supplier'
-            }
+        let suppliers;
+
+        if (showAll === 'true') {
+            suppliers = await supplierModel.find();
+        } else {
+            suppliers = await supplierModel.find(query);
         }
-        return supplier
+
+        if (!suppliers.length) {
+            return {
+                suppliers: []
+            };
+        }
+
+        return suppliers;
+    } catch (error) {
+        console.log(error);
+        return {
+            msg: 'Error finding suppliers',
+            error: error.message
+        };
+    }
+}
+
+export const createMultipleSuppliers = async (suppliers) => {
+    let supplierArray = []
+    try {
+        suppliers.forEach(async (supplier) => {
+            const newSuppliers = await supplierModel.create(supplier)
+            supplierArray.push(newSuppliers)
+        })
+        return supplierArray
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const deleteMultipleSuppliers = async (ids) => {
+    try {
+        ids.forEach(async (id) => {
+            await supplierModel.findByIdAndDelete(id, { new: true })
+        })
+        const totalSupplier = await supplierModel.countDocuments()
+
+        return { totalSupplier }
     } catch (error) {
         console.log(error)
     }
