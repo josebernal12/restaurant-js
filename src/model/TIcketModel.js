@@ -8,6 +8,10 @@ const ticketSchema = new Schema({
       price: Number,
       stock: Number,
       discount: Number,
+      category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category'
+      },
       uid: {
         type: String,
         default: uid(16)

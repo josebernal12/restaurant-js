@@ -459,13 +459,17 @@ export const billSellByQuery = async (date) => {
 }
 
 
-export const sellsCategory = async () => {
+export const sellsCategory = async (categoryId) => {
   try {
     const bills = await billModel.find().populate('ticketId')
     bills.forEach(bill => {
       bill.ticketId.forEach(value => {
+        console.log(value)
         value.products.forEach(product => {
           console.log(product)
+          if (product.category === categoryId) {
+            console.log(product)
+          }
         })
       })
     })
