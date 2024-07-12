@@ -68,11 +68,13 @@ export const getSuppliers = async (query, showAll, quantity, page) => {
     const skip = perPage * (pageQuery - 1);
     try {
         let suppliers;
-
+        let totalSuppliers
         if (showAll === 'true') {
             suppliers = await supplierModel.find();
+            totalSuppliers = await supplierModel.countDocuments()
         } else {
             suppliers = await supplierModel.find(query).limit(quantity).skip(skip);
+            totalSuppliers = await supplierModel.countDocuments()
         }
 
         if (!suppliers.length) {
@@ -81,7 +83,7 @@ export const getSuppliers = async (query, showAll, quantity, page) => {
             };
         }
 
-        return suppliers;
+        return { suppliers, totalSuppliers };
     } catch (error) {
         console.log(error);
         return {
