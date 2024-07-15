@@ -61,6 +61,10 @@ const RolSchema = new Schema({
     //   agregarProducto: false,
     //   actualizarProducto: false,
     // }
+  },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
   }
 });
 

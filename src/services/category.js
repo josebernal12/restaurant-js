@@ -1,14 +1,14 @@
 import categoryModel from "../model/CategoryModel.js"
 
-export const createCategory = async (name, color, idFather, path) => {
+export const createCategory = async (name, color, idFather, path, companyId) => {
     try {
         if (!name || !color) {
             return {
                 msg: 'todos los campos son obligatorios'
             }
         }
-       
-        const category = await categoryModel.create({ name, color, idFather, path })
+
+        const category = await categoryModel.create({ name, color, idFather, path, companyId })
         if (!category) {
             return {
                 msg: 'error al crear una categoria'
@@ -20,15 +20,15 @@ export const createCategory = async (name, color, idFather, path) => {
     }
 }
 
-export const updateCategory = async (id, name, color, idFather, path) => {
+export const updateCategory = async (id, name, color, idFather, path, companyId) => {
     try {
         if (!name || !color || !path) {
             return {
                 msg: 'todos los campos son obligatorios'
             }
         }
-       
-        const category = await categoryModel.findByIdAndUpdate(id, { name, color, idFather, path }, { new: true })
+
+        const category = await categoryModel.findByIdAndUpdate(id, { name, color, idFather, path, companyId }, { new: true })
         if (!category) {
             return {
                 msg: 'no hay categoria con ese id'
@@ -62,12 +62,12 @@ export const deleteCategory = async (id) => {
         return { message: 'Categoría eliminada y subcategorías reasignadas' };
     } catch (error) {
         console.log(error);
-        return { msg: 'Error al eliminar la categoría' };
-    }
+        return { msg: 'Error al eliminar la categoría' };
+    }
 };
-export const getAllCategory = async () => {
+export const getAllCategory = async (companyId) => {
     try {
-        const category = await categoryModel.find()
+        const category = await categoryModel.find({ companyId })
         if (!category) {
             return {
                 category: []

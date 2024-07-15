@@ -15,7 +15,7 @@ const productSchema = new Schema({
     type: Number,
     required: true
   },
- 
+
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'category',
@@ -40,7 +40,11 @@ const productSchema = new Schema({
     name: String,
     stock: Number,
     unit: String
-  }]
+  }],
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  }
 }, {
   timestamps: true
 })

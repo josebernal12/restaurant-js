@@ -21,6 +21,10 @@ const designTicketSchema = new Schema({
     measures: {
         type: String,
         default: '60'
+    },
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company'
     }
 }, {
     timestamps: true

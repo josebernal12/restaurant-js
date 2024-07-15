@@ -7,7 +7,7 @@ import moment from 'moment'; // Importa la librería moment.js para manejar fech
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
 import userModel from "../model/UserModel.js"
 import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
-export const generateBill = async (ticketId, tableId, userId, methodOfPayment) => {
+export const generateBill = async (ticketId, tableId, userId, methodOfPayment, companyId) => {
   try {
     // Verificación de campos obligatorios
     if (!tableId || !methodOfPayment) {
@@ -29,10 +29,10 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
       };
     }
 
-    const allTickets = await ticketModel.find({ tableId });
+    const allTickets = await ticketModel.find({ tableId, companyId });
 
     // Obtener el último folio y calcular el nuevo folio
-    const lastBill = await billModel.findOne().sort({ folio: -1 });
+    const lastBill = await billModel.findOne({ companyId }).sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
 
     // Verificación de tickets coincidentes con la mesa
@@ -42,7 +42,8 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
         tableId,
         userId,
         methodOfPayment,
-        folio: newFolio
+        folio: newFolio,
+        companyId
       });
 
       // Actualización del estado de la mesa
@@ -74,7 +75,7 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment) =
 };
 
 
-export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate, tableId) => {
+export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate, tableId, companyId) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -85,7 +86,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
-      let billsFiltered = await billModel.find()
+      let billsFiltered = await billModel.find({ companyId })
         .populate('tableId')
         .populate('userId')
         .populate({
@@ -97,7 +98,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
         })
         .sort({ createdAt: -1 });
 
-      const totalBills = await billModel.countDocuments();
+      const totalBills = await billModel.countDocuments({ companyId });
 
       return {
         totalBills,
@@ -128,7 +129,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     }
 
     // Realiza la búsqueda de facturas según la consulta definida
-    let billsFiltered = await billModel.find(query)
+    let billsFiltered = await billModel.find({ ...query, companyId })
       .populate({
         path: 'ticketId',
         populate: {
@@ -174,7 +175,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
   }
 };
 
-export const bestWaiter = async (type) => {
+export const bestWaiter = async (type, companyId) => {
   try {
     let startDate, endDate;
 
@@ -216,7 +217,7 @@ export const bestWaiter = async (type) => {
         $lte: endDate
       }
     } : {};
-    let bills = await billModel.find(query)
+    let bills = await billModel.find({ ...query, companyId })
       .populate({
         path: 'ticketId',
         populate: {
@@ -279,7 +280,7 @@ export const getBIllById = async (id) => {
 }
 
 
-export const sells = async (date) => {
+export const sells = async (date, companyId) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
 
@@ -328,7 +329,7 @@ export const sells = async (date) => {
           };
 
           // Verificar si hay ventas para el día actual
-          const bills = await billModel.find(query).populate('ticketId');
+          const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
           if (bills.length === 0) {
             return 0; // No hay ventas para este día, devolver 0
           }
@@ -338,7 +339,7 @@ export const sells = async (date) => {
       }
     }
 
-    const bills = await billModel.find(query).populate('ticketId');
+    const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
 
     let totalSales = 0;
     bills.forEach(bill => {
@@ -355,7 +356,7 @@ export const sells = async (date) => {
   }
 };
 
-export const getBillLastWeek = async (type, page) => {
+export const getBillLastWeek = async (type, page, companyId) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
@@ -379,7 +380,7 @@ export const getBillLastWeek = async (type, page) => {
       };
     }
     // Realiza la búsqueda de facturas según la consulta definida
-    let billsFiltered = await billModel.find(query)
+    let billsFiltered = await billModel.find({ ...query, companyId })
       .populate('ticketId')
       .populate('tableId')
       .populate('userId')
@@ -387,7 +388,7 @@ export const getBillLastWeek = async (type, page) => {
       .skip(skip)
       .sort({ createdAt: -1 });
 
-    const totalBills = await billModel.countDocuments(query);
+    const totalBills = await billModel.countDocuments({ ...query, companyId });
 
     if (!billsFiltered) {
       return {
@@ -405,11 +406,11 @@ export const getBillLastWeek = async (type, page) => {
 }
 
 
-export const userSell = async (id) => {
+export const userSell = async (id, companyId) => {
   try {
 
     const { year, month, week, day } = searchByDate();
-    let { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, userModel, id)
+    let { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, userModel, id, companyId)
 
     valorAño = valorAño.filter(bill =>
       bill.ticketId.some(ticket =>
@@ -445,12 +446,12 @@ export const userSell = async (id) => {
 }
 
 
-export const productSell = async (id) => {
+export const productSell = async (id, companyId) => {
   try {
 
     const { year, month, week, day } = searchByDate();
 
-    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, productModel, id)
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, productModel, id, companyId)
 
     let totalAño = 0;
     let totalMes = 0;
@@ -521,7 +522,7 @@ export const productSell = async (id) => {
     console.log(error)
   }
 }
-export const generateMultipleBills = async (tickets, tableId, userId, methodOfPayment) => {
+export const generateMultipleBills = async (tickets, tableId, userId, methodOfPayment, companyId) => {
   try {
     // Verificación de campos obligatorios
     if (!tableId || !methodOfPayment || !tickets || !Array.isArray(tickets) || tickets.length === 0) {
@@ -544,14 +545,15 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
           msg: `El ticket con el ID ${ticketId} no existe`
         };
       }
-      const lastBill = await billModel.findOne().sort({ folio: -1 });
+      const lastBill = await billModel.findOne({ companyId }).sort({ folio: -1 });
       const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
       const newBill = await billModel.create({
         ticketId,
         tableId,
         userId,
         methodOfPayment,
-        folio: newFolio
+        folio: newFolio,
+        companyId
       });
       // const allTickets = await ticketModel.find({ tableId });
 

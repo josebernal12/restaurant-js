@@ -1,4 +1,4 @@
-import mongoose  from 'mongoose'
+import mongoose from 'mongoose'
 
 const { Schema } = mongoose
 
@@ -18,12 +18,16 @@ const inventarySchema = new Schema({
   min: {
     type: Number,
     required: true
-  }, 
-  unit : {
+  },
+  unit: {
     name: {
       type: String,
       required: true
     },
+  },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
   }
 }, {
   timestamps: true

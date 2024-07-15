@@ -76,6 +76,10 @@ const ticketSchema = new Schema({
   ],
   folio: {
     type: Number
+  },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
   }
 }, {
   timestamps: true

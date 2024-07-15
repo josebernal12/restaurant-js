@@ -7,8 +7,8 @@ import {
 } from "../services/note.js"
 
 export const createNoteController = async (req, res) => {
-  const { note, userId, tableId, ticketId } = req.body
-  const newNote = await createNote(note, userId, tableId, ticketId)
+  const { note, userId, tableId, ticketId, companyId } = req.body
+  const newNote = await createNote(note, userId, tableId, ticketId, companyId)
   if (newNote?.msg) {
     res.status(404).json(newNote)
     return
@@ -17,9 +17,9 @@ export const createNoteController = async (req, res) => {
 }
 export const updateNoteController = async (req, res) => {
   const { id } = req.params
-  const { note, ticketId, userId } = req.body
+  const { note, ticketId, userId, companyId } = req.body
 
-  const noteUpdate = await updateNote(id, note, ticketId, userId)
+  const noteUpdate = await updateNote(id, note, ticketId, userId, companyId)
   if (noteUpdate?.msg) {
     res.status(404).json(noteUpdate)
     return
@@ -38,7 +38,7 @@ export const deleteNoteController = async (req, res) => {
 }
 
 export const getAllNotesController = async (req, res) => {
-  const notes = await getAllNotes()
+  const notes = await getAllNotes(req.user.companyId.toString())
   if (notes?.msg) {
     res.status(404).json(notes)
     return

@@ -4,7 +4,7 @@ import userModel from "../model/UserModel.js";
 import RolModel from '../model/RolModel.js';
 import bcrypt from 'bcrypt'
 import { uid } from 'uid'
-export const register = async (name, lastName, email, password, confirmPassword, rol) => {
+export const register = async (name, lastName, email, password, confirmPassword, rol, companyId) => {
   const saltRounds = 10;
 
   try {
@@ -19,7 +19,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
         const hash = bcrypt.hashSync(password, saltRound)
         if (!rol) {
           const rolMember = await RolModel.findOne({ name: 'miembro' });
-          const newUser = await userModel.create({ name, lastName, email, password: hash, rol: rolMember });
+          const newUser = await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId });
           const populatedUser = await userModel.findById(newUser._id).populate('rol').select('-password');
           const token = generateToken(newUser.id);
           return {
@@ -27,7 +27,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
             token
           };
         }
-        const newUser = await userModel.create({ name, lastName, email, password: hash, rol });
+        const newUser = await userModel.create({ name, lastName, email, password: hash, rol, companyId });
         const userId = await userModel.findById(newUser._id).populate('rol').select('-password');
         const token = generateToken(userId.id);
         return {
@@ -56,7 +56,6 @@ export const login = async (email, password) => {
     }
 
     const match = await bcrypt.compare(password, user.password);
-    console.log(match);
     if (match) {
       // Crear un nuevo objeto user sin la contraseña
       const userWithoutPassword = {

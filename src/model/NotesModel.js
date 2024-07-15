@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 
 const notesSchema = new Schema({
-  note:[
+  note: [
     {
       message: String,
       productId: {
@@ -18,6 +18,10 @@ const notesSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ticket'
   },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  }
 })
 
 const noteModel = mongoose.model('note', notesSchema)

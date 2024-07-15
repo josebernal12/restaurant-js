@@ -16,10 +16,10 @@ import {
 } from "../services/ticket.js"
 
 export const createTicketController = async (req, res) => {
-  const { products, subtotal, total, userId, waiter, waiterId, promotion } = req.body
+  const { products, subtotal, total, userId, waiter, waiterId, promotion, companyId } = req.body
   const { id } = req.params
 
-  const ticket = await createTicket(products, subtotal, total, id, userId, waiter, waiterId, promotion)
+  const ticket = await createTicket(products, subtotal, total, id, userId, waiter, waiterId, promotion, companyId)
   if (ticket?.msg) {
     res.status(404).json(ticket)
     return
@@ -28,10 +28,10 @@ export const createTicketController = async (req, res) => {
 }
 
 export const updateTicketController = async (req, res) => {
-  const { products, subTotal, total, tableId, userId, waiterId, promotion } = req.body
+  const { products, subTotal, total, tableId, userId, waiterId, promotion, companyId } = req.body
   const { id } = req.params
 
-  const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId, waiterId, promotion)
+  const ticket = await newUpdateTicket(id, products, subTotal, total, tableId, userId, waiterId, promotion, companyId)
 
   if (ticket?.msg) {
     res.status(404).json(ticket)
@@ -45,7 +45,7 @@ export const getTicketsController = async (req, res) => {
   if (req.query.waiter) {
     query.waiter = { $regex: req.query.waiter, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
-  const tickets = await getTickets(query)
+  const tickets = await getTickets(query,req.user.companyId.toString())
   if (tickets?.msg) {
     res.status(404).json(tickets)
     return
@@ -130,7 +130,7 @@ export const completedAllProductTicketController = async (req, res) => {
 
 export const joinAllProductsTicketController = async (req, res) => {
   const { id } = req.params
-  const ticket = await joinAllProductsTicket(id)
+  const ticket = await joinAllProductsTicket(id, req.user.companyId.toString())
   if (ticket?.msg) {
     res.status(404).json(ticket)
     return
@@ -140,7 +140,7 @@ export const joinAllProductsTicketController = async (req, res) => {
 
 export const getAllTicketsController = async (req, res) => {
   const { id } = req.params
-  const tickets = await getAllTickets(id)
+  const tickets = await getAllTickets(id, req.user.companyId.toString())
   if (tickets?.msg) {
     res.status(404).json(tickets)
     return

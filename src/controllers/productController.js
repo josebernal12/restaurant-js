@@ -10,10 +10,9 @@ import {
   searchProduct,
   updateProduct
 } from "../services/products.js"
-import mongoose from "mongoose"
 export const addProductController = async (req, res) => {
-  const { name, description, price, category, image, discount, recipe, promotion, iva } = req.body
-  const newProduct = await addProducts(name, description, price, category, image, discount, recipe, promotion, iva)
+  const { name, description, price, category, image, discount, recipe, promotion, iva, companyId } = req.body
+  const newProduct = await addProducts(name, description, price, category, image, discount, recipe, promotion, iva, companyId)
   if (newProduct?.msg) {
     res.status(404).json(newProduct)
     return
@@ -49,9 +48,9 @@ export const getProductsController = async (req, res) => {
   const skip = (pageNumber - 1) * limit;
 
   try {
-    const products = await getProducts(query, pageNumber, showAll, limit, skip);
+    const products = await getProducts(query, pageNumber, showAll, limit, skip, req.user.companyId.toString());
     if (!products.products.length) {
-      return res.status(200).json({ products: []});
+      return res.status(200).json({ products: [] });
     }
     res.json(products);
   } catch (error) {
@@ -82,9 +81,9 @@ export const deleteProductController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
   const { id } = req.params
-  const { name, description, price, category, discount, recipe, promotion, iva } = req.body
+  const { name, description, price, category, discount, recipe, promotion, iva, companyId } = req.body
 
-  const productUpdate = await updateProduct(id, name, description, price, category, discount, recipe, promotion, iva)
+  const productUpdate = await updateProduct(id, name, description, price, category, discount, recipe, promotion, iva, companyId)
   if (productUpdate?.msg) {
     res.status(404).json(productUpdate)
     return
@@ -103,7 +102,7 @@ export const bestProductController = async (req, res) => {
   if (req.query.range) {
     range = req.query.range
   }
-  const bill = await bestProduct(range)
+  const bill = await bestProduct(range,req.user.companyId.toString())
   res.json(bill)
 }
 export const deleteManyProductsController = async (req, res) => {

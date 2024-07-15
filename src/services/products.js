@@ -4,7 +4,7 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 import moment from 'moment-timezone'
 
-export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva) => {
+export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId) => {
   try {
 
     if (!name || !description || !price) {
@@ -18,7 +18,7 @@ export const addProducts = async (name, description, price, category, image, dis
         msg: 'ya existe un producto con ese nombre'
       }
     }
-    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva })).populate('recipe')
+    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId })).populate('recipe')
     newProduct.recipe.forEach(async (value) => {
       const product = await inventaryModel.findById(value._id)
       const difference = product.stock - value.stock
@@ -41,15 +41,15 @@ export const addProducts = async (name, description, price, category, image, dis
   }
 }
 
-export const getProducts = async (query, page, showAll, limit, skip) => {
+export const getProducts = async (query, page, showAll, limit, skip, companyId) => {
   try {
-    const productTotal = await productModel.countDocuments(query);
+    const productTotal = await productModel.countDocuments({ ...query, companyId });
 
     let products;
     if (showAll === "1") {
-      products = await productModel.find(query).populate('category');
+      products = await productModel.find({ ...query, companyId }).populate('category');
     } else {
-      products = await productModel.find(query)
+      products = await productModel.find({ ...query, companyId })
         .limit(limit)
         .skip(skip)
         .populate('category');
@@ -95,7 +95,7 @@ export const deleteProduct = async (id) => {
   }
 }
 
-export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva) => {
+export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId) => {
   try {
     if (!name || !description || !price || !category) {
       return {
@@ -118,7 +118,7 @@ export const updateProduct = async (id, name, description, price, category, disc
 
     // Actualizar el producto con la nueva información
     const productUpdate = await productModel.findByIdAndUpdate(id,
-      { name, description, price, category, discount, recipe, promotion, iva },
+      { name, description, price, category, discount, recipe, promotion, iva, companyId },
       { new: true }).populate('recipe');
 
     if (!productUpdate) {
@@ -204,7 +204,7 @@ export const TimeRange = {
   YEAR: 'year'
 };
 
-export const bestProduct = async (range) => {
+export const bestProduct = async (range, companyId) => {
   try {
     let filter = {};
 
@@ -254,7 +254,7 @@ export const bestProduct = async (range) => {
     }
 
     // Obtener todas las facturas (o filtrar por fecha si se proporciona un rango)
-    const bills = await billModel.find(filter).populate('ticketId');
+    const bills = await billModel.find({...filter, companyId}).populate('ticketId');
 
     // Objeto para almacenar la cantidad total vendida de cada producto
     const soldProducts = {};

@@ -2,36 +2,36 @@ import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 import RolModel from '../model/RolModel.js'
 import jwt from 'jsonwebtoken'
-export const getUsers = async (query, page, showAll, quantity) => {
+export const getUsers = async (query, page, showAll, quantity, companyId) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
   try {
     if (showAll === "1") {
-      const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find().populate('rol').select('-password')
+      const usersTotal = await userModel.countDocuments({ companyId })
+      const users = await userModel.find({ companyId }).populate('rol').select('-password')
       return {
         usersTotal,
         users
       }
     }
     if (quantity) {
-      const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find(query).limit(quantity).skip(skip).populate('rol').select('-password')
+      const usersTotal = await userModel.countDocuments({ companyId })
+      const users = await userModel.find({ ...query, companyId }).limit(quantity).skip(skip).populate('rol').select('-password')
       return {
         usersTotal,
         users
       }
     }
     if (query.rol) {
-      const rol = await RolModel.findOne({ name: query.rol });
+      const rol = await RolModel.findOne({ name: query.rol, companyId });
       if (!rol) {
         return {
           users: []
         };
       }
-      const usersTotal = await userModel.countDocuments()
-      const users = await userModel.find({ rol: rol._id }).limit(perPage).skip(skip).populate('rol').select('-password').exec();
+      const usersTotal = await userModel.countDocuments({ companyId })
+      const users = await userModel.find({ rol: rol._id, companyId }).limit(perPage).skip(skip).populate('rol').select('-password').exec();
       if (!users || users.length === 0) {
         return {
           users: []
@@ -42,11 +42,12 @@ export const getUsers = async (query, page, showAll, quantity) => {
         usersTotal
       };
     }
-    const usersTotal = await userModel.countDocuments()
-    const users = await userModel.find(query).limit(perPage).select('-password')
+    const usersTotal = await userModel.countDocuments({ companyId });
+    const users = await userModel.find({ ...query, companyId }).limit(perPage).select('-password')
       .skip(skip)
       .populate('rol')
-      .exec();;
+      .exec();
+
     if (!users || users.length === 0) {
       return {
         users: []
@@ -95,7 +96,7 @@ export const deleteUser = async (id) => {
     console.log(error)
   }
 }
-export const updateUser = async (id, name, lastName, email, rol) => {
+export const updateUser = async (id, name, lastName, email, rol, companyId) => {
   try {
 
     if (!name || !lastName || !email) {
@@ -107,7 +108,7 @@ export const updateUser = async (id, name, lastName, email, rol) => {
 
 
     if (user.email === email) {
-      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol }, { new: true })
+      const userUpdate = await userModel.findByIdAndUpdate(id, { name, lastName, email, rol, companyId }, { new: true })
       if (!userUpdate) {
         return {
           msg: 'error en la actualizacion'
@@ -149,7 +150,7 @@ export const searchUser = async (name) => {
   }
 }
 
-export const createUser = async (name, apellido, email, password, confirmPassword) => {
+export const createUser = async (name, apellido, email, password, confirmPassword, companyId) => {
   try {
     if (password !== confirmPassword) {
       return {
@@ -161,7 +162,9 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
         msg: 'todos los campos son necesarios'
       }
     }
-    const user = await (await userModel.create({ name, apellido, email, password })).populate('rol')
+    const user = await (await userModel.create({ name, apellido, email, password, companyId })).populate('rol')
+    user.haveCompany = true 
+    await user.save()
     if (!user) {
       return {
         msg: 'error al crear el usuario'
@@ -169,7 +172,10 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
     }
     if (!rol) {
       const rolMember = await RolModel.findOne({ name: 'miembro' });
-      const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember })).populate('rol')
+      const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId })).populate('rol');
+
+      user.haveCompany = true 
+      await user.save()
       const token = generateToken(user.id)
       return {
         user,
@@ -220,6 +226,8 @@ export const manyUser = async (users) => {
           const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false })
           const populatedUser = await userModel.findById(value._id).populate('rol').select('-password');
           usersTotal = await userModel.countDocuments()
+          user.haveCompany = true 
+          await user.save()
           if (!user) {
             return { user: [] };
           }

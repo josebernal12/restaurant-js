@@ -1,12 +1,12 @@
 import targetModel from "../model/TargetsModel.js"
 
-export const createTargets = async (targets) => {
+export const createTargets = async (targets, companyId) => {
   try {
     // Primero, eliminamos cualquier objetivo existente
     await targetModel.deleteMany({}); // Esto eliminará todos los objetivos existentes
 
     // Luego, creamos el nuevo objetivo
-    const newTarget = await targetModel.create({ targets });
+    const newTarget = await targetModel.create({ targets, companyId });
 
     if (!newTarget) {
       return {
@@ -22,9 +22,9 @@ export const createTargets = async (targets) => {
   }
 };
 
-export const updateTargets = async (id, targets) => {
+export const updateTargets = async (id, targets, companyId) => {
   try {
-    const targetUpdate = await targetModel.findByIdAndUpdate(id, { targets }, { new: true })
+    const targetUpdate = await targetModel.findByIdAndUpdate(id, { targets, companyId }, { new: true })
     if (!targetUpdate) {
       return {
         msg: 'error no hay objetivos con ese id'
@@ -50,9 +50,9 @@ export const deleteTarget = async (id) => {
   }
 }
 
-export const getAllTargets = async () => {
+export const getAllTargets = async (companyId) => {
   try {
-    const targets = await targetModel.find()
+    const targets = await targetModel.find({ companyId })
     if (!targets) {
       return {
         targets: []

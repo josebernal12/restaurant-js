@@ -7,7 +7,7 @@ import { subDays, subWeeks, subMonths, subYears } from 'date-fns';
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
 import moment2 from 'moment-timezone'
 
-export const userSellByTable = async (id, name, date) => {
+export const userSellByTable = async (id, name, date, companyId) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
 
@@ -58,7 +58,7 @@ export const userSellByTable = async (id, name, date) => {
           };
 
           // Verificar si hay ventas para el día actual
-          const bills = await billModel.find(query).populate('ticketId');
+          const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
           if (bills.length === 0) {
             return 0; // No hay ventas para este día, devolver 0
           }
@@ -68,7 +68,7 @@ export const userSellByTable = async (id, name, date) => {
       }
     }
     const [bills, user] = await Promise.all([
-      billModel.find(query)
+      billModel.find({ ...query, companyId })
         .populate({
           path: 'ticketId',
           populate: [
@@ -95,10 +95,10 @@ export const userSellByTable = async (id, name, date) => {
 }
 
 
-export const hourProduct = async (id) => {
+export const hourProduct = async (id, companyId) => {
   try {
     const [bills, product] = await Promise.all([
-      billModel.find().populate('ticketId'),
+      billModel.find({ companyId }).populate('ticketId'),
       productModel.findById(id)
     ]);
 
@@ -174,12 +174,12 @@ export const hourProduct = async (id) => {
   }
 };
 
-export const inventorySell = async (id) => {
+export const inventorySell = async (id, companyId) => {
   try {
 
     const { year, month, week, day } = searchByDate();
 
-    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, inventaryModel, id)
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, inventaryModel, id, companyId)
 
     let totalAño = 0;
     let totalMes = 0;
@@ -260,10 +260,10 @@ export const inventorySell = async (id) => {
   }
 }
 
-export const billSell = async () => {
+export const billSell = async (companyId) => {
   try {
     const { year, month, week, day } = searchByDate();
-    const { valorAño, valorMes, valorSemana, valorDia, valorTodos } = await searchByDatabase(year, month, week, day)
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos } = await searchByDatabase(year, month, week, day, null, null, companyId)
     let totalAño = valorAño.length;
     let totalMes = valorMes.length;
     let totalSemana = valorSemana.length;
@@ -283,13 +283,13 @@ export const billSell = async () => {
 }
 
 
-export const productSellAll = async () => {
+export const productSellAll = async (companyId) => {
   try {
     const { year, month, week, day } = searchByDate();
 
     const [valorAño, valorMes, valorSemana, valorDia, valorTodos, products] = await Promise.all(
       [
-        billModel.find(year).populate({
+        billModel.find({ ...year, companyId }).populate({
           path: 'ticketId',
           populate: {
             path: 'waiterId',
@@ -297,7 +297,7 @@ export const productSellAll = async () => {
           }
         }).populate('tableId').populate('userId'),
 
-        billModel.find(month).populate({
+        billModel.find({ ...month, companyId }).populate({
           path: 'ticketId',
           populate: {
             path: 'waiterId',
@@ -305,7 +305,7 @@ export const productSellAll = async () => {
           }
         }).populate('tableId').populate('userId'),
 
-        billModel.find(week).populate({
+        billModel.find({ ...week, companyId }).populate({
           path: 'ticketId',
           populate: {
             path: 'waiterId',
@@ -313,7 +313,7 @@ export const productSellAll = async () => {
           }
         }).populate('tableId').populate('userId'),
 
-        billModel.find(day).populate({
+        billModel.find({ ...day, companyId }).populate({
           path: 'ticketId',
           populate: {
             path: 'waiterId',
@@ -321,14 +321,14 @@ export const productSellAll = async () => {
           }
         }).populate('tableId').populate('userId'),
 
-        billModel.find().populate({
+        billModel.find({ companyId }).populate({
           path: 'ticketId',
           populate: {
             path: 'waiterId',
             model: 'User' // Asegúrate de que 'User' es el modelo correcto
           }
         }).populate('tableId').populate('userId'),
-        productModel.find()
+        productModel.find({ companyId })
       ]
     )
     let totalAño = 0;
@@ -383,7 +383,7 @@ export const productSellAll = async () => {
   }
 }
 
-export const billSellByQuery = async (date) => {
+export const billSellByQuery = async (date, companyId) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
 
@@ -432,7 +432,7 @@ export const billSellByQuery = async (date) => {
           };
 
           // Verificar si hay ventas para el día actual
-          const bills = await billModel.find(query).populate('ticketId');
+          const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
           if (bills.length === 0) {
             return { bills: 0 }; // No hay ventas para este día, devolver 0
           }
@@ -442,7 +442,7 @@ export const billSellByQuery = async (date) => {
       }
     }
 
-    const bills = await billModel.find(query).populate({
+    const bills = await billModel.find({ ...query, companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',

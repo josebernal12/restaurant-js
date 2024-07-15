@@ -1,7 +1,7 @@
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
 
-export const inventary = async (name, quantity, page, showAll) => {
+export const inventary = async (name, quantity, page, showAll, companyId) => {
 
   try {
 
@@ -13,8 +13,8 @@ export const inventary = async (name, quantity, page, showAll) => {
 
     // Si se solicitan todos los productos
     if (showAll === "1") {
-      const productTotal = await inventaryModel.countDocuments()
-      const products = await inventaryModel.find(query).select('-image -description -price');
+      const productTotal = await inventaryModel.countDocuments({ companyId })
+      const products = await inventaryModel.find({ ...query, companyId }).select('-image -description -price');
       return {
         productTotal,
         products
@@ -23,8 +23,8 @@ export const inventary = async (name, quantity, page, showAll) => {
 
     // Si se solicita una cantidad específica de productos
     if (quantity) {
-      const productTotal = await inventaryModel.countDocuments()
-      const products = await inventaryModel.find(query).limit(quantity).select('-image -description -price').skip(skip);
+      const productTotal = await inventaryModel.countDocuments({ companyId })
+      const products = await inventaryModel.find({ ...query, companyId }).limit(quantity).select('-image -description -price').skip(skip);
       return {
         productTotal,
         products
@@ -37,8 +37,8 @@ export const inventary = async (name, quantity, page, showAll) => {
     }
 
     // Si se solicita una página específica de productos
-    const productTotal = await inventaryModel.countDocuments(query)
-    const products = await inventaryModel.find(query).select('-image -description -price').limit(perPage).skip(skip).exec();
+    const productTotal = await inventaryModel.countDocuments({ ...query, companyId })
+    const products = await inventaryModel.find({ ...query, companyId }).select('-image -description -price').limit(perPage).skip(skip).exec();
 
     if (!products || products.length === 0) {
       return {
@@ -56,7 +56,7 @@ export const inventary = async (name, quantity, page, showAll) => {
 }
 
 
-export const createProductInventory = async (name, stock, max, min, unit) => {
+export const createProductInventory = async (name, stock, max, min, unit, companyId) => {
   try {
 
     const exist = await inventaryModel.findOne({ name })
@@ -65,7 +65,7 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
         msg: 'ya existe un producto con ese nombre'
       }
     }
-    const newProduct = await inventaryModel.create({ name, stock, max, min, unit })
+    const newProduct = await inventaryModel.create({ name, stock, max, min, unit, companyId })
     if (!newProduct) {
       return {
         msg: 'hubo un error al crear producto'
@@ -78,7 +78,7 @@ export const createProductInventory = async (name, stock, max, min, unit) => {
 }
 
 
-export const updateProductInventory = async (id, name, stock, max, min, unit) => {
+export const updateProductInventory = async (id, name, stock, max, min, unit, companyId) => {
   try {
     const exist = await inventaryModel.findOne({
       name,
@@ -91,7 +91,7 @@ export const updateProductInventory = async (id, name, stock, max, min, unit) =>
     }
     // Actualiza el inventario
 
-    const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit }, { new: true });
+    const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit, companyId }, { new: true });
 
     if (!updatedInventory) {
       return {

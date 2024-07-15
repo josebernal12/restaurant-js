@@ -8,6 +8,10 @@ const tableSchema = new Schema({
   },
   number: {
     type: Number
+  },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
   }
 },
   { timestamps: true })

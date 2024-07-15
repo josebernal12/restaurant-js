@@ -3,83 +3,83 @@ import moment2 from 'moment-timezone'
 import billModel from '../model/BillModel.js';
 
 export const searchByDate = () => {
-    const year = {
-        // Filtrar por año
-        createdAt: {
-            $gte: new Date(new Date().getFullYear(), 0, 1),
-            $lt: new Date(new Date().getFullYear() + 1, 0, 1)
-        }
-    };
-    const month = {
-        // Filtrar por mes
-        createdAt: {
-            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-            $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-        }
-    };
-    const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
-    const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
-
-    const week = {
-        createdAt: {
-            $gte: startOfWeekDate,
-            $lt: endOfWeekDate
-        }
-    };
-    const timeZone = 'America/Mazatlan';
-    const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
-    const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
-
-    const day = {
-        createdAt: {
-            $gte: startOfDayDate,
-            $lt: endOfDayDate
-        }
-    };
-    return {
-        year,
-        month,
-        week,
-        day
+  const year = {
+    // Filtrar por año
+    createdAt: {
+      $gte: new Date(new Date().getFullYear(), 0, 1),
+      $lt: new Date(new Date().getFullYear() + 1, 0, 1)
     }
+  };
+  const month = {
+    // Filtrar por mes
+    createdAt: {
+      $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+    }
+  };
+  const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
+  const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
+
+  const week = {
+    createdAt: {
+      $gte: startOfWeekDate,
+      $lt: endOfWeekDate
+    }
+  };
+  const timeZone = 'America/Mazatlan';
+  const startOfDayDate = moment2.tz(timeZone).startOf('day').toDate();
+  const endOfDayDate = moment2.tz(timeZone).endOf('day').toDate();
+
+  const day = {
+    createdAt: {
+      $gte: startOfDayDate,
+      $lt: endOfDayDate
+    }
+  };
+  return {
+    year,
+    month,
+    week,
+    day
+  }
 }
 
 
-export const searchByDatabase = async (year, month, week, day, database, id) => {
+export const searchByDatabase = async (year, month, week, day, database, id, companyId) => {
   const billQueries = [
-    billModel.find(year).populate({
+    billModel.find({ ...year, companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',
         model: 'User' // Asegúrate de que 'User' es el modelo correcto
       }
     }).populate('tableId').populate('userId'),
-    
-    billModel.find(month).populate({
+
+    billModel.find({ ...month, companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',
         model: 'User' // Asegúrate de que 'User' es el modelo correcto
       }
     }).populate('tableId').populate('userId'),
-    
-    billModel.find(week).populate({
+
+    billModel.find({ ...week, companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',
         model: 'User' // Asegúrate de que 'User' es el modelo correcto
       }
     }).populate('tableId').populate('userId'),
-    
-    billModel.find(day).populate({
+
+    billModel.find({ ...day, companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',
         model: 'User' // Asegúrate de que 'User' es el modelo correcto
       }
     }).populate('tableId').populate('userId'),
-    
-    billModel.find().populate({
+
+    billModel.find({ companyId }).populate({
       path: 'ticketId',
       populate: {
         path: 'waiterId',

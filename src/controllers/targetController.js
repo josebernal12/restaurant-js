@@ -7,8 +7,8 @@ import {
 } from "../services/targets.js"
 
 export const createTargetController = async (req, res) => {
-  const { targets } = req.body
-  const target = await createTargets(targets)
+  const { targets, companyId } = req.body
+  const target = await createTargets(targets, companyId)
   if (target?.msg) {
     res.status(404).json(target)
     return
@@ -17,9 +17,9 @@ export const createTargetController = async (req, res) => {
 }
 
 export const updateTargetController = async (req, res) => {
-  const { targets } = req.body
+  const { targets, companyId } = req.body
   const { id } = req.params
-  const target = await updateTargets(id, targets)
+  const target = await updateTargets(id, targets, companyId)
   if (target?.msg) {
     res.status(404).json(target)
     return
@@ -38,7 +38,7 @@ export const deleteTargetController = async (req, res) => {
 }
 
 export const getAllTargetController = async (req, res) => {
-  const targets = await getAllTargets()
+  const targets = await getAllTargets(req.user.companyId.toString())
   if (targets?.msg) {
     res.status(404).json(targets)
     return

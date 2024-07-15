@@ -5,7 +5,7 @@ import productModel from "../model/ProductModel.js";
 import promotionModel from "../model/Promotion.js";
 import inventaryModel from "../model/Inventary.js";
 
-export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId, promotion) => {
+export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId, promotion, companyId) => {
   try {
     if (!products || !total) {
       return {
@@ -97,7 +97,8 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       waiter,
       waiterId,
       promotion,
-      folio: newFolio
+      folio: newFolio,
+      companyId
     });
 
     if (!newTicket) {
@@ -118,7 +119,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     };
   }
 };
-export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId, promotion) => {
+export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId, promotion, companyId) => {
   try {
     // Encontrar el ticket actual
     const ticket = await ticketModel.findById(id);
@@ -222,7 +223,7 @@ export const updateTicket = async (id, products, subTotal, total, tableId, userI
     }
 
     // Actualizar el ticket
-    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId, waiterId, promotion }, { new: true });
+    const ticketUpdate = await ticketModel.findByIdAndUpdate(id, { products: ticket.products, subTotal, total, tableId, userId, waiterId, promotion, companyId }, { new: true });
     if (!ticketUpdate) {
       return {
         msg: 'No se pudo actualizar el ticket'
@@ -260,14 +261,14 @@ export const newUpdateTicket = async (id, products, subTotal, total, tableId, us
   }
 }
 
-export const getTickets = async (name) => {
+export const getTickets = async (name, companyId) => {
   try {
     if (name.waiter) {
-      const tickets = await ticketModel.find(name)
+      const tickets = await ticketModel.find({ name, companyId })
       return tickets
 
     }
-    const tickets = await ticketModel.find()
+    const tickets = await ticketModel.find({ companyId })
     if (!tickets) {
       return {
         tickets: []
@@ -424,9 +425,9 @@ export const completedAllProductTicket = async (id) => {
 }
 
 
-export const joinAllProductsTicket = async (tableId) => {
+export const joinAllProductsTicket = async (tableId, companyId) => {
   try {
-    const ticket = await ticketModel.find({ tableId })
+    const ticket = await ticketModel.find({ tableId, companyId })
       .populate({
         path: 'waiterId',
         select: '-password' // Exclude the password field
@@ -444,8 +445,8 @@ export const joinAllProductsTicket = async (tableId) => {
   }
 }
 
-export const getAllTickets = async () => {
-  const tickets = await ticketModel.find().populate('waiterId')
+export const getAllTickets = async (companyId) => {
+  const tickets = await ticketModel.find({ companyId }).populate('waiterId')
 
   if (!tickets || tickets.length === 0) {
     return {
@@ -482,7 +483,7 @@ export const createMultipleTickets = async (tickets) => {
     }
     const createdTickets = [];
     for (const ticket of tickets) {
-      const { products, subTotal, total, tableId, userId, waiter, waiterId, promotion } = ticket;
+      const { products, subTotal, total, tableId, userId, waiter, waiterId, promotion, companyId } = ticket;
       if (!products || !total) {
         return {
           msg: 'Todos los campos son obligatorios en cada ticket'
@@ -559,7 +560,8 @@ export const createMultipleTickets = async (tickets) => {
         waiter,
         waiterId,
         promotion,
-        folio: newFolio
+        folio: newFolio,
+        companyId
       });
 
       if (!newTicket) {

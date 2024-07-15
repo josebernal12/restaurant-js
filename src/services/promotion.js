@@ -1,13 +1,13 @@
 import promotionModel from "../model/Promotion.js"
 
-export const createPromotion = async (name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId) => {
+export const createPromotion = async (name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId) => {
   try {
     if (!name || !description || !type) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const promotion = await promotionModel.create({ name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId })
+    const promotion = await promotionModel.create({ name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId })
     if (!promotion) {
       return {
         msg: 'error al crear la promocion'
@@ -19,10 +19,10 @@ export const createPromotion = async (name, description, price, days, startHour,
   }
 }
 
-export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products) => {
+export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products, companyId) => {
   try {
 
-    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products }, { new: true })
+    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products, companyId }, { new: true })
     if (!promotion) {
       return {
         msg: 'error al actualizar'
@@ -49,9 +49,9 @@ export const deletePromotion = async (id) => {
 }
 
 
-export const getAllPromotion = async () => {
+export const getAllPromotion = async (companyId) => {
   try {
-    const promotions = await promotionModel.find()
+    const promotions = await promotionModel.find({ companyId })
     if (!promotions) {
       return {
         promotions: []

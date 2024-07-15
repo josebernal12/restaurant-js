@@ -28,6 +28,15 @@ const userSchema = new Schema({
   token: {
     type: String,
     default: null
+  },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  },
+  haveCompany: {
+    type: Boolean,
+    trim: true,
+    default: false
   }
 }, {
   timestamps: true

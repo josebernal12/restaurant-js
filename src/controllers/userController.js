@@ -40,7 +40,7 @@ export const getUsersController = async (req, res) => {
     quantity = req.query.quantity
   }
 
-  const response = await getUsers(query, page, showAll, quantity)
+  const response = await getUsers(query, page, showAll, quantity, req.user.companyId.toString())
   res.json(response)
 }
 
@@ -65,10 +65,10 @@ export const deleteUserController = async (req, res) => {
 }
 
 export const updateUserController = async (req, res) => {
-  const { name, lastName, email, rol } = req.body
+  const { name, lastName, email, rol, companyId } = req.body
   const { id } = req.params
 
-  const user = await updateUser(id, name, lastName, email, rol)
+  const user = await updateUser(id, name, lastName, email, rol, companyId)
   if (user?.msg) {
     res.status(404).json(user)
     return
@@ -99,8 +99,8 @@ export const obtainUserByToken = async (req, res) => {
 }
 
 export const createUserController = async (req, res) => {
-  const { name, apellido, email, password, confirmPassword } = req.body
-  const user = await createUser(name, apellido, email, password, confirmPassword)
+  const { name, apellido, email, password, confirmPassword, companyId } = req.body
+  const user = await createUser(name, apellido, email, password, confirmPassword, companyId)
   if (user?.msg) {
     return res.status(404).json(user)
   }
@@ -150,7 +150,7 @@ export const usersWithoutPasswordController = async (req, res) => {
 };
 
 
-export const tokenIsValidController = async(req, res) => {
+export const tokenIsValidController = async (req, res) => {
   const { token } = req.params;
   console.log(token);
   const response = await tokenIsValid(token);

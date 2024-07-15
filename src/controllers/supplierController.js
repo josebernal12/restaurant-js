@@ -9,9 +9,9 @@ import {
 } from "../services/suppliers.js"
 
 export const createSupplierController = async (req, res) => {
-    const { name, address, phone, email } = req.body
+    const { name, address, phone, email, companyId } = req.body
 
-    const supplier = await createSupplier(name, address, phone, email)
+    const supplier = await createSupplier(name, address, phone, email, companyId)
     if (supplier?.msg) {
         return res.status(400).json(supplier)
     }
@@ -30,9 +30,9 @@ export const getSupplierByIdController = async (req, res) => {
 
 export const updateSupplierController = async (req, res) => {
     const { id } = req.params
-    const { name, address, phone } = req.body
+    const { name, address, phone, companyId } = req.body
 
-    const supplier = await updateSupplier(id, name, address, phone)
+    const supplier = await updateSupplier(id, name, address, phone, companyId)
     if (supplier?.msg) {
         return res.status(400).json(supplier)
     }
@@ -71,7 +71,7 @@ export const getSuppliersController = async (req, res) => {
     const showAll = req.query.showAll
     const quantity = req.query.quantity
     const page = req.query.page
-    const supplier = await getSuppliers(query, showAll, quantity, page)
+    const supplier = await getSuppliers(query, showAll, quantity, page, req.user.companyId.toString())
 
     if (supplier?.msg) {
         return res.status(400).json(supplier)

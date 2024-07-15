@@ -7,7 +7,11 @@ const targetsSchema = new Schema({
       target: String,
       date: String
     }
-  ]
+  ],
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  }
 
 },
   {

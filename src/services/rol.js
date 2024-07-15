@@ -1,14 +1,14 @@
 import RolModel from '../model/RolModel.js'
 import userModel from '../model/UserModel.js'
 
-export const createRol = async (name, permissions) => {
+export const createRol = async (name, permissions, companyId) => {
   try {
     if (!name || !permissions) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const newRol = await RolModel.create({ name, permissions })
+    const newRol = await RolModel.create({ name, permissions, companyId })
     if (!newRol) {
       return 'error a la creacion del rol'
     }
@@ -18,9 +18,9 @@ export const createRol = async (name, permissions) => {
   }
 }
 
-export const getRol = async () => {
+export const getRol = async (companyId) => {
   try {
-    const rols = await RolModel.find()
+    const rols = await RolModel.find({ companyId })
     if (!rols) {
       return {
         rols: []
@@ -32,14 +32,14 @@ export const getRol = async () => {
   }
 }
 
-export const updateRol = async (id, name, permissions) => {
+export const updateRol = async (id, name, permissions, companyId) => {
   try {
     if (!id || !name || !permissions) {
       return {
         msg: 'todos los campos son obligatorios'
       }
     }
-    const rol = await RolModel.findByIdAndUpdate(id, { name, permissions }, { new: true })
+    const rol = await RolModel.findByIdAndUpdate(id, { name, permissions, companyId }, { new: true })
     if (!rol) {
       return {
         msg: 'error al actualizar'
@@ -68,7 +68,7 @@ export const deleteRol = async (id) => {
         user.rol = userRol._id;
         user.save()
       })
-      
+
     }
     if (!rol) {
       return {

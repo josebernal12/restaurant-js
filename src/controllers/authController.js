@@ -2,8 +2,8 @@ import { authGoogle, changePassword, checkTokenEmail, login, register, restorePa
 
 
 export const registerController = async (req, res) => {
-  const { name, lastName, email, password, confirmPassword, rol } = req.body
-  const user = await register(name, lastName, email, password, confirmPassword, rol)
+  const { name, lastName, email, password, confirmPassword, rol, companyId } = req.body
+  const user = await register(name, lastName, email, password, confirmPassword, rol, companyId)
   if (user.msg) {
     res.status(404).json(user)
     return

@@ -1,13 +1,13 @@
 import supplierModel from "../model/Suppliers.js"
 
-export const createSupplier = async (name, address, phone, email) => {
+export const createSupplier = async (name, address, phone, email, companyId) => {
     try {
         if (!name) {
             return {
                 msg: 'error, name is required'
             }
         }
-        const supplier = await supplierModel.create({ name, address, phone, email })
+        const supplier = await supplierModel.create({ name, address, phone, email, companyId })
         if (!supplier) {
             return {
                 msg: 'error creating supplier'
@@ -34,9 +34,9 @@ export const getSupplierById = async (id) => {
 }
 
 
-export const updateSupplier = async (id, name, address, phone) => {
+export const updateSupplier = async (id, name, address, phone, companyId) => {
     try {
-        const supplier = await supplierModel.findByIdAndUpdate(id, { name, address, phone }, { new: true })
+        const supplier = await supplierModel.findByIdAndUpdate(id, { name, address, phone, companyId }, { new: true })
         if (!supplier) {
             return {
                 msg: 'error updating supplier'
@@ -62,7 +62,7 @@ export const deleteSupplier = async (id) => {
     }
 }
 
-export const getSuppliers = async (query, showAll, quantity, page) => {
+export const getSuppliers = async (query, showAll, quantity, page, companyId) => {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
@@ -70,11 +70,11 @@ export const getSuppliers = async (query, showAll, quantity, page) => {
         let suppliers;
         let totalSuppliers
         if (showAll === 'true') {
-            suppliers = await supplierModel.find();
-            totalSuppliers = await supplierModel.countDocuments()
+            suppliers = await supplierModel.find({ companyId });
+            totalSuppliers = await supplierModel.countDocuments({ companyId })
         } else {
-            suppliers = await supplierModel.find(query).limit(quantity).skip(skip);
-            totalSuppliers = await supplierModel.countDocuments()
+            suppliers = await supplierModel.find({ ...query, companyId }).limit(quantity).skip(skip);
+            totalSuppliers = await supplierModel.countDocuments({ companyId })
         }
 
         if (!suppliers.length) {

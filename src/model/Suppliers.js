@@ -17,6 +17,10 @@ const suppliersSchema = new Schema({
     phone: {
         type: String,
         trim: true
+    },
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company'
     }
 }, { timestamps: true })
 

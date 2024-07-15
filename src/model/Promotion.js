@@ -52,7 +52,11 @@ const promotionSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
     }
-  ]
+  ],
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  }
 }, {
   timestamps: true
 })
