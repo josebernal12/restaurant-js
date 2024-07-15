@@ -18,6 +18,7 @@ export const createCompany = async (name, userId) => {
             }
         }
         user.haveCompany = true
+        user.companyId = company._id
         await user.save()
         return company
     } catch (error) {
