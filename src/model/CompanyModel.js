@@ -5,6 +5,22 @@ const CompanySchema = new Schema({
         type: String,
         trim: true,
         required: true
+    },
+    email: {
+        type: String,
+        trim: true
+    },
+    address: {
+        type: String,
+        trim: true
+    },
+    number: {
+        type: Number,
+        trim: true
+    },
+    pais: {
+        type: String,
+        trim: true
     }
 }, { timestamps: true })
 
