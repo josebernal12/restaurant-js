@@ -6,8 +6,8 @@ import {
 
 
 export const createCompanyController = async (req, res) => {
-    const { name, email, address, number, pais } = req.body
-    const company = await createCompany(name, email, address, number, pais)
+    const { name, email, address, number, country } = req.body
+    const company = await createCompany(name, email, address, number, country)
     if (company?.msg) {
         return res.status(400).json(company)
     }
@@ -16,9 +16,9 @@ export const createCompanyController = async (req, res) => {
 
 export const updateCompanyController = async (req, res) => {
     const { id } = req.params
-    const { name, email, address, number, pais } = req.body
+    const { name, email, address, number, country } = req.body
 
-    const company = await updateCompany(id, name, email, address, number, pais)
+    const company = await updateCompany(id, name, email, address, number, country)
 
     if (company?.msg) {
         return res.status(400).json(company)

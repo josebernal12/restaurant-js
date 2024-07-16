@@ -18,7 +18,7 @@ const CompanySchema = new Schema({
         type: Number,
         trim: true
     },
-    pais: {
+    country: {
         type: String,
         trim: true
     }
