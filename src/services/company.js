@@ -3,6 +3,7 @@ import userModel from "../model/UserModel.js"
 
 export const createCompany = async (name, email, address, number, country, userId) => {
     try {
+        console.log(userId)
         const user = await userModel.findById(userId)
 
         if (!user) {
