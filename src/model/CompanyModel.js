@@ -14,7 +14,7 @@ const CompanySchema = new Schema({
         type: String,
         trim: true
     },
-    number: {
+    phone: {
         type: Number,
         trim: true
     },

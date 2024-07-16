@@ -1,7 +1,8 @@
 import companyModel from "../model/CompanyModel.js"
+import methodOfPaymentModel from "../model/methodOfPayment.js"
 import userModel from "../model/UserModel.js"
 
-export const createCompany = async (name, email, address, number, country, userId) => {
+export const createCompany = async (name, email, address, phone, country, userId) => {
     try {
         console.log(userId)
         const user = await userModel.findById(userId)
@@ -12,7 +13,7 @@ export const createCompany = async (name, email, address, number, country, userI
             }
         }
 
-        const company = await companyModel.create({ name, email, address, number, country })
+        const company = await companyModel.create({ name, email, address, phone, country })
         if (!company) {
             return {
                 msg: 'error creating company'
@@ -21,6 +22,7 @@ export const createCompany = async (name, email, address, number, country, userI
         user.haveCompany = true
         user.companyId = company._id
         await user.save()
+        await methodOfPaymentModel.create({ userId })
         return company
     } catch (error) {
         console.log(error)
@@ -28,9 +30,9 @@ export const createCompany = async (name, email, address, number, country, userI
 }
 
 
-export const updateCompany = async (id, name, email, address, number, country) => {
+export const updateCompany = async (id, name, email, address, phone, country, companyId) => {
     try {
-        const company = await companyModel.findByIdAndUpdate(id, { name, email, address, number, country }, { new: true })
+        const company = await companyModel.findByIdAndUpdate(id, { name, email, address, phone, country, companyId }, { new: true })
         if (!company) {
             return {
                 msg: 'error updating company'

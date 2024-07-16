@@ -21,6 +21,8 @@ import categoryRouter from './router/category.js'
 import questionsRouter from './router/questions.js'
 import suppliersRouter from './router/suppliers.js'
 import companyRouter from './router/company.js'
+import currencyRouter from './router/currency.js'
+import methodOfPaymentRouter from './router/methodOfPayment.js'
 const app = express()
 const port = process.env.PORT || 8080
 const corsOptions = {
@@ -60,6 +62,8 @@ app.use('/api/category', categoryRouter)
 app.use('/api/questions', questionsRouter)
 app.use('/api/supplier', suppliersRouter)
 app.use('/api/company', companyRouter)
+app.use('/api/currency', currencyRouter)
+app.use('/api/methodOfPayment', methodOfPaymentRouter)
 const server = app.listen(port, () => {
   connectDB()
 
