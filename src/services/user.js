@@ -163,7 +163,7 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
       }
     }
     const user = await (await userModel.create({ name, apellido, email, password, companyId })).populate('rol')
-    user.haveCompany = true 
+    user.haveCompany = true
     await user.save()
     if (!user) {
       return {
@@ -174,7 +174,7 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
       const rolMember = await RolModel.findOne({ name: 'miembro' });
       const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId })).populate('rol');
 
-      user.haveCompany = true 
+      user.haveCompany = true
       await user.save()
       const token = generateToken(user.id)
       return {
@@ -223,10 +223,10 @@ export const manyUser = async (users) => {
       for (const value of users) {
         const exist = await checkEmailInDB(value.email)
         if (!exist) {
-          const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false })
+          const user = await userModel.create({ name: value.name, lastName: value.lastName, email: value.email, rol: rolMember, havePassword: false, companyId: value.companyId })
           const populatedUser = await userModel.findById(value._id).populate('rol').select('-password');
           usersTotal = await userModel.countDocuments()
-          user.haveCompany = true 
+          user.haveCompany = true
           await user.save()
           if (!user) {
             return { user: [] };
