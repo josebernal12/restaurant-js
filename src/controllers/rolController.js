@@ -18,7 +18,7 @@ export const updateRolController = async (req, res) => {
   const { name, permissions, companyId } = req.body
   const { id } = req.params
 
-  const rol = await updateRol(id, name, permissions, companyId)
+  const rol = await updateRol(id, name, permissions, companyId, req.user._id.toString())
 
   if (rol?.msg) {
     return res.status(400).json(rol)

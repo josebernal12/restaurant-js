@@ -15,6 +15,66 @@ export const register = async (name, lastName, email, password, confirmPassword,
           msg: 'Los passwords no coinciden'
         };
       } else {
+        const saltRound = bcrypt.genSaltSync(saltRounds)
+        const hash = bcrypt.hashSync(password, saltRound)
+        if (!rol) {
+          const newUser = await userModel.create({ name, lastName, email, password: hash, companyId });
+          const [admin, miembro] = await Promise.all([
+            RolModel.create({
+              name: 'admin',
+              permissions: {
+                mesa: {
+                  crear: true,
+                  eliminar: true
+                },
+                ticket: {
+                  pagar: true,
+                  descargar: true,
+                  imprimir: true
+                },
+                meta: {
+                  crear: true
+                },
+                order: {
+                  cancelar: true,
+                  crear: true
+                }
+              },
+              userId: newUser._id
+            }),
+            RolModel.create({
+              name: 'miembro',
+              permissions: {
+                mesa: {
+                  crear: true,
+                  eliminar: true
+                },
+                ticket: {
+                  pagar: true,
+                  descargar: true,
+                  imprimir: true
+                },
+                meta: {
+                  crear: true
+                },
+                order: {
+                  cancelar: true,
+                  crear: true
+                }
+              },
+              userId: newUser._id
+            }),
+          ])
+          newUser.rol = miembro._id
+          await newUser.save()
+          const populatedUser = await userModel.findById(newUser._id).populate('rol').select('-password');
+          const token = generateToken(newUser.id);
+          return {
+            user: populatedUser,
+            token
+          };
+        }
+        const newUser = await userModel.create({ name, lastName, email, password: hash, rol, companyId });
         await Promise.all([
           RolModel.create({
             name: 'admin',
@@ -36,7 +96,7 @@ export const register = async (name, lastName, email, password, confirmPassword,
                 crear: true
               }
             },
-            companyId
+            userId: newUser._id
           }),
           RolModel.create({
             name: 'miembro',
@@ -58,23 +118,9 @@ export const register = async (name, lastName, email, password, confirmPassword,
                 crear: true
               }
             },
-            companyId
+            userId: newUser._id
           }),
         ])
-
-        const saltRound = bcrypt.genSaltSync(saltRounds)
-        const hash = bcrypt.hashSync(password, saltRound)
-        if (!rol) {
-          const rolMember = await RolModel.findOne({ name: 'miembro', companyId });
-          const newUser = await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId });
-          const populatedUser = await userModel.findById(newUser._id).populate('rol').select('-password');
-          const token = generateToken(newUser.id);
-          return {
-            user: populatedUser,
-            token
-          };
-        }
-        const newUser = await userModel.create({ name, lastName, email, password: hash, rol, companyId });
         const userId = await userModel.findById(newUser._id).populate('rol').select('-password');
         const token = generateToken(userId.id);
         return {

@@ -1,5 +1,6 @@
 import companyModel from "../model/CompanyModel.js"
 import methodOfPaymentModel from "../model/methodOfPayment.js"
+import RolModel from "../model/RolModel.js"
 import userModel from "../model/UserModel.js"
 
 export const createCompany = async (name, email, address, phone, country, userId) => {
@@ -21,8 +22,14 @@ export const createCompany = async (name, email, address, phone, country, userId
         }
         user.haveCompany = true
         user.companyId = company._id
+        const rol = await RolModel.find({ userId: user._id })
+
         await user.save()
         await methodOfPaymentModel.create({ companyId: userId })
+        rol.forEach(async (value) => {
+            value.companyId = company._id
+            await value.save()
+        })
         return company
     } catch (error) {
         console.log(error)
@@ -30,9 +37,9 @@ export const createCompany = async (name, email, address, phone, country, userId
 }
 
 
-export const updateCompany = async (id, name, email, address, phone, country, companyId) => {
+export const updateCompany = async (id, name, email, address, phone, country, companyId, userId) => {
     try {
-        const company = await companyModel.findByIdAndUpdate(id, { name, email, address, phone, country, companyId }, { new: true })
+        const company = await companyModel.findByIdAndUpdate(id, { name, email, address, phone, country, companyId, userId }, { new: true })
         if (!company) {
             return {
                 msg: 'error updating company'

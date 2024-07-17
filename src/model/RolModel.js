@@ -65,6 +65,10 @@ const RolSchema = new Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 
