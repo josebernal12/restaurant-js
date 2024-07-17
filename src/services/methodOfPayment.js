@@ -2,8 +2,9 @@ import methodOfPaymentModel from "../model/methodOfPayment.js"
 
 export const updateMethodOfPayment = async (id,  cash, transfer, creditCard, creditDebit ) => {
     try {
+        console.log(id)
         const methodOfPayment = await methodOfPaymentModel.findOne({ companyId: id })
-       
+        console.log(methodOfPayment)
         methodOfPayment.cash = cash
         methodOfPayment.transfer = transfer
         methodOfPayment.creditCard = creditCard

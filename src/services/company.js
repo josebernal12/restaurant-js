@@ -25,7 +25,7 @@ export const createCompany = async (name, email, address, phone, country, userId
         const rol = await RolModel.find({ userId: user._id })
 
         await user.save()
-        await methodOfPaymentModel.create({ companyId: userId })
+        await methodOfPaymentModel.create({ companyId: company._id })
         rol.forEach(async (value) => {
             value.companyId = company._id
             await value.save()
