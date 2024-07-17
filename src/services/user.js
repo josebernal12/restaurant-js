@@ -241,6 +241,8 @@ export const manyUser = async (users) => {
       const exist = await checkEmailInDB(value.email)
       if (!exist) {
         const user = await userModel.create(value);
+        user.haveCompany = true
+        await user.save()
         if (!user) {
           return { user: [] };
         }
