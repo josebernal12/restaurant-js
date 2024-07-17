@@ -171,7 +171,7 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
       }
     }
     if (!rol) {
-      const rolMember = await RolModel.findOne({ name: 'miembro' });
+      const rolMember = await RolModel.findOne({ name: 'miembro', companyId });
       const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId })).populate('rol');
 
       user.haveCompany = true
