@@ -1,8 +1,14 @@
 import methodOfPaymentModel from "../model/methodOfPayment.js"
 
-export const updateMethodOfPayment = async (id, { cash, transfer, creditCard, creditDebit }) => {
+export const updateMethodOfPayment = async (id,  cash, transfer, creditCard, creditDebit ) => {
     try {
-        const methodOfPayment = await methodOfPaymentModel.findByIdAndUpdate(id, { cash, transfer, creditCard, creditDebit }, { new: true })
+        const methodOfPayment = await methodOfPaymentModel.findOne({ companyId: id })
+       
+        methodOfPayment.cash = cash
+        methodOfPayment.transfer = transfer
+        methodOfPayment.creditCard = creditCard
+        methodOfPayment.creditDebit = creditDebit
+        await methodOfPayment.save()
         if (!methodOfPayment) {
             return {
                 msg: 'error updating method of payment'
