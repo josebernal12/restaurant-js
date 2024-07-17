@@ -15,6 +15,51 @@ export const register = async (name, lastName, email, password, confirmPassword,
           msg: 'Los passwords no coinciden'
         };
       } else {
+        await Promise.all([
+          RolModel.create({
+            name: 'admin',
+            permissions: {
+              mesa: {
+                crear: true,
+                eliminar: true
+              },
+              ticket: {
+                pagar: true,
+                descargar: true,
+                imprimir: true
+              },
+              meta: {
+                crear: true
+              },
+              order: {
+                cancelar: true,
+                crear: true
+              }
+            }
+          }),
+          RolModel.create({
+            name: 'miembro',
+            permissions: {
+              mesa: {
+                crear: true,
+                eliminar: true
+              },
+              ticket: {
+                pagar: true,
+                descargar: true,
+                imprimir: true
+              },
+              meta: {
+                crear: true
+              },
+              order: {
+                cancelar: true,
+                crear: true
+              }
+            }
+          }),
+        ])
+
         const saltRound = bcrypt.genSaltSync(saltRounds)
         const hash = bcrypt.hashSync(password, saltRound)
         if (!rol) {
