@@ -13,7 +13,8 @@ const methodOfPaymentSchema = new Schema({
     },
     creditCard: {
         type: Boolean,
-        trim: true
+        trim: true,
+        default:false
     },
     creditDebit: {
         type: Boolean,

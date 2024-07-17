@@ -22,7 +22,7 @@ export const createCompany = async (name, email, address, phone, country, userId
         user.haveCompany = true
         user.companyId = company._id
         await user.save()
-        await methodOfPaymentModel.create({ userId })
+        await methodOfPaymentModel.create({ companyId: userId })
         return company
     } catch (error) {
         console.log(error)
