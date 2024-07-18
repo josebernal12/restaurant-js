@@ -446,8 +446,11 @@ export const joinAllProductsTicket = async (tableId, companyId) => {
 }
 
 export const getAllTickets = async (companyId) => {
-  console.log(companyId)
-  const tickets = await ticketModel.find({ companyId }).populate('waiterId')
+  const tickets = await ticketModel.find({ companyId })
+    .populate({
+      path: 'waiterId',
+      select: '-password' // Esto excluye el campo 'password'
+    });
 
   if (!tickets || tickets.length === 0) {
     return {
