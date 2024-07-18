@@ -99,8 +99,8 @@ export const obtainUserByToken = async (req, res) => {
 }
 
 export const createUserController = async (req, res) => {
-  const { name, apellido, email, password, confirmPassword, companyId } = req.body
-  const user = await createUser(name, apellido, email, password, confirmPassword, companyId)
+  const { name, lastName, email, password, confirmPassword, rol } = req.body
+  const user = await createUser(name, lastName, email, password, confirmPassword, rol, req.user.companyId.toString())
   if (user?.msg) {
     return res.status(404).json(user)
   }

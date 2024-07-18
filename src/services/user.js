@@ -2,6 +2,9 @@ import { checkEmailInDB } from "../helpers/validate.js"
 import userModel from "../model/UserModel.js"
 import RolModel from '../model/RolModel.js'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+import generateToken from "../helpers/generateToken.js"
+
 export const getUsers = async (query, page, showAll, quantity, companyId) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
@@ -150,29 +153,26 @@ export const searchUser = async (name) => {
   }
 }
 
-export const createUser = async (name, apellido, email, password, confirmPassword, companyId) => {
+export const createUser = async (name, lastName, email, password, confirmPassword, rol, companyId) => {
+  let saltRounds = 10
   try {
     if (password !== confirmPassword) {
       return {
         msg: 'los password no coiciden'
       }
     }
-    if (!name || !apellido || !email) {
+    const exist = await userModel.findOne({ email })
+    if (exist) {
       return {
-        msg: 'todos los campos son necesarios'
+        msg: 'email already exist'
       }
     }
-    const user = await (await userModel.create({ name, apellido, email, password, companyId })).populate('rol')
-    user.haveCompany = true
-    await user.save()
-    if (!user) {
-      return {
-        msg: 'error al crear el usuario'
-      }
-    }
+    const saltRound = bcrypt.genSaltSync(saltRounds)
+    const hash = bcrypt.hashSync(password, saltRound)
+
     if (!rol) {
       const rolMember = await RolModel.findOne({ name: 'miembro', companyId });
-      const user = (await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId })).populate('rol');
+      const user = await userModel.create({ name, lastName, email, password: hash, rol: rolMember, companyId });
 
       user.haveCompany = true
       await user.save()
@@ -180,6 +180,14 @@ export const createUser = async (name, apellido, email, password, confirmPasswor
       return {
         user,
         token
+      }
+    }
+    const user = await userModel.create({ name, lastName, email, password: hash, companyId })
+    user.haveCompany = true
+    await user.save()
+    if (!user) {
+      return {
+        msg: 'error al crear el usuario'
       }
     }
     const userWithoutPassword = {
