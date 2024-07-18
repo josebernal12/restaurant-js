@@ -36,7 +36,7 @@ export const findMethodOfPaymentByCompany = async (companyId) => {
 }
 
 
-export const totalSellCash = async () => {
+export const totalSellCash = async (date) => {
     try {
 
     } catch (error) {
@@ -44,7 +44,7 @@ export const totalSellCash = async () => {
     }
 }
 
-export const totalSellTransfer = async () => {
+export const totalSellTransfer = async (date) => {
     try {
 
     } catch (error) {
@@ -52,7 +52,7 @@ export const totalSellTransfer = async () => {
     }
 }
 
-export const totalSellCreditCard = async () => {
+export const totalSellCreditCard = async (date) => {
     try {
 
     } catch (error) {
@@ -60,7 +60,15 @@ export const totalSellCreditCard = async () => {
     }
 }
 
-export const totalSellCreditDebit = async () => {
+export const totalSellCreditDebit = async (date) => {
+    try {
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const quantitySellMethodOfPayment = async () => {
     try {
 
     } catch (error) {

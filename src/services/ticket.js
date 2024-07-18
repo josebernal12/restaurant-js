@@ -446,6 +446,7 @@ export const joinAllProductsTicket = async (tableId, companyId) => {
 }
 
 export const getAllTickets = async (companyId) => {
+  console.log(companyId)
   const tickets = await ticketModel.find({ companyId }).populate('waiterId')
 
   if (!tickets || tickets.length === 0) {
