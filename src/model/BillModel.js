@@ -18,8 +18,8 @@ const billSchema = new Schema({
     ref: 'User'
   },
   methodOfPayment: {
-    type: String,
-    required: true
+    type: [String],
+    default: []
   },
   folio: {
     type: Number

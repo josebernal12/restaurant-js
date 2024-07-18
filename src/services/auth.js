@@ -140,10 +140,9 @@ export const register = async (name, lastName, email, password, confirmPassword,
     throw error;
   }
 };
-//TODO:CHECK
 export const login = async (email, password) => {
   try {
-    const user = await userModel.findOne({ email })
+    const user = await userModel.findOne({ email }).populate('rol')
 
     if (!user) {
       return 'email o password no son correctos';
@@ -171,7 +170,7 @@ export const login = async (email, password) => {
 //TODO CHECK
 export const restorePassword = async (email) => {
   try {
-    const exist = await userModel.findOne({ email })
+    const exist = await userModel.findOne({ email }).populate('rol')
     if (!exist) {
       return {
         msg: 'el email no existe en la DB'
