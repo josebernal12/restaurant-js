@@ -17,10 +17,17 @@ const billSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  methodOfPayment: {
-    type: [String],
-    default: []
-  },
+  methodOfPayment: [
+    {
+      name: {
+        type: String,
+        trim: true
+      },
+      sell: {
+        type: Number
+      }
+    }
+  ],
   folio: {
     type: Number
   },

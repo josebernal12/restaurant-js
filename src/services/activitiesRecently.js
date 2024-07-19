@@ -60,3 +60,4 @@ export const getActivities = async (page = 1) => {
     console.log(error)
   }
 }
+
