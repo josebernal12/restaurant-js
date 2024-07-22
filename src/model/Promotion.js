@@ -56,6 +56,10 @@ const promotionSchema = new Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  },
+  dailyMenu: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true

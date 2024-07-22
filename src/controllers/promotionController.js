@@ -7,8 +7,8 @@ import {
 } from "../services/promotion.js"
 
 export const createPromotionController = async (req, res) => {
-  const { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId } = req.body
-  const promotion = await createPromotion(name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId)
+  const { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu } = req.body
+  const promotion = await createPromotion(name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }
@@ -16,9 +16,9 @@ export const createPromotionController = async (req, res) => {
 }
 
 export const updatePromotionController = async (req, res) => {
-  const { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId } = req.body
+  const { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu } = req.body
   const { id } = req.params
-  const promotion = await updatePromotion(id, name, price, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId)
+  const promotion = await updatePromotion(id, name, price, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }
