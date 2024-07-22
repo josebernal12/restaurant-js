@@ -36,48 +36,227 @@ export const findMethodOfPaymentByCompany = async (companyId) => {
         console.log(error)
     }
 }
+export const totalSellCash = async (dateFilter, companyId) => {
+    let cash = 0;
 
-
-export const totalSellCash = async (date, companyId) => {
     try {
-        const bills = await billModel.find({ companyId }).populate({
+        const query = { companyId };
+
+        if (dateFilter) {
+            let startDate;
+            let endDate;
+
+            switch (dateFilter) {
+                case 'day':
+                    startDate = moment().utc().startOf('day').toDate();
+                    endDate = moment().utc().endOf('day').toDate();
+                    break;
+                case 'week':
+                    startDate = moment().utc().startOf('isoWeek').toDate();
+                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    break;
+                case 'month':
+                    startDate = moment().utc().startOf('month').toDate();
+                    endDate = moment().utc().endOf('month').toDate();
+                    break;
+                case 'year':
+                    startDate = moment().utc().startOf('year').toDate();
+                    endDate = moment().utc().endOf('year').toDate();
+                    break;
+                default:
+                    throw new Error('Invalid date filter');
+            }
+
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        const bills = await billModel.find(query).populate({
             path: 'ticketId',
             populate: {
                 path: 'waiterId',
                 model: 'User'
             }
         }).populate('tableId').populate('userId');
+
         bills.forEach(bill => {
-            bill.ticketId.forEach(ticket => {
-                console.log(ticket)
-            })
-        })
+            bill.methodOfPayment.forEach(method => {
+                if (method?.name === 'cash') {
+                    cash += method.sell;
+                }
+            });
+        });
+
+        return cash;
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
-}
+};
 
 export const totalSellTransfer = async (date, companyId) => {
-    try {
+    let transfer = 0;
 
+    try {
+        const query = { companyId };
+
+        if (dateFilter) {
+            let startDate;
+            let endDate;
+
+            switch (dateFilter) {
+                case 'day':
+                    startDate = moment().utc().startOf('day').toDate();
+                    endDate = moment().utc().endOf('day').toDate();
+                    break;
+                case 'week':
+                    startDate = moment().utc().startOf('isoWeek').toDate();
+                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    break;
+                case 'month':
+                    startDate = moment().utc().startOf('month').toDate();
+                    endDate = moment().utc().endOf('month').toDate();
+                    break;
+                case 'year':
+                    startDate = moment().utc().startOf('year').toDate();
+                    endDate = moment().utc().endOf('year').toDate();
+                    break;
+                default:
+                    throw new Error('Invalid date filter');
+            }
+
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        const bills = await billModel.find(query).populate({
+            path: 'ticketId',
+            populate: {
+                path: 'waiterId',
+                model: 'User'
+            }
+        }).populate('tableId').populate('userId');
+
+        bills.forEach(bill => {
+            bill.methodOfPayment.forEach(method => {
+                if (method?.name === 'transfer') {
+                    transfer += method.sell;
+                }
+            });
+        });
+
+        return transfer;
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
 export const totalSellCreditCard = async (date, companyId) => {
-    try {
+    let creditCard = 0;
 
+    try {
+        const query = { companyId };
+
+        if (dateFilter) {
+            let startDate;
+            let endDate;
+
+            switch (dateFilter) {
+                case 'day':
+                    startDate = moment().utc().startOf('day').toDate();
+                    endDate = moment().utc().endOf('day').toDate();
+                    break;
+                case 'week':
+                    startDate = moment().utc().startOf('isoWeek').toDate();
+                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    break;
+                case 'month':
+                    startDate = moment().utc().startOf('month').toDate();
+                    endDate = moment().utc().endOf('month').toDate();
+                    break;
+                case 'year':
+                    startDate = moment().utc().startOf('year').toDate();
+                    endDate = moment().utc().endOf('year').toDate();
+                    break;
+                default:
+                    throw new Error('Invalid date filter');
+            }
+
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        const bills = await billModel.find(query).populate({
+            path: 'ticketId',
+            populate: {
+                path: 'waiterId',
+                model: 'User'
+            }
+        }).populate('tableId').populate('userId');
+
+        bills.forEach(bill => {
+            bill.methodOfPayment.forEach(method => {
+                if (method.name === 'creditCard') {
+                    creditCard += method.sell;
+                }
+            });
+        });
+
+        return creditCard;
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
 export const totalSellCreditDebit = async (date, companyId) => {
-    try {
+    let creditDebit = 0;
 
+    try {
+        const query = { companyId };
+
+        if (dateFilter) {
+            let startDate;
+            let endDate;
+
+            switch (dateFilter) {
+                case 'day':
+                    startDate = moment().utc().startOf('day').toDate();
+                    endDate = moment().utc().endOf('day').toDate();
+                    break;
+                case 'week':
+                    startDate = moment().utc().startOf('isoWeek').toDate();
+                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    break;
+                case 'month':
+                    startDate = moment().utc().startOf('month').toDate();
+                    endDate = moment().utc().endOf('month').toDate();
+                    break;
+                case 'year':
+                    startDate = moment().utc().startOf('year').toDate();
+                    endDate = moment().utc().endOf('year').toDate();
+                    break;
+                default:
+                    throw new Error('Invalid date filter');
+            }
+
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        const bills = await billModel.find(query).populate({
+            path: 'ticketId',
+            populate: {
+                path: 'waiterId',
+                model: 'User'
+            }
+        }).populate('tableId').populate('userId');
+
+        bills.forEach(bill => {
+            bill.methodOfPayment.forEach(method => {
+                if (method.name === 'creditDebit') {
+                    creditDebit += method.sell;
+                }
+            });
+        });
+
+        return creditDebit;
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
@@ -90,7 +269,7 @@ export const quantitySellMethodOfPayment = async (dateFilter, companyId) => {
 
     try {
         const query = { companyId };
-        
+
         if (dateFilter) {
             let startDate;
             let endDate;
@@ -145,7 +324,7 @@ export const quantitySellMethodOfPayment = async (dateFilter, companyId) => {
                 }
             });
         });
-        
+
         return { cash, transfer, creditCard, creditDebit };
     } catch (error) {
         console.log(error);

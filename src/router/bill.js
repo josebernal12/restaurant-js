@@ -37,7 +37,7 @@ router.get('/bill', [checkJwt], billSellController)
 router.get('/products', [checkJwt], productsSellAllController)
 router.get('/bill/query', [checkJwt], billSellByQuerysController) //
 router.post('/create/multiple-bills', [checkJwt], createMultipleBillsController)
-router.get('/sells-category/:id', [checkJwt], sellsCategoryController)
+router.get('/sellsCategory', [checkJwt], sellsCategoryController)
 router.post('/:id', [checkJwt], generateBillController)
 router.get('/:id', [checkJwt], getBillByIdController)
 export default router

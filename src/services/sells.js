@@ -1,5 +1,6 @@
 import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js";
 import billModel from "../model/BillModel.js";
+import categoryModel from "../model/CategoryModel.js";
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
 import userModel from "../model/UserModel.js";
@@ -459,21 +460,29 @@ export const billSellByQuery = async (date, companyId) => {
 }
 
 
-export const sellsCategory = async (categoryId) => {
+export const sellsCategory = async () => {
   try {
-    const bills = await billModel.find().populate('ticketId')
-    bills.forEach(bill => {
-      bill.ticketId.forEach(value => {
-        console.log(value)
-        value.products.forEach(product => {
-          console.log(product)
-          if (product.category === categoryId) {
-            console.log(product)
+    const bills = await billModel.find().populate('ticketId');
+    const categoryCount = {};
+
+    for (const bill of bills) {
+      for (const ticket of bill.ticketId) {
+        for (const product of ticket.products) {
+          const category = await categoryModel.findById(product.category);
+
+          if (category) {
+            if (categoryCount[category.name]) {
+              categoryCount[category.name]++;
+            } else {
+              categoryCount[category.name] = 1;
+            }
           }
-        })
-      })
-    })
+        }
+      }
+    }
+
+    return categoryCount;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};

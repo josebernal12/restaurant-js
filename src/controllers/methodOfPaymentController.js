@@ -2,6 +2,9 @@ import {
     findMethodOfPaymentByCompany,
     quantitySellMethodOfPayment,
     totalSellCash,
+    totalSellCreditCard,
+    totalSellCreditDebit,
+    totalSellTransfer,
     updateMethodOfPayment
 } from "../services/methodOfPayment.js"
 
@@ -32,6 +35,21 @@ export const quantitySellMethodOfPaymentController = async (req, res) => {
 }
 
 export const totalSellCashController = async (req, res) => {
-    const response = await totalSellCash(null,req.user.companyId.toString())
+    const response = await totalSellCash(req.query.date, req.user.companyId.toString())
+    res.json(response)
+}
+
+export const totalSellTransferController = async (req, res) => {
+    const response = await totalSellTransfer(req.query.date, req.user.companyId.toString())
+    res.json(response)
+}
+
+export const totalSellCreditCardController = async (req, res) => {
+    const response = await totalSellCreditCard(req.query.date, req.user.companyId.toString())
+    res.json(response)
+}
+
+export const totalSellCreditDebitController = async (req, res) => { 
+    const response = await totalSellCreditDebit(req.query.date, req.user.companyId.toString())
     res.json(response)
 }

@@ -68,7 +68,7 @@ const server = app.listen(port, () => {
   connectDB()
 
   console.log('Connection has been established successfully.');
-  console.log('server listening to port 8080')
+  console.log(`server listening port ${port}`)
 })
 
 
