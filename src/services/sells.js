@@ -459,64 +459,57 @@ export const billSellByQuery = async (date, companyId) => {
   }
 }
 
-
 export const sellsCategory = async (dateFilter, companyId) => {
-  try {
-      const query = { companyId };
+    try {
+        const query = { companyId };
 
-      if (dateFilter) {
-          let startDate;
-          let endDate;
+        if (dateFilter) {
+            let startDate;
+            let endDate = moment().utc().toDate(); // Hasta la fecha actual
 
-          switch (dateFilter) {
-              case 'day':
-                  startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
-                  endDate = moment().utc().subtract(1, 'days').endOf('day').toDate();
-                  break;
-              case 'week':
-                  startDate = moment().utc().subtract(1, 'weeks').startOf('isoWeek').toDate();
-                  endDate = moment().utc().subtract(1, 'weeks').endOf('isoWeek').toDate();
-                  break;
-              case 'month':
-                  startDate = moment().utc().subtract(1, 'months').startOf('month').toDate();
-                  endDate = moment().utc().subtract(1, 'months').endOf('month').toDate();
-                  break;
-              case 'year':
-                  startDate = moment().utc().subtract(1, 'years').startOf('year').toDate();
-                  endDate = moment().utc().subtract(1, 'years').endOf('year').toDate();
-                  break;
-              default:
-                  throw new Error('Invalid date filter');
-          }
+            switch (dateFilter) {
+                case 'day':
+                    startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
+                    endDate = moment().utc().endOf('day').toDate();
+                    break;
+                case 'week':
+                    startDate = moment().utc().subtract(1, 'weeks').startOf('day').toDate();
+                    break;
+                case 'month':
+                    startDate = moment().utc().subtract(1, 'months').startOf('day').toDate();
+                    break;
+                case 'year':
+                    startDate = moment().utc().subtract(1, 'years').startOf('day').toDate();
+                    break;
+                default:
+                    throw new Error('Invalid date filter');
+            }
 
-          console.log(`Date Filter: ${dateFilter}`);
-          console.log(`Start Date: ${startDate}`);
-          console.log(`End Date: ${endDate}`);
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        }
 
-          query.createdAt = { $gte: startDate, $lte: endDate };
-      }
+        const bills = await billModel.find(query).populate('ticketId');
+        const categoryCount = {};
 
-      const bills = await billModel.find(query).populate('ticketId');
-      const categoryCount = {};
+        for (const bill of bills) {
+            for (const ticket of bill.ticketId) {
+                for (const product of ticket.products) {
+                    const category = await categoryModel.findById(product.category);
 
-      for (const bill of bills) {
-          for (const ticket of bill.ticketId) {
-              for (const product of ticket.products) {
-                  const category = await categoryModel.findById(product.category);
+                    if (category) {
+                        if (categoryCount[category.name]) {
+                            categoryCount[category.name]++;
+                        } else {
+                            categoryCount[category.name] = 1;
+                        }
+                    }
+                }
+            }
+        }
 
-                  if (category) {
-                      if (categoryCount[category.name]) {
-                          categoryCount[category.name]++;
-                      } else {
-                          categoryCount[category.name] = 1;
-                      }
-                  }
-              }
-          }
-      }
-
-      return categoryCount;
-  } catch (error) {
-      console.log(error);
-  }
+        return categoryCount;
+    } catch (error) {
+        console.log(error);
+    }
 };
+
