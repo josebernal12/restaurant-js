@@ -94,6 +94,7 @@ export const getSuppliers = async (query, showAll, quantity, page, companyId) =>
 }
 export const createMultipleSuppliers = async (suppliers) => {
     try {
+        console.log(suppliers)
         const supplierPromises = suppliers.map((supplier) => supplierModel.create(supplier));
         const supplierArray = await Promise.all(supplierPromises);
         const suppliersTotal = await supplierModel.countDocuments();

@@ -80,7 +80,7 @@ export const getSuppliersController = async (req, res) => {
 }
 
 export const createMultipleSuppliersController = async (req, res) => {
-    const { suppliers } = req.body
+    const suppliers = req.body
 
     const newSuppliers = await createMultipleSuppliers(suppliers)
 
