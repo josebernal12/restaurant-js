@@ -316,7 +316,9 @@ export const quantitySellMethodOfPayment = async (dateFilter, companyId) => {
             });
         });
 
-        return { cash, transfer, creditCard, creditDebit };
+        const total = cash + transfer + creditCard + creditDebit;
+
+        return { cash, transfer, creditCard, creditDebit, total };
     } catch (error) {
         console.log(error);
     }
