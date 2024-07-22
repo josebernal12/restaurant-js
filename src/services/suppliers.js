@@ -92,20 +92,17 @@ export const getSuppliers = async (query, showAll, quantity, page, companyId) =>
         };
     }
 }
-
 export const createMultipleSuppliers = async (suppliers) => {
-    let supplierArray = []
     try {
-        suppliers.forEach(async (supplier) => {
-            const newSuppliers = await supplierModel.create(supplier)
-            supplierArray.push(newSuppliers)
-        })
-        const suppliersTotal = await supplierModel.countDocuments()
-        return { supplierArray, suppliersTotal }
+        const supplierPromises = suppliers.map((supplier) => supplierModel.create(supplier));
+        const supplierArray = await Promise.all(supplierPromises);
+        const suppliersTotal = await supplierModel.countDocuments();
+        return { supplierArray, suppliersTotal };
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
-}
+};
+
 
 export const deleteMultipleSuppliers = async (ids) => {
     try {
