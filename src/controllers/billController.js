@@ -198,8 +198,7 @@ export const createMultipleBillsController = async (req, res) => {
 }
 
 export const sellsCategoryController = async (req, res) => {
-  const { id } = req.params
-  const categories = await sellsCategory(id)
+  const categories = await sellsCategory(req.query.date, req.user.companyId.toString())
 
   res.json(categories)
 }

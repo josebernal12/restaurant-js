@@ -7,7 +7,7 @@ import userModel from "../model/UserModel.js";
 import { subDays, subWeeks, subMonths, subYears } from 'date-fns';
 import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
 import moment2 from 'moment-timezone'
-
+import moment from 'moment';
 export const userSellByTable = async (id, name, date, companyId) => {
   try {
     let query = {}; // Inicializamos la consulta como vacía
@@ -460,29 +460,63 @@ export const billSellByQuery = async (date, companyId) => {
 }
 
 
-export const sellsCategory = async () => {
+export const sellsCategory = async (dateFilter, companyId) => {
   try {
-    const bills = await billModel.find().populate('ticketId');
-    const categoryCount = {};
+      const query = { companyId };
 
-    for (const bill of bills) {
-      for (const ticket of bill.ticketId) {
-        for (const product of ticket.products) {
-          const category = await categoryModel.findById(product.category);
+      if (dateFilter) {
+          let startDate;
+          let endDate;
 
-          if (category) {
-            if (categoryCount[category.name]) {
-              categoryCount[category.name]++;
-            } else {
-              categoryCount[category.name] = 1;
-            }
+          switch (dateFilter) {
+              case 'day':
+                  startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
+                  endDate = moment().utc().subtract(1, 'days').endOf('day').toDate();
+                  break;
+              case 'week':
+                  startDate = moment().utc().subtract(1, 'weeks').startOf('isoWeek').toDate();
+                  endDate = moment().utc().subtract(1, 'weeks').endOf('isoWeek').toDate();
+                  break;
+              case 'month':
+                  startDate = moment().utc().subtract(1, 'months').startOf('month').toDate();
+                  endDate = moment().utc().subtract(1, 'months').endOf('month').toDate();
+                  break;
+              case 'year':
+                  startDate = moment().utc().subtract(1, 'years').startOf('year').toDate();
+                  endDate = moment().utc().subtract(1, 'years').endOf('year').toDate();
+                  break;
+              default:
+                  throw new Error('Invalid date filter');
           }
-        }
-      }
-    }
 
-    return categoryCount;
+          console.log(`Date Filter: ${dateFilter}`);
+          console.log(`Start Date: ${startDate}`);
+          console.log(`End Date: ${endDate}`);
+
+          query.createdAt = { $gte: startDate, $lte: endDate };
+      }
+
+      const bills = await billModel.find(query).populate('ticketId');
+      const categoryCount = {};
+
+      for (const bill of bills) {
+          for (const ticket of bill.ticketId) {
+              for (const product of ticket.products) {
+                  const category = await categoryModel.findById(product.category);
+
+                  if (category) {
+                      if (categoryCount[category.name]) {
+                          categoryCount[category.name]++;
+                      } else {
+                          categoryCount[category.name] = 1;
+                      }
+                  }
+              }
+          }
+      }
+
+      return categoryCount;
   } catch (error) {
-    console.log(error);
+      console.log(error);
   }
 };
