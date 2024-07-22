@@ -44,24 +44,21 @@ export const totalSellCash = async (dateFilter, companyId) => {
 
         if (dateFilter) {
             let startDate;
-            let endDate;
+            let endDate = moment().utc().toDate(); // Hasta la fecha actual
 
             switch (dateFilter) {
                 case 'day':
-                    startDate = moment().utc().startOf('day').toDate();
+                    startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
                     endDate = moment().utc().endOf('day').toDate();
                     break;
                 case 'week':
-                    startDate = moment().utc().startOf('isoWeek').toDate();
-                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    startDate = moment().utc().subtract(1, 'weeks').startOf('day').toDate();
                     break;
                 case 'month':
-                    startDate = moment().utc().startOf('month').toDate();
-                    endDate = moment().utc().endOf('month').toDate();
+                    startDate = moment().utc().subtract(1, 'months').startOf('day').toDate();
                     break;
                 case 'year':
-                    startDate = moment().utc().startOf('year').toDate();
-                    endDate = moment().utc().endOf('year').toDate();
+                    startDate = moment().utc().subtract(1, 'years').startOf('day').toDate();
                     break;
                 default:
                     throw new Error('Invalid date filter');
@@ -69,6 +66,7 @@ export const totalSellCash = async (dateFilter, companyId) => {
 
             query.createdAt = { $gte: startDate, $lte: endDate };
         }
+
 
         const bills = await billModel.find(query).populate({
             path: 'ticketId',
@@ -100,24 +98,21 @@ export const totalSellTransfer = async (dateFilter, companyId) => {
 
         if (dateFilter) {
             let startDate;
-            let endDate;
+            let endDate = moment().utc().toDate(); // Hasta la fecha actual
 
             switch (dateFilter) {
                 case 'day':
-                    startDate = moment().utc().startOf('day').toDate();
+                    startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
                     endDate = moment().utc().endOf('day').toDate();
                     break;
                 case 'week':
-                    startDate = moment().utc().startOf('isoWeek').toDate();
-                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    startDate = moment().utc().subtract(1, 'weeks').startOf('day').toDate();
                     break;
                 case 'month':
-                    startDate = moment().utc().startOf('month').toDate();
-                    endDate = moment().utc().endOf('month').toDate();
+                    startDate = moment().utc().subtract(1, 'months').startOf('day').toDate();
                     break;
                 case 'year':
-                    startDate = moment().utc().startOf('year').toDate();
-                    endDate = moment().utc().endOf('year').toDate();
+                    startDate = moment().utc().subtract(1, 'years').startOf('day').toDate();
                     break;
                 default:
                     throw new Error('Invalid date filter');
@@ -125,6 +120,7 @@ export const totalSellTransfer = async (dateFilter, companyId) => {
 
             query.createdAt = { $gte: startDate, $lte: endDate };
         }
+
 
         const bills = await billModel.find(query).populate({
             path: 'ticketId',
@@ -156,24 +152,21 @@ export const totalSellCreditCard = async (dateFilter, companyId) => {
 
         if (dateFilter) {
             let startDate;
-            let endDate;
+            let endDate = moment().utc().toDate(); // Hasta la fecha actual
 
             switch (dateFilter) {
                 case 'day':
-                    startDate = moment().utc().startOf('day').toDate();
+                    startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
                     endDate = moment().utc().endOf('day').toDate();
                     break;
                 case 'week':
-                    startDate = moment().utc().startOf('isoWeek').toDate();
-                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    startDate = moment().utc().subtract(1, 'weeks').startOf('day').toDate();
                     break;
                 case 'month':
-                    startDate = moment().utc().startOf('month').toDate();
-                    endDate = moment().utc().endOf('month').toDate();
+                    startDate = moment().utc().subtract(1, 'months').startOf('day').toDate();
                     break;
                 case 'year':
-                    startDate = moment().utc().startOf('year').toDate();
-                    endDate = moment().utc().endOf('year').toDate();
+                    startDate = moment().utc().subtract(1, 'years').startOf('day').toDate();
                     break;
                 default:
                     throw new Error('Invalid date filter');
@@ -212,24 +205,21 @@ export const totalSellCreditDebit = async (dateFilter, companyId) => {
 
         if (dateFilter) {
             let startDate;
-            let endDate;
+            let endDate = moment().utc().toDate(); // Hasta la fecha actual
 
             switch (dateFilter) {
                 case 'day':
-                    startDate = moment().utc().startOf('day').toDate();
+                    startDate = moment().utc().subtract(1, 'days').startOf('day').toDate();
                     endDate = moment().utc().endOf('day').toDate();
                     break;
                 case 'week':
-                    startDate = moment().utc().startOf('isoWeek').toDate();
-                    endDate = moment().utc().endOf('isoWeek').toDate();
+                    startDate = moment().utc().subtract(1, 'weeks').startOf('day').toDate();
                     break;
                 case 'month':
-                    startDate = moment().utc().startOf('month').toDate();
-                    endDate = moment().utc().endOf('month').toDate();
+                    startDate = moment().utc().subtract(1, 'months').startOf('day').toDate();
                     break;
                 case 'year':
-                    startDate = moment().utc().startOf('year').toDate();
-                    endDate = moment().utc().endOf('year').toDate();
+                    startDate = moment().utc().subtract(1, 'years').startOf('day').toDate();
                     break;
                 default:
                     throw new Error('Invalid date filter');
@@ -237,6 +227,7 @@ export const totalSellCreditDebit = async (dateFilter, companyId) => {
 
             query.createdAt = { $gte: startDate, $lte: endDate };
         }
+
 
         const bills = await billModel.find(query).populate({
             path: 'ticketId',
