@@ -24,7 +24,7 @@ export const addProductController = async (req, res) => {
 
 export const getProductsController = async (req, res) => {
   const query = {};
-  const { name, category, page, showAll, quantity } = req.query;
+  const { name, category, page, showAll, quantity, sortName, sortPrice } = req.query;
 
   if (name) {
     query.name = { $regex: name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
@@ -48,7 +48,7 @@ export const getProductsController = async (req, res) => {
   const skip = (pageNumber - 1) * limit;
 
   try {
-    const products = await getProducts(query, pageNumber, showAll, limit, skip, req.user.companyId.toString());
+    const products = await getProducts(query, pageNumber, showAll, limit, skip, req.user.companyId.toString(), sortName, sortPrice);
     if (!products.products.length) {
       return res.status(200).json({ products: [] });
     }
@@ -102,7 +102,7 @@ export const bestProductController = async (req, res) => {
   if (req.query.range) {
     range = req.query.range
   }
-  const bill = await bestProduct(range,req.user.companyId.toString())
+  const bill = await bestProduct(range, req.user.companyId.toString())
   res.json(bill)
 }
 export const deleteManyProductsController = async (req, res) => {

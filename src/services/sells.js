@@ -337,6 +337,8 @@ export const productSellAll = async (companyId) => {
     let totalSemana = 0;
     let totalDia = 0;
     let totalStock = 0;
+
+    console.log(valorAño)
     valorAño.forEach(bill => {
       bill.ticketId.some(ticket => {
         ticket.products.some(product => {
@@ -490,9 +492,9 @@ export const sellsCategory = async (dateFilter, companyId) => {
 
         const bills = await billModel.find(query).populate('ticketId');
         const categoryCount = {};
-
         for (const bill of bills) {
             for (const ticket of bill.ticketId) {
+              console.log(ticket)
                 for (const product of ticket.products) {
                     const category = await categoryModel.findById(product.category);
 

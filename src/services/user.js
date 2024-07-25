@@ -4,28 +4,46 @@ import RolModel from '../model/RolModel.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import generateToken from "../helpers/generateToken.js"
-
-export const getUsers = async (query, page, showAll, quantity, companyId) => {
+export const getUsers = async (query, page, showAll, quantity, companyId, sortName) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
+  console.log(sortName)
+  // Inicializar opciones de ordenamiento
+  let sortOptions = {};
+
+  // Configurar el ordenamiento por nombre
+  if (sortName) {
+    sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+  }
+
   try {
     if (showAll === "1") {
-      const usersTotal = await userModel.countDocuments({ companyId })
-      const users = await userModel.find({ companyId }).populate('rol').select('-password')
+      const usersTotal = await userModel.countDocuments({ companyId });
+      const users = await userModel.find({ companyId })
+        .populate('rol')
+        .select('-password')
+        .sort(sortOptions); // Aplicar el ordenamiento
       return {
         usersTotal,
         users
-      }
+      };
     }
+
     if (quantity) {
-      const usersTotal = await userModel.countDocuments({ companyId })
-      const users = await userModel.find({ ...query, companyId }).limit(quantity).skip(skip).populate('rol').select('-password')
+      const usersTotal = await userModel.countDocuments({ companyId });
+      const users = await userModel.find({ ...query, companyId })
+        .limit(quantity)
+        .skip(skip)
+        .populate('rol')
+        .select('-password')
+        .sort(sortOptions); // Aplicar el ordenamiento
       return {
         usersTotal,
         users
-      }
+      };
     }
+
     if (query.rol) {
       const rol = await RolModel.findOne({ name: query.rol, companyId });
       if (!rol) {
@@ -33,8 +51,14 @@ export const getUsers = async (query, page, showAll, quantity, companyId) => {
           users: []
         };
       }
-      const usersTotal = await userModel.countDocuments({ companyId })
-      const users = await userModel.find({ rol: rol._id, companyId }).limit(perPage).skip(skip).populate('rol').select('-password').exec();
+      const usersTotal = await userModel.countDocuments({ companyId });
+      const users = await userModel.find({ rol: rol._id, companyId })
+        .limit(perPage)
+        .skip(skip)
+        .populate('rol')
+        .select('-password')
+        .sort(sortOptions) // Aplicar el ordenamiento
+        .exec();
       if (!users || users.length === 0) {
         return {
           users: []
@@ -45,10 +69,14 @@ export const getUsers = async (query, page, showAll, quantity, companyId) => {
         usersTotal
       };
     }
+
     const usersTotal = await userModel.countDocuments({ companyId });
-    const users = await userModel.find({ ...query, companyId }).limit(perPage).select('-password')
+    const users = await userModel.find({ ...query, companyId })
+      .limit(perPage)
       .skip(skip)
       .populate('rol')
+      .select('-password')
+      .sort(sortOptions) // Aplicar el ordenamiento
       .exec();
 
     if (!users || users.length === 0) {
@@ -56,11 +84,7 @@ export const getUsers = async (query, page, showAll, quantity, companyId) => {
         users: []
       };
     }
-    if (users.length === 0) {
-      return {
-        users: []
-      }
-    }
+
     return {
       users,
       usersTotal
@@ -69,7 +93,8 @@ export const getUsers = async (query, page, showAll, quantity, companyId) => {
     console.log(error);
     throw error; // Propagar el error para que sea manejado en el controlador
   }
-}
+};
+
 
 export const getUserById = async (id) => {
   try {

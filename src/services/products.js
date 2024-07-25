@@ -40,18 +40,32 @@ export const addProducts = async (name, description, price, category, image, dis
     console.log(error)
   }
 }
-
-export const getProducts = async (query, page, showAll, limit, skip, companyId) => {
+export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice) => {
   try {
     const productTotal = await productModel.countDocuments({ ...query, companyId });
 
+    let sortOptions = {};
+
+    // Ordenar por nombre si se especifica
+    if (sortName) {
+      sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
+
+    // Ordenar por precio si se especifica
+    if (sortPrice) {
+      sortOptions.price = sortPrice === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
+
     let products;
     if (showAll === "1") {
-      products = await productModel.find({ ...query, companyId }).populate('category');
+      products = await productModel.find({ ...query, companyId })
+        .sort(sortOptions) // Aplicar el ordenamiento
+        .populate('category');
     } else {
       products = await productModel.find({ ...query, companyId })
         .limit(limit)
         .skip(skip)
+        .sort(sortOptions) // Aplicar el ordenamiento
         .populate('category');
     }
 
@@ -255,7 +269,7 @@ export const bestProduct = async (range, companyId) => {
     }
 
     // Obtener todas las facturas (o filtrar por fecha si se proporciona un rango)
-    const bills = await billModel.find({...filter, companyId}).populate('ticketId');
+    const bills = await billModel.find({ ...filter, companyId }).populate('ticketId');
 
     // Objeto para almacenar la cantidad total vendida de cada producto
     const soldProducts = {};

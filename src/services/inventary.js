@@ -1,59 +1,87 @@
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
 
-export const inventary = async (name, quantity, page, showAll, companyId) => {
-
+export const inventary = async (name, quantity, page, showAll, companyId, sortName, sortStock, sortMin, sortMax) => {
   try {
-
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
 
     let query = {}; // Inicializamos la consulta como vacía
 
-    // Si se solicitan todos los productos
-    if (showAll === "1") {
-      const productTotal = await inventaryModel.countDocuments({ companyId })
-      const products = await inventaryModel.find({ ...query, companyId }).select('-image -description -price');
-      return {
-        productTotal,
-        products
-      }
+    // Inicializar opciones de ordenamiento
+    let sortOptions = {};
+
+    // Configurar el ordenamiento por nombre
+    if (sortName) {
+      sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
 
-    // Si se solicita una cantidad específica de productos
-    if (quantity) {
-      const productTotal = await inventaryModel.countDocuments({ companyId })
-      const products = await inventaryModel.find({ ...query, companyId }).limit(quantity).select('-image -description -price').skip(skip);
-      return {
-        productTotal,
-        products
-      }
+    // Configurar el ordenamiento por stock
+    if (sortStock) {
+      sortOptions.stock = sortStock === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
+    if (sortMin) {
+      sortOptions.min = sortMin === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
+    if (sortMax) {
+      sortOptions.max = sortMax === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
 
     // Si se busca por nombre
     if (name && name.name) {
-      query = name;
+      query.name = name.name;
+    }
+
+    // Si se solicitan todos los productos
+    if (showAll === "1") {
+      const productTotal = await inventaryModel.countDocuments({ ...query, companyId });
+      const products = await inventaryModel.find({ ...query, companyId }).select('-image -description -price').sort(sortOptions);
+      return {
+        productTotal,
+        products
+      };
+    }
+
+    // Si se solicita una cantidad específica de productos
+    if (quantity) {
+      const productTotal = await inventaryModel.countDocuments({ ...query, companyId });
+      const products = await inventaryModel.find({ ...query, companyId })
+        .limit(quantity)
+        .select('-image -description -price')
+        .skip(skip)
+        .sort(sortOptions); // Aplicar el ordenamiento
+      return {
+        productTotal,
+        products
+      };
     }
 
     // Si se solicita una página específica de productos
-    const productTotal = await inventaryModel.countDocuments({ ...query, companyId })
-    const products = await inventaryModel.find({ ...query, companyId }).select('-image -description -price').limit(perPage).skip(skip).exec();
+    const productTotal = await inventaryModel.countDocuments({ ...query, companyId });
+    const products = await inventaryModel.find({ ...query, companyId })
+      .select('-image -description -price')
+      .limit(perPage)
+      .skip(skip)
+      .sort(sortOptions) // Aplicar el ordenamiento
+      .exec();
 
     if (!products || products.length === 0) {
       return {
         products: []
-      }
+      };
     }
 
     return {
       products,
       productTotal
-    }
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    throw new Error('Error retrieving inventory from the database');
   }
-}
+};
+
 
 
 export const createProductInventory = async (name, stock, max, min, unit, companyId) => {

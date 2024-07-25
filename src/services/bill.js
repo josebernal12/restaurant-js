@@ -178,7 +178,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 export const bestWaiter = async (type, companyId) => {
   try {
     let startDate, endDate;
-
+    
     // Determinar las fechas de inicio y fin según el tipo de consulta o si no se proporciona ningún tipo
     switch (type) {
       case 'week':
