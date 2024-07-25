@@ -40,7 +40,7 @@ export const addProducts = async (name, description, price, category, image, dis
     console.log(error)
   }
 }
-export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice) => {
+export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice, sortCategory) => {
   try {
     const productTotal = await productModel.countDocuments({ ...query, companyId });
 
@@ -55,7 +55,9 @@ export const getProducts = async (query, page, showAll, limit, skip, companyId, 
     if (sortPrice) {
       sortOptions.price = sortPrice === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
-
+    if (sortCategory) {
+      sortOptions.category = sortCategory === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
     let products;
     if (showAll === "1") {
       products = await productModel.find({ ...query, companyId })

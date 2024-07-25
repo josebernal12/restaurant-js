@@ -1,7 +1,7 @@
 import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js";
 
-export const inventary = async (name, quantity, page, showAll, companyId, sortName, sortStock, sortMin, sortMax) => {
+export const inventary = async (name, quantity, page, showAll, companyId, sortName, sortStock, sortMin, sortMax, sortUnit) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -27,7 +27,9 @@ export const inventary = async (name, quantity, page, showAll, companyId, sortNa
     if (sortMax) {
       sortOptions.max = sortMax === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
-
+    if (sortUnit) {
+      sortOptions.unit = sortUnit === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
     // Si se busca por nombre
     if (name && name.name) {
       query.name = name.name;

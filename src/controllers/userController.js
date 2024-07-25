@@ -19,6 +19,8 @@ export const getUsersController = async (req, res) => {
   let showAll;
   let quantity;
   let sortName;
+  let sortEmail;
+  let sortRol;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
@@ -43,7 +45,13 @@ export const getUsersController = async (req, res) => {
   if (req.query.sortName) {
     sortName = req.query.sortName
   }
-  const response = await getUsers(query, page, showAll, quantity, req.user.companyId.toString(), sortName)
+  if (req.query.sortEmail) {
+    sortEmail = req.query.sortEmail
+  }
+  if (req.query.sortRol) {
+    sortRol = req.query.sortRol
+  }
+  const response = await getUsers(query, page, showAll, quantity, req.user.companyId.toString(), sortName, sortEmail, sortRol)
   res.json(response)
 }
 

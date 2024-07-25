@@ -17,6 +17,7 @@ export const inventaryController = async (req, res) => {
   let sortStock;
   let sortMin;
   let sortMax;
+  let sortUnit;
   if (req.query.name) {
     query.name = { $regex: req.query.name, $options: 'i' }; // 'i' para hacer la búsqueda case-insensitive
   }
@@ -41,7 +42,10 @@ export const inventaryController = async (req, res) => {
   if (req.query.sortMax) {
     sortMax = req.query.sortMax // 'i' para hacer la búsqueda case-insensitive
   }
-  const products = await inventary(query, quantity, page, showAll, req.user.companyId.toString(), sortName, sortStock, sortMin, sortMax)
+  if (req.query.sortUnit) {
+    sortUnit = req.query.sortUnit // 'i' para hacer la búsqueda case-insensitive
+  }
+  const products = await inventary(query, quantity, page, showAll, req.user.companyId.toString(), sortName, sortStock, sortMin, sortMax, sortUnit)
   if (products?.msg) {
     res.status(404).json(products)
     return

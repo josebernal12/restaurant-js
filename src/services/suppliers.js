@@ -62,21 +62,27 @@ export const deleteSupplier = async (id) => {
     }
 }
 
-export const getSuppliers = async (query, showAll, quantity, page, companyId) => {
+export const getSuppliers = async (query, showAll, quantity, page, companyId, sortName, sortEmail) => {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
     const skip = perPage * (pageQuery - 1);
+    let sortOptions = {};
+    if (sortName) {
+        sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
+    if (sortEmail) {
+        sortOptions.email = sortEmail === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+    }
     try {
         let suppliers;
         let totalSuppliers
         if (showAll === 'true') {
-            suppliers = await supplierModel.find({ companyId });
+            suppliers = await supplierModel.find({ companyId }).sort(sortOptions);
             totalSuppliers = await supplierModel.countDocuments({ companyId })
         } else {
-            suppliers = await supplierModel.find({ ...query, companyId }).limit(quantity).skip(skip);
+            suppliers = await supplierModel.find({ ...query, companyId }).limit(quantity).skip(skip).sort(sortOptions);
             totalSuppliers = await supplierModel.countDocuments({ companyId })
         }
-
         if (!suppliers.length) {
             return {
                 suppliers: []
@@ -94,7 +100,6 @@ export const getSuppliers = async (query, showAll, quantity, page, companyId) =>
 }
 export const createMultipleSuppliers = async (suppliers) => {
     try {
-        console.log(suppliers)
         const supplierPromises = suppliers.map((supplier) => supplierModel.create(supplier));
         const supplierArray = await Promise.all(supplierPromises);
         const suppliersTotal = await supplierModel.countDocuments();

@@ -51,7 +51,7 @@ export const deleteSupplierController = async (req, res) => {
 
 export const getSuppliersController = async (req, res) => {
     let query = {};
-    const { name, phone, address, email } = req.query;
+    const { name, phone, address, email, sortName, sortEmail } = req.query;
 
 
     if (name) {
@@ -67,11 +67,10 @@ export const getSuppliersController = async (req, res) => {
         query.email = { $regex: email, $options: 'i' };
     }
 
-
     const showAll = req.query.showAll
     const quantity = req.query.quantity
     const page = req.query.page
-    const supplier = await getSuppliers(query, showAll, quantity, page, req.user.companyId.toString())
+    const supplier = await getSuppliers(query, showAll, quantity, page, req.user.companyId.toString(), sortName, sortEmail)
 
     if (supplier?.msg) {
         return res.status(400).json(supplier)

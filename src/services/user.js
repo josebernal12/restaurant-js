@@ -4,7 +4,7 @@ import RolModel from '../model/RolModel.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import generateToken from "../helpers/generateToken.js"
-export const getUsers = async (query, page, showAll, quantity, companyId, sortName) => {
+export const getUsers = async (query, page, showAll, quantity, companyId, sortName, sortEmail, sortRol) => {
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
@@ -16,7 +16,12 @@ export const getUsers = async (query, page, showAll, quantity, companyId, sortNa
   if (sortName) {
     sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
   }
-
+  if (sortEmail) {
+    sortOptions.email = sortEmail === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+  }
+  if (sortRol) {
+    sortOptions.rol = sortRol === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+  }
   try {
     if (showAll === "1") {
       const usersTotal = await userModel.countDocuments({ companyId });
