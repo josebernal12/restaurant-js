@@ -86,7 +86,7 @@ export const inventary = async (name, quantity, page, showAll, companyId, sortNa
 
 
 
-export const createProductInventory = async (name, stock, max, min, unit, companyId) => {
+export const createProductInventory = async (name, stock, max, min, unit, companyId,unitQuantity) => {
   try {
 
     const exist = await inventaryModel.findOne({ name, companyId })
@@ -95,7 +95,7 @@ export const createProductInventory = async (name, stock, max, min, unit, compan
         msg: 'ya existe un producto con ese nombre'
       }
     }
-    const newProduct = await inventaryModel.create({ name, stock, max, min, unit, companyId })
+    const newProduct = await inventaryModel.create({ name, stock, max, min, unit, companyId,unitQuantity })
     if (!newProduct) {
       return {
         msg: 'hubo un error al crear producto'
@@ -108,7 +108,7 @@ export const createProductInventory = async (name, stock, max, min, unit, compan
 }
 
 
-export const updateProductInventory = async (id, name, stock, max, min, unit, companyId) => {
+export const updateProductInventory = async (id, name, stock, max, min, unit, companyId, unitQuantity) => {
   try {
     const exist = await inventaryModel.findOne({
       name,
@@ -122,7 +122,7 @@ export const updateProductInventory = async (id, name, stock, max, min, unit, co
     }
     // Actualiza el inventario
 
-    const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit, companyId }, { new: true });
+    const updatedInventory = await inventaryModel.findByIdAndUpdate(id, { name, stock, max, min, unit, companyId,unitQuantity }, { new: true });
 
     if (!updatedInventory) {
       return {

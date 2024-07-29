@@ -28,6 +28,9 @@ const inventarySchema = new Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  },
+  unitQuantity: {
+    type: Number
   }
 }, {
   timestamps: true
