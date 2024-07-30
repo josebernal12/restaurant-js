@@ -54,8 +54,8 @@ export const inventaryController = async (req, res) => {
 }
 
 export const createProductInventoryController = async (req, res) => {
-  const { name, stock, max, min, unit, companyId,unitQuantity } = req.body
-  const product = await createProductInventory(name, stock, max, min, unit, companyId,unitQuantity)
+  const { name, stock, max, min, unit, companyId,unitQuantity, unitTime } = req.body
+  const product = await createProductInventory(name, stock, max, min, unit, companyId,unitQuantity,unitTime)
   if (product?.msg) {
     res.status(404).json(product)
     return
@@ -65,8 +65,8 @@ export const createProductInventoryController = async (req, res) => {
 
 export const updateProductInventoryController = async (req, res) => {
   const { id } = req.params
-  const { name, stock, max, min, unit, companyId,unitQuantity } = req.body
-  const product = await updateProductInventory(id, name, stock, max, min, unit, companyId,unitQuantity)
+  const { name, stock, max, min, unit, companyId,unitQuantity,unitTime } = req.body
+  const product = await updateProductInventory(id, name, stock, max, min, unit, companyId,unitQuantity,unitTime)
   if (product?.msg) {
     res.status(404).json(product)
     return
