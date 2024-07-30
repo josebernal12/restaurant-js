@@ -31,6 +31,9 @@ const inventarySchema = new Schema({
   },
   unitQuantity: {
     type: Number
+  },
+  unitType: {
+    type: String
   }
 }, {
   timestamps: true
