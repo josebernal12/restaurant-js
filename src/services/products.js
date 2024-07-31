@@ -20,7 +20,7 @@ const conversiones = {
   botella: 1
 };
 
-export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId) => {
+export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, quantity = 1) => {
   try {
     if (!name || !description || !price) {
       return {
@@ -53,7 +53,7 @@ export const addProducts = async (name, description, price, category, image, dis
       const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
       const inventoryUnitQuantity = product.unitQuantity !== undefined ? product.unitQuantity : 1;
 
-      const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity;
+      const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity * quantity; // Multiplying by quantity here
       const inventoryItemStockEnGramos = product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
 
       const difference = inventoryItemStockEnGramos - recipeItemStockEnGramos;
@@ -77,7 +77,6 @@ export const addProducts = async (name, description, price, category, image, dis
     };
   }
 };
-
 export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice, sortCategory) => {
   try {
     const productTotal = await productModel.countDocuments({ ...query, companyId });
