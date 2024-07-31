@@ -18,7 +18,7 @@ export const createPromotionController = async (req, res) => {
 export const updatePromotionController = async (req, res) => {
   const { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu } = req.body
   const { id } = req.params
-  const promotion = await updatePromotion(id, name, price, description, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu)
+  const promotion = await updatePromotion(id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu)
   if (promotion?.msg) {
     return res.status(404).json(promotion)
   }

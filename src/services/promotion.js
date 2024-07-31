@@ -19,10 +19,10 @@ export const createPromotion = async (name, description, price, days, startHour,
   }
 }
 
-export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products, companyId, dailyMenu) => {
+export const updatePromotion = async (id, name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu) => {
   try {
-
-    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, products, companyId, dailyMenu }, { new: true })
+    console.log(price)
+    const promotion = await promotionModel.findByIdAndUpdate(id, { name, description, price, days, startHour, endHour, startDate, endDate, type, discount, active, image, productsId, companyId, dailyMenu }, { new: true })
     if (!promotion) {
       return {
         msg: 'error al actualizar'
