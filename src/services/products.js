@@ -52,7 +52,7 @@ export const addProducts = async (name, description, price, category, image, dis
 
       const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
       const inventoryUnitQuantity = product.unitQuantity !== undefined ? product.unitQuantity : 1;
-
+  
       const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity * quantity; // Multiplying by quantity here
       const inventoryItemStockEnGramos = product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
 
@@ -61,6 +61,7 @@ export const addProducts = async (name, description, price, category, image, dis
       if (difference >= 0) {
         const newStockEnGramos = inventoryItemStockEnGramos - recipeItemStockEnGramos;
         const newStock = newStockEnGramos / (conversiones[product.unit.name] * inventoryUnitQuantity);
+
         await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock });
       } else {
         return {
@@ -199,6 +200,7 @@ export const updateProduct = async (id, name, description, price, category, disc
 
         const newStockEnGramos = inventoryStockEnGramos - stockDifferenceEnGramos;
         const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
+        console.log(newStock)
 
         await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
 
@@ -212,7 +214,7 @@ export const updateProduct = async (id, name, description, price, category, disc
 
         const newStockEnGramos = inventoryStockEnGramos - valueStockEnGramos;
         const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
-
+        console.log(newStock)
         await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
       }
     }
@@ -228,6 +230,7 @@ export const updateProduct = async (id, name, description, price, category, disc
 
       const newStockEnGramos = inventoryStockEnGramos + oldStockEnGramos;
       const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
+      console.log(newStock)
 
       await inventaryModel.findByIdAndUpdate(oldProduct._id, { stock: newStock }, { new: true });
     }

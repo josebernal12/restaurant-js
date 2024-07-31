@@ -256,28 +256,39 @@ export const bestWaiter = async (type, companyId) => {
     throw new Error('Ocurrió un error al obtener las facturas');
   }
 }
-
-export const getBIllById = async (id) => {
+export const getBillById = async (id) => {
   try {
-    const bill = await billModel.findById(id).populate('tableId').populate('userId').populate({
-      path: 'ticketId',
-      populate: {
-        path: 'waiterId',
-        model: 'User' // el nombre del modelo relacionado
-      }
-    })
+    const bill = await billModel.findById(id)
+      .populate('tableId')
+      .populate({
+        path: 'userId',
+        select: '-password' // Excluir el campo password
+      })
+      .populate({
+        path: 'ticketId',
+        populate: {
+          path: 'waiterId',
+          model: 'User',
+          select: '-password' // Excluir el campo password
+        }
+      });
 
     if (!bill) {
       return {
-        msg: 'esa factura con ese id no existe'
-      }
+        msg: 'Esa factura con ese ID no existe'
+      };
     }
-    return bill
+    
+    return bill;
 
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Error del servidor'
+    };
   }
-}
+};
+
 
 
 export const sells = async (date, companyId) => {
