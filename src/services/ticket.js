@@ -5,6 +5,21 @@ import productModel from "../model/ProductModel.js";
 import promotionModel from "../model/Promotion.js";
 import inventaryModel from "../model/Inventary.js";
 
+const conversiones = {
+  kg: 1000, // 1 kg = 1000 g
+  gramos: 1, // 1 g = 1 g
+  mg: 0.001, // 1 mg = 0.001 g
+  litros: 1000, // 1 l = 1000 ml
+  ml: 1, // 1 ml = 1 ml
+  cl: 10, // 1 cl = 10 ml
+  piezas: 1, // 1 pieza = 1 unidad
+  uds: 1, // 1 unidad = 1 unidad
+  m: 100, // 1 m = 100 cm
+  cm: 1, // 1 cm = 1 cm
+  mm: 0.1, // 1 mm = 0.1 cm
+  botella: 1
+};
+
 export const createTicket = async (products, subTotal, total, tableId, userId, waiter, waiterId, promotion, companyId) => {
   try {
     if (!products || !total) {
@@ -22,14 +37,14 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       };
     }
 
-    let invalid = false; // Inicializamos la bandera como falsa
+    let invalid = false;
 
     if (promotion) {
       if (promotion.length > 0) {
-        for (const value of promotion) {
-          const promotion = await promotionModel.findById(value);
-          for (const product of promotion.productsId) {
-            const promoProduct = await productModel.findById(product);
+        for (const promoId of promotion) {
+          const promotion = await promotionModel.findById(promoId);
+          for (const productId of promotion.productsId) {
+            const promoProduct = await productModel.findById(productId);
             for (const recipe of promoProduct.recipe) {
               if (recipe._id) {
                 await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
@@ -42,28 +57,16 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
 
     const lastBill = await ticketModel.findOne().sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
-    // Verificación del stock de productos
+
     for (const product of products) {
-      // if (product.type === true) {
-      //   const promotion = await promotionModel.findById(product._id);
-      //   for (const product of promotion.productsId) {
-      //     const promoProduct = await productModel.findById(product);
-      //     for (const recipe of promoProduct.recipe) {
-      //       if (recipe._id) {
-      //         await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
-      //       }
-      //     }
-      //   }
-      // }
       const productUpdate = await productModel.findById(product._id);
-      // if (!productUpdate) {
-      //   invalid = true;
-      //   break;
-      // }
 
       for (const recipe of product.recipe) {
         const inventoryItem = await inventaryModel.findById(recipe._id);
-        if (inventoryItem.stock < recipe.stock) {
+        const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit];
+        const inventoryStockEnGramos = inventoryItem.stock * conversiones[inventoryItem.unit.name];
+        
+        if (inventoryStockEnGramos < recipeStockEnGramos * product.stock) {
           invalid = true;
           break;
         }
@@ -78,16 +81,18 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
       };
     }
 
-    // Si ninguno de los productos tiene una cantidad inválida, actualizamos el stock de cada producto y su receta
     for (const product of products) {
-      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
-
       for (const recipe of product.recipe) {
-        await inventaryModel.findByIdAndUpdate(recipe._id, { $inc: { stock: -recipe.stock } });
+        const inventoryItem = await inventaryModel.findById(recipe._id);
+        const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit] * product.stock;
+        const newInventoryStock = (inventoryItem.stock * conversiones[inventoryItem.unit.name] - recipeStockEnGramos) / conversiones[inventoryItem.unit.name];
+        
+        await inventaryModel.findByIdAndUpdate(recipe._id, { stock: newInventoryStock });
       }
+
+      await productModel.findByIdAndUpdate(product._id, { $inc: { stock: -product.stock } });
     }
 
-    // Crear el nuevo ticket
     const newTicket = await ticketModel.create({
       products,
       subTotal,
