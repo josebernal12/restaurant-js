@@ -149,14 +149,12 @@ export const deleteProduct = async (id) => {
     console.log(error)
   }
 }
-
 export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId) => {
   try {
     if (!name || !description || !price || !category) {
-      return {
-        msg: 'todos los campos son obligatorios'
-      }
+      return { msg: 'Todos los campos son obligatorios' };
     }
+
     const exist = await productModel.findOne({
       name,
       companyId,
@@ -164,18 +162,18 @@ export const updateProduct = async (id, name, description, price, category, disc
     });
 
     if (exist) {
-      return {
-        msg: 'ya existe un producto con ese nombre'
-      };
+      return { msg: 'Ya existe un producto con ese nombre' };
     }
 
     // Obtener el producto antes de la actualización
     const productsBefore = await productModel.findById(id).populate('recipe');
 
     // Actualizar el producto con la nueva información
-    const productUpdate = await productModel.findByIdAndUpdate(id,
+    const productUpdate = await productModel.findByIdAndUpdate(
+      id,
       { name, description, price, category, discount, recipe, promotion, iva, companyId },
-      { new: true }).populate('recipe');
+      { new: true }
+    ).populate('recipe');
 
     if (!productUpdate) {
       return { msg: 'Error en la actualización' };
@@ -186,35 +184,44 @@ export const updateProduct = async (id, name, description, price, category, disc
 
     // Iterar sobre los ingredientes en la receta actualizada
     for (let value of productUpdate.recipe) {
+      const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
+      const valueStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity;
+
       if (beforeRecipeMap.has(value._id.toString())) {
         // Si el ingrediente está en ambas recetas, ajustar el stock según la diferencia
         const oldProduct = beforeRecipeMap.get(value._id.toString());
-        const stockDifference = value.stock - oldProduct.stock;
-        const inventary = await inventaryModel.findById(value._id);
+        const oldRecipeUnitQuantity = oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
+        const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
+        const stockDifferenceEnGramos = valueStockEnGramos - oldStockEnGramos;
 
-        await inventaryModel.findByIdAndUpdate(value._id,
-          { stock: inventary.stock - stockDifference },
-          { new: true });
+        const inventary = await inventaryModel.findById(value._id);
+        const newStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1) - stockDifferenceEnGramos;
+        const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1));
+
+        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
 
         // Eliminar el ingrediente del mapa para marcarlo como procesado
         beforeRecipeMap.delete(value._id.toString());
       } else {
         // Si el ingrediente es nuevo en la receta, restar el stock del inventario
         const inventary = await inventaryModel.findById(value._id);
+        const newStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1) - valueStockEnGramos;
+        const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1));
 
-        await inventaryModel.findByIdAndUpdate(value._id,
-          { stock: inventary.stock - value.stock },
-          { new: true });
+        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
       }
     }
 
     // Los ingredientes restantes en beforeRecipeMap ya no están en la receta, restaurar su stock
     for (let [key, oldProduct] of beforeRecipeMap) {
-      const inventary = await inventaryModel.findById(oldProduct._id);
+      const oldRecipeUnitQuantity = oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
+      const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
 
-      await inventaryModel.findByIdAndUpdate(oldProduct._id,
-        { stock: inventary.stock + oldProduct.stock },
-        { new: true });
+      const inventary = await inventaryModel.findById(oldProduct._id);
+      const newStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1) + oldStockEnGramos;
+      const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * (inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1));
+
+      await inventaryModel.findByIdAndUpdate(oldProduct._id, { stock: newStock }, { new: true });
     }
 
     return productUpdate;
@@ -223,7 +230,6 @@ export const updateProduct = async (id, name, description, price, category, disc
     return { msg: 'Error en la actualización' };
   }
 };
-
 
 
 
