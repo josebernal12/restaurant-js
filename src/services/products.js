@@ -4,42 +4,79 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 import moment from 'moment-timezone'
 
+
+const conversiones = {
+  kg: 1000, // 1 kg = 1000 g
+  gramos: 1, // 1 g = 1 g
+  mg: 0.001, // 1 mg = 0.001 g
+  litros: 1000, // 1 l = 1000 ml
+  ml: 1, // 1 ml = 1 ml
+  cl: 10, // 1 cl = 10 ml
+  piezas: 1, // 1 pieza = 1 unidad
+  uds: 1, // 1 unidad = 1 unidad
+  m: 100, // 1 m = 100 cm
+  cm: 1, // 1 cm = 1 cm
+  mm: 0.1, // 1 mm = 0.1 cm
+  botella: 1
+};
+
 export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId) => {
   try {
-
     if (!name || !description || !price) {
       return {
-        msg: 'todos los campos son obligatorios'
-      }
+        msg: 'Todos los campos son obligatorios'
+      };
     }
-    const exist = await productModel.findOne({ name, companyId })
+
+    const exist = await productModel.findOne({ name, companyId });
     if (exist) {
       return {
-        msg: 'ya existe un producto con ese nombre'
-      }
+        msg: 'Ya existe un producto con ese nombre'
+      };
     }
-    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId })).populate('recipe')
-    newProduct.recipe.forEach(async (value) => {
-      const product = await inventaryModel.findById(value._id)
-      const difference = product.stock - value.stock
-      if (difference > 0) {
-        await inventaryModel.findByIdAndUpdate(value._id, { $inc: { stock: - value.stock } })
-      } else {
-        return {
-          msg: `no hay suficiente ${product.name} para el ${value.name} `
-        }
-      }
-    })
+
+    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId })).populate('recipe');
     if (!newProduct) {
       return {
-        msg: 'error al crear producto'
+        msg: 'Error al crear producto'
+      };
+    }
+
+    for (const value of newProduct.recipe) {
+      const product = await inventaryModel.findById(value._id);
+      if (!product) {
+        return {
+          msg: `No se encontró el producto ${value._id} en el inventario`
+        };
+      }
+
+      const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
+      const inventoryUnitQuantity = product.unitQuantity !== undefined ? product.unitQuantity : 1;
+
+      const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity;
+      const inventoryItemStockEnGramos = product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
+
+      const difference = inventoryItemStockEnGramos - recipeItemStockEnGramos;
+
+      if (difference >= 0) {
+        const newStockEnGramos = inventoryItemStockEnGramos - recipeItemStockEnGramos;
+        const newStock = newStockEnGramos / (conversiones[product.unit.name] * inventoryUnitQuantity);
+        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock });
+      } else {
+        return {
+          msg: `No hay suficiente ${product.name} para el ${value.name}`
+        };
       }
     }
-    return newProduct
+
+    return newProduct;
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return {
+      msg: 'Error del servidor'
+    };
   }
-}
+};
 
 export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice, sortCategory) => {
   try {
