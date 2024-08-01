@@ -44,6 +44,9 @@ const productSchema = new Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  },
+  priceBasis:{
+    type:Number
   }
 }, {
   timestamps: true

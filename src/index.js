@@ -110,4 +110,7 @@ io.on('connection', (socket) => {
   socket.on('borrar mesa', mesa => {
     io.emit('mesa eliminada', mesa)
   })
+  socket.on('comprar ticket', bill => {
+    io.emit('ticket comprado', bill)
+  })
 })

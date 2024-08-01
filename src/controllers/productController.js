@@ -11,8 +11,8 @@ import {
   updateProduct
 } from "../services/products.js"
 export const addProductController = async (req, res) => {
-  const { name, description, price, category, image, discount, recipe, promotion, iva, companyId } = req.body
-  const newProduct = await addProducts(name, description, price, category, image, discount, recipe, promotion, iva, companyId)
+  const { name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis } = req.body
+  const newProduct = await addProducts(name, description, price, category, image, discount, recipe, promotion, iva, companyId,priceBasis)
   if (newProduct?.msg) {
     res.status(404).json(newProduct)
     return
@@ -81,9 +81,9 @@ export const deleteProductController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
   const { id } = req.params
-  const { name, description, price, category, discount, recipe, promotion, iva, companyId } = req.body
+  const { name, description, price, category, discount, recipe, promotion, iva, companyId,priceBasis } = req.body
 
-  const productUpdate = await updateProduct(id, name, description, price, category, discount, recipe, promotion, iva, companyId)
+  const productUpdate = await updateProduct(id, name, description, price, category, discount, recipe, promotion, iva, companyId,  priceBasis)
   if (productUpdate?.msg) {
     res.status(404).json(productUpdate)
     return

@@ -8,7 +8,6 @@ export const getUsers = async (query, page, showAll, quantity, companyId, sortNa
   const perPage = 10;
   const pageQuery = parseInt(page) || 1;
   const skip = perPage * (pageQuery - 1);
-  console.log(sortName)
   // Inicializar opciones de ordenamiento
   let sortOptions = {};
 

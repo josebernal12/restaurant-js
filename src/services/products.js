@@ -20,7 +20,7 @@ const conversiones = {
   botella: 1
 };
 
-export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, quantity = 1) => {
+export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis ,quantity = 1) => {
   try {
     if (!name || !description || !price) {
       return {
@@ -149,7 +149,7 @@ export const deleteProduct = async (id) => {
     console.log(error)
   }
 }
-export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId) => {
+export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId, priceBasis) => {
   try {
     if (!name || !description || !price || !category) {
       return { msg: 'Todos los campos son obligatorios' };
