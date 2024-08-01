@@ -35,7 +35,7 @@ export const addProducts = async (name, description, price, category, image, dis
       };
     }
 
-    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId })).populate('recipe');
+    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId,priceBasis })).populate('recipe');
     if (!newProduct) {
       return {
         msg: 'Error al crear producto'
@@ -171,7 +171,7 @@ export const updateProduct = async (id, name, description, price, category, disc
     // Actualizar el producto con la nueva información
     const productUpdate = await productModel.findByIdAndUpdate(
       id,
-      { name, description, price, category, discount, recipe, promotion, iva, companyId },
+      { name, description, price, category, discount, recipe, promotion, iva, companyId, priceBasis },
       { new: true }
     ).populate('recipe');
 
