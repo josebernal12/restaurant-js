@@ -2,7 +2,7 @@ import {
   bestWaiter,
   generateBill,
   generateMultipleBills,
-  getBIllById,
+  getBillById,
   getBillLastWeek,
   getBills,
   productSell,

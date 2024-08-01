@@ -63,10 +63,13 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
 
       for (const recipe of product.recipe) {
         const inventoryItem = await inventaryModel.findById(recipe._id);
+        
         const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit];
         const inventoryStockEnGramos = inventoryItem.stock * conversiones[inventoryItem.unit.name];
         
-        if (inventoryStockEnGramos < recipeStockEnGramos * product.stock) {
+        const totalRecipeStockEnGramos = recipeStockEnGramos * product.stock;
+
+        if (inventoryStockEnGramos < totalRecipeStockEnGramos) {
           invalid = true;
           break;
         }
@@ -84,9 +87,11 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     for (const product of products) {
       for (const recipe of product.recipe) {
         const inventoryItem = await inventaryModel.findById(recipe._id);
+
         const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit] * product.stock;
-        const newInventoryStock = (inventoryItem.stock * conversiones[inventoryItem.unit.name] - recipeStockEnGramos) / conversiones[inventoryItem.unit.name];
-        
+        const newInventoryStockEnGramos = inventoryItem.stock * conversiones[inventoryItem.unit.name] - recipeStockEnGramos;
+        const newInventoryStock = newInventoryStockEnGramos / conversiones[inventoryItem.unit.name];
+
         await inventaryModel.findByIdAndUpdate(recipe._id, { stock: newInventoryStock });
       }
 
@@ -124,6 +129,7 @@ export const createTicket = async (products, subTotal, total, tableId, userId, w
     };
   }
 };
+
 export const updateTicket = async (id, products, subTotal, total, tableId, userId, waiterId, promotion, companyId) => {
   try {
     // Encontrar el ticket actual
@@ -432,6 +438,7 @@ export const completedAllProductTicket = async (id) => {
 
 export const joinAllProductsTicket = async (tableId, companyId) => {
   try {
+    console.log(companyId)
     const ticket = await ticketModel.find({ tableId, companyId })
       .populate({
         path: 'waiterId',

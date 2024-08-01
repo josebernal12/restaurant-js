@@ -130,6 +130,7 @@ export const completedAllProductTicketController = async (req, res) => {
 
 export const joinAllProductsTicketController = async (req, res) => {
   const { id } = req.params
+  console.log(req.user)
   const ticket = await joinAllProductsTicket(id, req.user.companyId.toString())
   if (ticket?.msg) {
     res.status(404).json(ticket)
