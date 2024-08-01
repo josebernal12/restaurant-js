@@ -438,7 +438,6 @@ export const completedAllProductTicket = async (id) => {
 
 export const joinAllProductsTicket = async (tableId, companyId) => {
   try {
-    console.log(companyId)
     const ticket = await ticketModel.find({ tableId, companyId })
       .populate({
         path: 'waiterId',

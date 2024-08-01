@@ -73,7 +73,7 @@ export const getBillsController = async (req, res) => {
 
 export const getBillByIdController = async (req, res) => {
   const { id } = req.params
-  const bill = await getBIllById(id)
+  const bill = await getBillById(id)
   if (bill?.msg) {
     res.status(404).json(bill)
     return
