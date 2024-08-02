@@ -66,7 +66,7 @@ export const createTicket = async (
               const adjustedStock = product.stock * factor * recipe.stock;
               if (recipe._id) {
                 await inventaryModel.findByIdAndUpdate(recipe._id, {
-                  $inc: { stock: -product.stock },
+                  $inc: { stock: -recipe.stock },
                 });
               }
             }
