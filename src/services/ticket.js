@@ -49,23 +49,24 @@ export const createTicket = async (
 
     let invalid = false;
 
-    if (promotion) {
-      if (promotion.length > 0) {
-        for (const promoId of promotion) {
-          const promotion = await promotionModel.findById(promoId);
-          for (const productId of promotion.productsId) {
-            const promoProduct = await productModel.findById(productId);
-            if (promoProduct?.recipe) {
-              for (const recipe of promoProduct.recipe) {
-                products.forEach(async (product) => {
-                  if (product._id === promoId) {
-                    const newStock = product.stock * recipe.stock;
-                    if (recipe._id) {
-                      await inventaryModel.findByIdAndUpdate(recipe._id, {
-                        $inc: { stock: -newStock },
-                      });
-                    }
-                  }
+    // Adjust stock for promotions
+    if (promotion && promotion.length > 0) {
+      for (const promoId of promotion) {
+        const promo = await promotionModel.findById(promoId);
+        if (!promo) continue;
+
+        const factor = getPromotionFactor(promo.type); // Helper function to get the promotion factor
+        for (const productId of promo.productsId) {
+          const promoProduct = await productModel.findById(productId);
+          if (promoProduct?.recipe) {
+            for (const recipe of promoProduct.recipe) {
+              const product = products.find(p => p._id === productId);
+              if (!product) continue;
+
+              const adjustedStock = product.stock * factor * recipe.stock;
+              if (recipe._id) {
+                await inventaryModel.findByIdAndUpdate(recipe._id, {
+                  $inc: { stock: -adjustedStock },
                 });
               }
             }
@@ -74,12 +75,9 @@ export const createTicket = async (
       }
     }
 
-    const lastBill = await ticketModel.findOne().sort({ folio: -1 });
-    const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
-
+    // Check stock availability
     for (const product of products) {
       const productUpdate = await productModel.findById(product._id);
-
       if (product?.recipe) {
         for (const recipe of product.recipe) {
           const inventoryItem = await inventaryModel.findById(recipe._id);
@@ -106,6 +104,7 @@ export const createTicket = async (
       };
     }
 
+    // Deduct stock after validating availability
     for (const product of products) {
       if (product?.recipe) {
         for (const recipe of product.recipe) {
@@ -129,6 +128,9 @@ export const createTicket = async (
         $inc: { stock: -product.stock },
       });
     }
+
+    const lastBill = await ticketModel.findOne().sort({ folio: -1 });
+    const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
 
     const newTicket = await ticketModel.create({
       products,
@@ -158,6 +160,18 @@ export const createTicket = async (
     return {
       msg: "Ocurrió un error al crear el ticket",
     };
+  }
+};
+
+// Helper function to get the promotion factor
+const getPromotionFactor = (type) => {
+  switch (type) {
+    case '2x1':
+      return 2;
+    case '3x1':
+      return 3;
+    default:
+      return 1;
   }
 };
 
