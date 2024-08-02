@@ -54,7 +54,7 @@ export const createTicket = async (
       for (const promoId of promotion) {
         const promo = await promotionModel.findById(promoId);
         if (!promo) continue;
-
+        
         const factor = getPromotionFactor(promo.type); // Helper function to get the promotion factor
         for (const productId of promo.productsId) {
           const promoProduct = await productModel.findById(productId);
@@ -66,7 +66,7 @@ export const createTicket = async (
               const adjustedStock = product.stock * factor * recipe.stock;
               if (recipe._id) {
                 await inventaryModel.findByIdAndUpdate(recipe._id, {
-                  $inc: { stock: -adjustedStock },
+                  $inc: { stock: -product.stock },
                 });
               }
             }
