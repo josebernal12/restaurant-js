@@ -49,46 +49,44 @@ export const createTicket = async (
 
     let invalid = false;
 
-    // Adjust stock for promotions
-    if (promotion && promotion.length > 0) {
-      for (const promoId of promotion) {
-        const promo = await promotionModel.findById(promoId);
-        if (!promo) continue;
-        
-        const factor = getPromotionFactor(promo.type); // Helper function to get the promotion factor
-        for (const productId of promo.productsId) {
-          const promoProduct = await productModel.findById(productId);
-          if (promoProduct?.recipe) {
-            for (const recipe of promoProduct.recipe) {
-              const product = products.find(p => p._id === productId);
-              if (!product) continue;
+    // // Adjust stock for promotions
+    // if (promotion && promotion.length > 0) {
+    //   for (const promoId of promotion) {
+    //     const promo = await promotionModel.findById(promoId);
+    //     if (!promo) continue;
 
-              const adjustedStock = product.stock * factor * recipe.stock;
-              if (recipe._id) {
-                await inventaryModel.findByIdAndUpdate(recipe._id, {
-                  $inc: { stock: -recipe.stock },
-                });
-              }
-            }
-          }
-        }
-      }
-    }
+    //     const factor = getPromotionFactor(promo.type); // Helper function to get the promotion factor
+    //     for (const productId of promo.productsId) {
+    //       const promoProduct = await productModel.findById(productId);
+    //       if (promoProduct?.recipe) {
+    //         for (const recipe of promoProduct.recipe) {
+    //           const product = products.find(p => p._id.equals(productId));
+    //           if (!product) continue;
+
+    //           const adjustedStock = factor * recipe.stock; // Adjust stock based on promotion factor
+    //           if (recipe._id) {
+    //             await inventaryModel.findByIdAndUpdate(recipe._id, {
+    //               $inc: { stock: -adjustedStock },
+    //             });
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     // Check stock availability
     for (const product of products) {
-      const productUpdate = await productModel.findById(product._id);
       if (product?.recipe) {
         for (const recipe of product.recipe) {
           const inventoryItem = await inventaryModel.findById(recipe._id);
+          if (!inventoryItem) continue;
 
           const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit];
           const inventoryStockEnGramos =
             inventoryItem.stock * conversiones[inventoryItem.unit.name];
 
-          const totalRecipeStockEnGramos = recipeStockEnGramos * product.stock;
-
-          if (inventoryStockEnGramos < totalRecipeStockEnGramos) {
+          if (inventoryStockEnGramos < recipeStockEnGramos) {
             invalid = true;
             break;
           }
@@ -109,9 +107,10 @@ export const createTicket = async (
       if (product?.recipe) {
         for (const recipe of product.recipe) {
           const inventoryItem = await inventaryModel.findById(recipe._id);
+          if (!inventoryItem) continue;
 
           const recipeStockEnGramos =
-            recipe.stock * conversiones[recipe.unit] * product.stock;
+            recipe.stock * conversiones[recipe.unit];
           const newInventoryStockEnGramos =
             inventoryItem.stock * conversiones[inventoryItem.unit.name] -
             recipeStockEnGramos;
@@ -163,12 +162,14 @@ export const createTicket = async (
   }
 };
 
+
+
 // Helper function to get the promotion factor
 const getPromotionFactor = (type) => {
   switch (type) {
-    case '2x1':
+    case "2x1":
       return 2;
-    case '3x1':
+    case "3x1":
       return 3;
     default:
       return 1;
