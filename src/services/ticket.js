@@ -57,11 +57,16 @@ export const createTicket = async (
             const promoProduct = await productModel.findById(productId);
             if (promoProduct?.recipe) {
               for (const recipe of promoProduct.recipe) {
-                if (recipe._id) {
-                  await inventaryModel.findByIdAndUpdate(recipe._id, {
-                    $inc: { stock: -recipe.stock },
-                  });
-                }
+                products.forEach(async (product) => {
+                  if (product._id === promoId) {
+                    const newStock = product.stock * recipe.stock;
+                    if (recipe._id) {
+                      await inventaryModel.findByIdAndUpdate(recipe._id, {
+                        $inc: { stock: -newStock },
+                      });
+                    }
+                  }
+                });
               }
             }
           }
@@ -155,7 +160,6 @@ export const createTicket = async (
     };
   }
 };
-
 
 export const updateTicket = async (
   id,
