@@ -23,6 +23,8 @@ const ticketSchema = new Schema({
       recipe: [{
         name: String,
         stock: Number,
+        unitType: Number,
+        unitQuantity: Number,
         unit: {
           name: {
             type: String
