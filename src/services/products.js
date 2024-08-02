@@ -4,7 +4,6 @@ import inventaryModel from "../model/Inventary.js";
 import productModel from "../model/ProductModel.js"
 import moment from 'moment-timezone'
 
-
 const conversiones = {
   kg: 1000, // 1 kg = 1000 g
   gramos: 1, // 1 g = 1 g
@@ -20,7 +19,7 @@ const conversiones = {
   botella: 1
 };
 
-export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis ,quantity = 1) => {
+export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis, quantity = 1) => {
   try {
     if (!name || !description || !price) {
       return {
@@ -35,7 +34,7 @@ export const addProducts = async (name, description, price, category, image, dis
       };
     }
 
-    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId,priceBasis })).populate('recipe');
+    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis })).populate('recipe');
     if (!newProduct) {
       return {
         msg: 'Error al crear producto'
@@ -52,18 +51,14 @@ export const addProducts = async (name, description, price, category, image, dis
 
       const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
       const inventoryUnitQuantity = product.unitQuantity !== undefined ? product.unitQuantity : 1;
-  
+
       const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity * quantity; // Multiplying by quantity here
       const inventoryItemStockEnGramos = product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
 
+      // Aquí solo se realiza la conversión, no se actualiza el inventario
       const difference = inventoryItemStockEnGramos - recipeItemStockEnGramos;
 
-      if (difference >= 0) {
-        const newStockEnGramos = inventoryItemStockEnGramos - recipeItemStockEnGramos;
-        const newStock = newStockEnGramos / (conversiones[product.unit.name] * inventoryUnitQuantity);
-
-        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock });
-      } else {
+      if (difference < 0) {
         return {
           msg: `No hay suficiente ${product.name} para el ${value.name}`
         };
@@ -78,6 +73,7 @@ export const addProducts = async (name, description, price, category, image, dis
     };
   }
 };
+
 export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice, sortCategory) => {
   try {
     const productTotal = await productModel.countDocuments({ ...query, companyId });
@@ -149,6 +145,7 @@ export const deleteProduct = async (id) => {
     console.log(error)
   }
 }
+
 export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId, priceBasis) => {
   try {
     if (!name || !description || !price || !category) {
@@ -194,32 +191,28 @@ export const updateProduct = async (id, name, description, price, category, disc
         const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
         const stockDifferenceEnGramos = valueStockEnGramos - oldStockEnGramos;
 
+        // Realizar solo la conversión, sin actualizar el inventario
         const inventary = await inventaryModel.findById(value._id);
         const inventoryUnitQuantity = inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
         const inventoryStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * inventoryUnitQuantity;
 
         const newStockEnGramos = inventoryStockEnGramos - stockDifferenceEnGramos;
         const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
-        console.log(newStock)
-
-        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
 
         // Eliminar el ingrediente del mapa para marcarlo como procesado
         beforeRecipeMap.delete(value._id.toString());
       } else {
-        // Si el ingrediente es nuevo en la receta, restar el stock del inventario
+        // Si el ingrediente es nuevo en la receta, solo realizar la conversión sin actualizar el inventario
         const inventary = await inventaryModel.findById(value._id);
         const inventoryUnitQuantity = inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
         const inventoryStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * inventoryUnitQuantity;
 
         const newStockEnGramos = inventoryStockEnGramos - valueStockEnGramos;
         const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
-        console.log(newStock)
-        await inventaryModel.findByIdAndUpdate(value._id, { stock: newStock }, { new: true });
       }
     }
 
-    // Los ingredientes restantes en beforeRecipeMap ya no están en la receta, restaurar su stock
+    // Los ingredientes restantes en beforeRecipeMap ya no están en la receta, no actualizar su stock
     for (let [key, oldProduct] of beforeRecipeMap) {
       const oldRecipeUnitQuantity = oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
       const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
@@ -230,9 +223,6 @@ export const updateProduct = async (id, name, description, price, category, disc
 
       const newStockEnGramos = inventoryStockEnGramos + oldStockEnGramos;
       const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
-      console.log(newStock)
-
-      await inventaryModel.findByIdAndUpdate(oldProduct._id, { stock: newStock }, { new: true });
     }
 
     return productUpdate;
@@ -241,6 +231,7 @@ export const updateProduct = async (id, name, description, price, category, disc
     return { msg: 'Error en la actualización' };
   }
 };
+
 
 export const searchProduct = async (name, price, category,) => {
   try {
