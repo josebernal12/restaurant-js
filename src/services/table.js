@@ -1,9 +1,11 @@
-import tableModel from "../model/TableModel.js"
+import tableModel from "../model/TableModel.js";
 
 export const createTable = async (available, quantity, companyId) => {
   try {
     // Obtener el número máximo actual de mesa
-    const maxNumberTable = await tableModel.findOne({ companyId }, {}, { sort: { number: -1 } }).select('number');
+    const maxNumberTable = await tableModel
+      .findOne({ companyId }, {}, { sort: { number: -1 } })
+      .select("number");
 
     // Si no hay mesas existentes, asignar 0 como número máximo
     const maxNumber = maxNumberTable ? maxNumberTable.number : 0;
@@ -20,7 +22,7 @@ export const createTable = async (available, quantity, companyId) => {
       tables.push(table);
     }
     if (!tables.length) {
-      return 'error al crear las tablas';
+      return "error al crear las tablas";
     }
     return tables;
   } catch (error) {
@@ -29,54 +31,66 @@ export const createTable = async (available, quantity, companyId) => {
   }
 };
 
-
-
-
 export const getTables = async (number, companyId) => {
   try {
-
     if (number) {
       if (isNaN(number)) {
-        return []
+        return [];
       }
-      const table = await tableModel.find({ number, companyId })
+      const table = await tableModel.find({ number, companyId });
       if (!table) {
-        return 'no hay mesas con ese id'
+        return "no hay mesas con ese id";
       }
-      return table
+      return table;
     }
-    const table = await tableModel.find({ companyId })
+    const table = await tableModel.find({ companyId });
     if (!table) {
-      return []
+      return [];
     }
-    return table
+    return table;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const getTableById = async (id) => {
   try {
-    const table = await tableModel.findById(id)
+    const table = await tableModel.findById(id);
     if (!table) {
-      return 'no hay mesas con ese id'
+      return "no hay mesas con ese id";
     }
-    return table
+    return table;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const availableTable = async (id, available, companyId) => {
   try {
-    const table = await tableModel.findByIdAndUpdate(id, { available, companyId }, { new: true })
+    const table = await tableModel.findByIdAndUpdate(
+      id,
+      { available, companyId },
+      { new: true }
+    );
     if (!table) {
-      return 'error en la seleccion de la mesa'
+      return "error en la seleccion de la mesa";
     }
-    return table
+    return table;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-
+export const deletedTable = async (id) => {
+  try {
+    const table = await tableModel.findByIdAndDelete(id, { new: true });
+    if (!table) {
+      return {
+        msg: "error deleting table",
+      };
+    }
+    return table;
+  } catch (error) {
+    console.log(error);
+  }
+};
