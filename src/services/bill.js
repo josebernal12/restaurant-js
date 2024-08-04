@@ -607,3 +607,11 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
     };
   }
 };
+//pending
+export const payManyTickets = async (tableIds) => {
+  try {
+    
+  } catch (error) {
+    console.log(error)
+  }
+}

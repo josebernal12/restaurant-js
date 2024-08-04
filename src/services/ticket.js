@@ -109,8 +109,7 @@ export const createTicket = async (
           const inventoryItem = await inventaryModel.findById(recipe._id);
           if (!inventoryItem) continue;
 
-          const recipeStockEnGramos =
-            recipe.stock * conversiones[recipe.unit];
+          const recipeStockEnGramos = recipe.stock * conversiones[recipe.unit];
           const newInventoryStockEnGramos =
             inventoryItem.stock * conversiones[inventoryItem.unit.name] -
             recipeStockEnGramos;
@@ -130,7 +129,9 @@ export const createTicket = async (
 
     const lastBill = await ticketModel.findOne().sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
-
+    const tableAvailable = await tableModel.findById(tableId);
+    tableAvailable.available = false;
+    await tableAvailable.save();
     const newTicket = await ticketModel.create({
       products,
       subTotal,
@@ -161,8 +162,6 @@ export const createTicket = async (
     };
   }
 };
-
-
 
 // Helper function to get the promotion factor
 const getPromotionFactor = (type) => {
@@ -391,15 +390,33 @@ export const getTicketById = async (id) => {
 };
 
 export const deleteTicket = async (id) => {
+  let noMatchFound = true;
+
   try {
+    const tickets = await ticketModel.find({ companyId });
     const ticketDeleted = await ticketModel.findByIdAndDelete(id, {
       new: true,
     });
+
     if (!ticketDeleted) {
       return {
         msg: "no hay tickets con ese id",
       };
     }
+
+    for (const ticket of tickets) {
+      if (ticket.tableId.toString() === ticketDeleted.tableId.toString()) {
+        noMatchFound = false;
+        break;
+      }
+    }
+
+    if (noMatchFound) {
+      const table = await tableModel.findById(ticketDeleted.tableId);
+      table.available = true;
+      await table.save();
+    }
+
     return ticketDeleted;
   } catch (error) {
     console.log(error);

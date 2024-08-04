@@ -1,8 +1,7 @@
-
-import billModel from "../model/BillModel.js"
+import billModel from "../model/BillModel.js";
 import inventaryModel from "../model/Inventary.js";
-import productModel from "../model/ProductModel.js"
-import moment from 'moment-timezone'
+import productModel from "../model/ProductModel.js";
+import moment from "moment-timezone";
 
 const conversiones = {
   kg: 1000, // 1 kg = 1000 g
@@ -16,28 +15,57 @@ const conversiones = {
   m: 100, // 1 m = 100 cm
   cm: 1, // 1 cm = 1 cm
   mm: 0.1, // 1 mm = 0.1 cm
-  botella: 1
+  botella: 1,
 };
 
-export const addProducts = async (name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis, quantity = 1) => {
+export const addProducts = async (
+  name,
+  description,
+  price,
+  category,
+  image,
+  discount,
+  recipe,
+  promotion,
+  iva,
+  companyId,
+  priceBasis,
+  quantity = 1,
+  show
+) => {
   try {
     if (!name || !description || !price) {
       return {
-        msg: 'Todos los campos son obligatorios'
+        msg: "Todos los campos son obligatorios",
       };
     }
 
     const exist = await productModel.findOne({ name, companyId });
     if (exist) {
       return {
-        msg: 'Ya existe un producto con ese nombre'
+        msg: "Ya existe un producto con ese nombre",
       };
     }
 
-    const newProduct = await (await productModel.create({ name, description, price, category, image, discount, recipe, promotion, iva, companyId, priceBasis })).populate('recipe');
+    const newProduct = await (
+      await productModel.create({
+        name,
+        description,
+        price,
+        category,
+        image,
+        discount,
+        recipe,
+        promotion,
+        iva,
+        companyId,
+        priceBasis,
+        show,
+      })
+    ).populate("recipe");
     if (!newProduct) {
       return {
-        msg: 'Error al crear producto'
+        msg: "Error al crear producto",
       };
     }
 
@@ -45,22 +73,26 @@ export const addProducts = async (name, description, price, category, image, dis
       const product = await inventaryModel.findById(value._id);
       if (!product) {
         return {
-          msg: `No se encontró el producto ${value._id} en el inventario`
+          msg: `No se encontró el producto ${value._id} en el inventario`,
         };
       }
 
-      const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
-      const inventoryUnitQuantity = product.unitQuantity !== undefined ? product.unitQuantity : 1;
+      const recipeUnitQuantity =
+        value.unitQuantity !== undefined ? value.unitQuantity : 1;
+      const inventoryUnitQuantity =
+        product.unitQuantity !== undefined ? product.unitQuantity : 1;
 
-      const recipeItemStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity * quantity; // Multiplying by quantity here
-      const inventoryItemStockEnGramos = product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
+      const recipeItemStockEnGramos =
+        value.stock * conversiones[value.unit] * recipeUnitQuantity * quantity; // Multiplying by quantity here
+      const inventoryItemStockEnGramos =
+        product.stock * conversiones[product.unit.name] * inventoryUnitQuantity;
 
       // Aquí solo se realiza la conversión, no se actualiza el inventario
       const difference = inventoryItemStockEnGramos - recipeItemStockEnGramos;
 
       if (difference < 0) {
         return {
-          msg: `No hay suficiente ${product.name} para el ${value.name}`
+          msg: `No hay suficiente ${product.name} para el ${value.name}`,
         };
       }
     }
@@ -69,201 +101,268 @@ export const addProducts = async (name, description, price, category, image, dis
   } catch (error) {
     console.log(error);
     return {
-      msg: 'Error del servidor'
+      msg: "Error del servidor",
     };
   }
 };
 
-export const getProducts = async (query, page, showAll, limit, skip, companyId, sortName, sortPrice, sortCategory) => {
+export const getProducts = async (
+  query,
+  page,
+  showAll,
+  limit,
+  skip,
+  companyId,
+  sortName,
+  sortPrice,
+  sortCategory
+) => {
   try {
-    const productTotal = await productModel.countDocuments({ ...query, companyId });
+    const productTotal = await productModel.countDocuments({
+      ...query,
+      companyId,
+    });
 
     let sortOptions = {};
 
     // Ordenar por nombre si se especifica
     if (sortName) {
-      sortOptions.name = sortName === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+      sortOptions.name = sortName === "asc" ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
     // Ordenar por precio si se especifica
     if (sortPrice) {
-      sortOptions.price = sortPrice === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+      sortOptions.price = sortPrice === "asc" ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
     // Ordenar por nombre de categoría si se especifica
     if (sortCategory) {
-      sortOptions['category.name'] = sortCategory === 'asc' ? 1 : -1; // 1 para ascendente, -1 para descendente
+      sortOptions["category.name"] = sortCategory === "asc" ? 1 : -1; // 1 para ascendente, -1 para descendente
     }
     let products;
     if (showAll === "1") {
-      products = await productModel.find({ ...query, companyId })
+      products = await productModel
+        .find({ ...query, companyId })
         .sort(sortOptions) // Aplicar el ordenamiento
-        .populate('category'); // Asegúrate de que 'category' está correctamente referenciado
+        .populate("category"); // Asegúrate de que 'category' está correctamente referenciado
     } else {
-      products = await productModel.find({ ...query, companyId })
+      products = await productModel
+        .find({ ...query, companyId })
         .limit(limit)
         .skip(skip)
         .sort(sortOptions) // Aplicar el ordenamiento
-        .populate('category'); // Asegúrate de que 'category' está correctamente referenciado
+        .populate("category"); // Asegúrate de que 'category' está correctamente referenciado
     }
 
     return {
       products,
-      productTotal
+      productTotal,
     };
   } catch (error) {
     console.error(error);
-    throw new Error('Error retrieving products from the database');
+    throw new Error("Error retrieving products from the database");
   }
 };
 
-
 export const getProductsById = async (id) => {
   try {
-    const product = await productModel.findById(id).populate('category');
+    const product = await productModel.findById(id).populate("category");
     if (!product) {
       return {
-        msg: 'no hay productos con ese id'
-      }
+        msg: "no hay productos con ese id",
+      };
     }
-    return product
+    return product;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const deleteProduct = async (id) => {
   try {
-    const product = await productModel.findByIdAndDelete(id)
-    const productTotal = await productModel.countDocuments()
+    const product = await productModel.findByIdAndDelete(id);
+    const productTotal = await productModel.countDocuments();
 
     if (!product) {
       return {
-        msg: 'no hay productos con ese id'
-      }
+        msg: "no hay productos con ese id",
+      };
     }
-    return { product, productTotal }
+    return { product, productTotal };
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export const updateProduct = async (id, name, description, price, category, discount, recipe, promotion, iva, companyId, priceBasis) => {
+export const updateProduct = async (
+  id,
+  name,
+  description,
+  price,
+  category,
+  discount,
+  recipe,
+  promotion,
+  iva,
+  companyId,
+  priceBasis,
+  show
+) => {
   try {
     if (!name || !description || !price || !category) {
-      return { msg: 'Todos los campos son obligatorios' };
+      return { msg: "Todos los campos son obligatorios" };
     }
 
     const exist = await productModel.findOne({
       name,
       companyId,
-      _id: { $ne: id } // Excluye el producto actual de la búsqueda
+      _id: { $ne: id }, // Excluye el producto actual de la búsqueda
     });
 
     if (exist) {
-      return { msg: 'Ya existe un producto con ese nombre' };
+      return { msg: "Ya existe un producto con ese nombre" };
     }
 
     // Obtener el producto antes de la actualización
-    const productsBefore = await productModel.findById(id).populate('recipe');
+    const productsBefore = await productModel.findById(id).populate("recipe");
 
     // Actualizar el producto con la nueva información
-    const productUpdate = await productModel.findByIdAndUpdate(
-      id,
-      { name, description, price, category, discount, recipe, promotion, iva, companyId, priceBasis },
-      { new: true }
-    ).populate('recipe');
+    const productUpdate = await productModel
+      .findByIdAndUpdate(
+        id,
+        {
+          name,
+          description,
+          price,
+          category,
+          discount,
+          recipe,
+          promotion,
+          iva,
+          companyId,
+          priceBasis,
+          show
+        },
+        { new: true }
+      )
+      .populate("recipe");
 
     if (!productUpdate) {
-      return { msg: 'Error en la actualización' };
+      return { msg: "Error en la actualización" };
     }
 
     // Crear un map de los ingredientes antes de la actualización para un acceso más rápido
-    const beforeRecipeMap = new Map(productsBefore.recipe.map(item => [item._id.toString(), item]));
+    const beforeRecipeMap = new Map(
+      productsBefore.recipe.map((item) => [item._id.toString(), item])
+    );
 
     // Iterar sobre los ingredientes en la receta actualizada
     for (let value of productUpdate.recipe) {
-      const recipeUnitQuantity = value.unitQuantity !== undefined ? value.unitQuantity : 1;
-      const valueStockEnGramos = value.stock * conversiones[value.unit] * recipeUnitQuantity;
+      const recipeUnitQuantity =
+        value.unitQuantity !== undefined ? value.unitQuantity : 1;
+      const valueStockEnGramos =
+        value.stock * conversiones[value.unit] * recipeUnitQuantity;
 
       if (beforeRecipeMap.has(value._id.toString())) {
         // Si el ingrediente está en ambas recetas, ajustar el stock según la diferencia
         const oldProduct = beforeRecipeMap.get(value._id.toString());
-        const oldRecipeUnitQuantity = oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
-        const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
+        const oldRecipeUnitQuantity =
+          oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
+        const oldStockEnGramos =
+          oldProduct.stock *
+          conversiones[oldProduct.unit] *
+          oldRecipeUnitQuantity;
         const stockDifferenceEnGramos = valueStockEnGramos - oldStockEnGramos;
 
         // Realizar solo la conversión, sin actualizar el inventario
         const inventary = await inventaryModel.findById(value._id);
-        const inventoryUnitQuantity = inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
-        const inventoryStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * inventoryUnitQuantity;
+        const inventoryUnitQuantity =
+          inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
+        const inventoryStockEnGramos =
+          inventary.stock *
+          conversiones[inventary.unit.name] *
+          inventoryUnitQuantity;
 
-        const newStockEnGramos = inventoryStockEnGramos - stockDifferenceEnGramos;
-        const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
+        const newStockEnGramos =
+          inventoryStockEnGramos - stockDifferenceEnGramos;
+        const newStock =
+          newStockEnGramos /
+          (conversiones[inventary.unit.name] * inventoryUnitQuantity);
 
         // Eliminar el ingrediente del mapa para marcarlo como procesado
         beforeRecipeMap.delete(value._id.toString());
       } else {
         // Si el ingrediente es nuevo en la receta, solo realizar la conversión sin actualizar el inventario
         const inventary = await inventaryModel.findById(value._id);
-        const inventoryUnitQuantity = inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
-        const inventoryStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * inventoryUnitQuantity;
+        const inventoryUnitQuantity =
+          inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
+        const inventoryStockEnGramos =
+          inventary.stock *
+          conversiones[inventary.unit.name] *
+          inventoryUnitQuantity;
 
         const newStockEnGramos = inventoryStockEnGramos - valueStockEnGramos;
-        const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
+        const newStock =
+          newStockEnGramos /
+          (conversiones[inventary.unit.name] * inventoryUnitQuantity);
       }
     }
 
     // Los ingredientes restantes en beforeRecipeMap ya no están en la receta, no actualizar su stock
     for (let [key, oldProduct] of beforeRecipeMap) {
-      const oldRecipeUnitQuantity = oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
-      const oldStockEnGramos = oldProduct.stock * conversiones[oldProduct.unit] * oldRecipeUnitQuantity;
+      const oldRecipeUnitQuantity =
+        oldProduct.unitQuantity !== undefined ? oldProduct.unitQuantity : 1;
+      const oldStockEnGramos =
+        oldProduct.stock *
+        conversiones[oldProduct.unit] *
+        oldRecipeUnitQuantity;
 
       const inventary = await inventaryModel.findById(oldProduct._id);
-      const inventoryUnitQuantity = inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
-      const inventoryStockEnGramos = inventary.stock * conversiones[inventary.unit.name] * inventoryUnitQuantity;
+      const inventoryUnitQuantity =
+        inventary.unitQuantity !== undefined ? inventary.unitQuantity : 1;
+      const inventoryStockEnGramos =
+        inventary.stock *
+        conversiones[inventary.unit.name] *
+        inventoryUnitQuantity;
 
       const newStockEnGramos = inventoryStockEnGramos + oldStockEnGramos;
-      const newStock = newStockEnGramos / (conversiones[inventary.unit.name] * inventoryUnitQuantity);
+      const newStock =
+        newStockEnGramos /
+        (conversiones[inventary.unit.name] * inventoryUnitQuantity);
     }
 
     return productUpdate;
   } catch (error) {
     console.log(error);
-    return { msg: 'Error en la actualización' };
+    return { msg: "Error en la actualización" };
   }
 };
 
-
-export const searchProduct = async (name, price, category,) => {
+export const searchProduct = async (name, price, category) => {
   try {
-    const productSearch = await productModel.find(
-      {
-        name: { $regex: new RegExp(name, 'i') },
-        // price: {
-        //   $regex: new RegExp(price, 'i'),
-        // },
-        category: { $regex: new RegExp(category, 'i') }
-
-      })
+    const productSearch = await productModel.find({
+      name: { $regex: new RegExp(name, "i") },
+      // price: {
+      //   $regex: new RegExp(price, 'i'),
+      // },
+      category: { $regex: new RegExp(category, "i") },
+    });
 
     if (!productSearch) {
       return {
-        msg: 'error en la busqueda'
-      }
+        msg: "error en la busqueda",
+      };
     }
-    return productSearch
+    return productSearch;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
-
+};
 
 export const TimeRange = {
-  DAY: 'day',
-  WEEK: 'week',
-  MONTH: 'month',
-  QUARTER: 'quarter',
-  YEAR: 'year'
+  DAY: "day",
+  WEEK: "week",
+  MONTH: "month",
+  QUARTER: "quarter",
+  YEAR: "year",
 };
 
 export const bestProduct = async (range, companyId) => {
@@ -277,9 +376,9 @@ export const bestProduct = async (range, companyId) => {
       switch (range) {
         case TimeRange.DAY:
           // Rango para el día actual en la zona horaria de Mazatlán
-          const timeZone = 'America/Mazatlan';
-          startDate = moment.tz(timeZone).startOf('day').toDate();
-          endDate = moment.tz(timeZone).endOf('day').toDate();
+          const timeZone = "America/Mazatlan";
+          startDate = moment.tz(timeZone).startOf("day").toDate();
+          endDate = moment.tz(timeZone).endOf("day").toDate();
           break;
         case TimeRange.WEEK:
           // Rango para la semana actual
@@ -293,13 +392,25 @@ export const bestProduct = async (range, companyId) => {
         case TimeRange.MONTH:
           // Rango para el mes actual
           const currentDate = new Date();
-          startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // Primer día del mes actual
-          endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Último día del mes actual
+          startDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            1
+          ); // Primer día del mes actual
+          endDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
+            0
+          ); // Último día del mes actual
           break;
         case TimeRange.QUARTER:
           // Rango para el trimestre actual
           const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3);
-          startDate = new Date(new Date().getFullYear(), 3 * currentQuarter - 3, 1); // Primer día del trimestre actual
+          startDate = new Date(
+            new Date().getFullYear(),
+            3 * currentQuarter - 3,
+            1
+          ); // Primer día del trimestre actual
           endDate = new Date(new Date().getFullYear(), 3 * currentQuarter, 0); // Último día del trimestre actual
           break;
         case TimeRange.YEAR:
@@ -308,7 +419,7 @@ export const bestProduct = async (range, companyId) => {
           endDate = new Date(new Date().getFullYear(), 11, 31); // Último día del año actual
           break;
         default:
-          throw new Error('Rango de tiempo no válido');
+          throw new Error("Rango de tiempo no válido");
       }
 
       // Aplicar el filtro por fecha
@@ -316,18 +427,20 @@ export const bestProduct = async (range, companyId) => {
     }
 
     // Obtener todas las facturas (o filtrar por fecha si se proporciona un rango)
-    const bills = await billModel.find({ ...filter, companyId }).populate('ticketId');
+    const bills = await billModel
+      .find({ ...filter, companyId })
+      .populate("ticketId");
 
     // Objeto para almacenar la cantidad total vendida de cada producto
     const soldProducts = {};
 
     // Recorrer todas las facturas
-    bills.forEach(bill => {
+    bills.forEach((bill) => {
       // Verificar si bill.ticketId está definido
-      bill.ticketId.forEach(value => {
+      bill.ticketId.forEach((value) => {
         if (bill.ticketId && value.products) {
           // Recorrer todos los productos de la factura
-          value.products.forEach(product => {
+          value.products.forEach((product) => {
             // Si el producto tiene un ID
             if (product._id) {
               // Si el producto ya está en el objeto, aumenta la cantidad vendida
@@ -340,58 +453,62 @@ export const bestProduct = async (range, companyId) => {
             }
           });
         }
-      })
+      });
     });
     let product;
     const productIds = Object.keys(soldProducts);
-    const productsInfo = await Promise.all(productIds.map(async productId => {
-      product = await productModel.findById(productId);
-      if (!product) {
-        // Si el producto no existe en la base de datos, simplemente regresa null
-        return null;
-      }
-      // Si el producto existe, regresa su información
-      return { name: product.name, stock: soldProducts[productId].stock };
-    }));
+    const productsInfo = await Promise.all(
+      productIds.map(async (productId) => {
+        product = await productModel.findById(productId);
+        if (!product) {
+          // Si el producto no existe en la base de datos, simplemente regresa null
+          return null;
+        }
+        // Si el producto existe, regresa su información
+        return { name: product.name, stock: soldProducts[productId].stock };
+      })
+    );
 
     // Filtrar los productos que son null (productos no encontrados en la base de datos)
-    const validProductsInfo = productsInfo.filter(product => product !== null);
+    const validProductsInfo = productsInfo.filter(
+      (product) => product !== null
+    );
 
     // Ordenar los productos válidos por la cantidad vendida (de mayor a menor)
     const sortedProducts = validProductsInfo.sort((a, b) => b.stock - a.stock);
 
     if (sortedProducts.length === 0) {
       return {
-        products: []
+        products: [],
       };
     }
 
     // Obtener solo los nombres de los productos más vendidos
-    const products = sortedProducts.map(product => ({ name: product.name, stock: product.stock }));
+    const products = sortedProducts.map((product) => ({
+      name: product.name,
+      stock: product.stock,
+    }));
 
     // Devolver los nombres y cantidades de los productos más vendidos
     return { products };
-
   } catch (error) {
     console.log(error);
-    throw new Error('Ocurrió un error al obtener los productos más vendidos.');
+    throw new Error("Ocurrió un error al obtener los productos más vendidos.");
   }
 };
-
-
 
 export const deleteManyProducts = async (ids) => {
   try {
     ids.forEach(async (id) => {
-      const product = await productModel.findByIdAndDelete(id, { new: true })
-      const productTotal = await productModel.countDocuments()
+      const product = await productModel.findByIdAndDelete(id, { new: true });
+      const productTotal = await productModel.countDocuments();
 
-      return { product, productTotal }
-    })
+      return { product, productTotal };
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const manyProduct = async (products) => {
   try {
@@ -399,7 +516,7 @@ export const manyProduct = async (products) => {
     let productTotal;
     for (const value of products) {
       const product = await productModel.create(value);
-      productTotal = await productModel.countDocuments()
+      productTotal = await productModel.countDocuments();
 
       if (!product) {
         return { product: [] };
@@ -412,6 +529,3 @@ export const manyProduct = async (products) => {
     throw error; // Puedes elegir manejar el error aquí o dejarlo para que lo maneje el controlador.
   }
 };
-
-
-
