@@ -3,10 +3,9 @@ import { createNoteController, deleteNoteController, getAllNotesController, getN
 import { checkJwt } from '../middleware/permission.js'
 
 const router = Router()
-
+router.patch('/update/:id', [checkJwt], updateNoteController)
 router.post('/', [checkJwt], createNoteController)
 router.get('/', [checkJwt], getAllNotesController)
 router.get('/:id', [checkJwt], getNoteByIdController)
-router.put('/update/:id', [checkJwt], updateNoteController)
 router.delete('/delete/:id', [checkJwt], deleteNoteController)
 export default router

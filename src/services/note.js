@@ -1,85 +1,111 @@
-import noteModel from "../model/NotesModel.js"
+import noteModel from "../model/NotesModel.js";
 
-export const createNote = async (note, userId, tableId, ticketId, companyId) => {
+export const createNote = async (
+  note,
+  userId,
+  tableId,
+  ticketId,
+  companyId
+) => {
   try {
     if (!tableId) {
       return {
-        msg: 'error no viene tableId'
-      }
+        msg: "error no viene tableId",
+      };
     }
 
-    const newNote = await noteModel.create({ note, ticketId, userId, tableId, companyId })
+    const newNote = await noteModel.create({
+      note,
+      ticketId,
+      userId,
+      tableId,
+      companyId,
+    });
     if (!newNote) {
       return {
-        msg: 'error al crear la nota'
-      }
+        msg: "error al crear la nota",
+      };
     }
-    return newNote
+    return newNote;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export const updateNote = async (id, note, ticketId, userId, companyId) => {
+export const updateNote = async (
+  id,
+  noteId,
+  note,
+  ticketId,
+  userId,
+  companyId
+) => {
   try {
-    const noteUpdate = await noteModel.findByIdAndUpdate(id, { note, ticketId, userId, companyId }, { new: true })
+    const noteUpdate = await noteModel.findById(id);
     if (!noteUpdate) {
       return {
-        msg: 'no existe nota con ese id'
-      }
+        msg: "no existe nota con ese id",
+      };
     }
-    return noteUpdate
+    noteUpdate.note.forEach(async (value) => {
+      if(value._id.toString() === noteId.toString()) {
+        value.message = note.message
+      }
+    });
+    await noteUpdate.save()
+    return noteUpdate;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 export const deleteNote = async (id, idBody) => {
   try {
     if (idBody) {
-      const notes = await noteModel.findById(id)
-      const noteUpdate = notes.note.filter(value => value._id.toString() !== idBody)
-      notes.note = noteUpdate
-      notes.save()
-      return notes
+      const notes = await noteModel.findById(id);
+      const noteUpdate = notes.note.filter(
+        (value) => value._id.toString() !== idBody
+      );
+      notes.note = noteUpdate;
+      await notes.save();
+      return notes;
     }
-    const noteDeleted = await noteModel.findByIdAndDelete(id, { new: true })
+    const noteDeleted = await noteModel.findByIdAndDelete(id, { new: true });
     if (!noteDeleted) {
       return {
-        msg: 'no hay id con esa nota'
-      }
+        msg: "no hay id con esa nota",
+      };
     }
-    return noteDeleted
+    return noteDeleted;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const getAllNotes = async (companyId) => {
   try {
-    const notes = await noteModel.find({ companyId })
+    const notes = await noteModel.find({ companyId });
     if (!notes) {
       return {
-        notes: []
-      }
+        notes: [],
+      };
     }
-    return notes
+    return notes;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const getNoteById = async (id) => {
   try {
-    const note = await noteModel.findById(id)
+    const note = await noteModel.findById(id);
     if (!note) {
       return {
-        msg: 'no hay nota con ese id'
-      }
+        msg: "no hay nota con ese id",
+      };
     }
-    return note
+    return note;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
