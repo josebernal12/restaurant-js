@@ -137,7 +137,7 @@ export const updateProductController = async (req, res) => {
     iva,
     companyId,
     priceBasis,
-    show
+    show,
   } = req.body;
 
   const productUpdate = await updateProduct(
