@@ -49,7 +49,7 @@ export const updateNote = async (
     }
     noteUpdate.note.forEach(async (value) => {
       if(value._id.toString() === noteId.toString()) {
-        value.message = note.message
+        value.message = note
       }
     });
     await noteUpdate.save()
