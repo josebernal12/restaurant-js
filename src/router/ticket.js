@@ -42,8 +42,8 @@ router.post(
   createMultipleTicketsControlller
 );
 router.get("/:id", [checkJwt], getTicketsByIdController);
-router.put("/updateTable/:id", [checkJwt], updateTableTicketController);
-router.put("/updateWaiter/:id", [checkJwt], updateWaiterTicketController);
+router.patch("/updateTable/:id", [checkJwt], updateTableTicketController);
+router.patch("/updateWaiter/:id", [checkJwt], updateWaiterTicketController);
 router.delete(
   "/deleteProductTicket/:id",
   [checkJwt],
