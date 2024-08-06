@@ -127,7 +127,9 @@ export const createTicket = async (
       });
     }
 
-    const lastBill = await ticketModel.findOne().sort({ folio: -1 });
+    const lastBill = await ticketModel
+      .findOne({ companyId })
+      .sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
     const tableAvailable = await tableModel.findById(tableId);
     tableAvailable.available = false;

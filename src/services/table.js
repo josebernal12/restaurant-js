@@ -81,16 +81,31 @@ export const availableTable = async (id, available, companyId) => {
   }
 };
 
-export const deletedTable = async (id) => {
+export const deleteTable = async (id, companyId) => {
   try {
-    const table = await tableModel.findByIdAndDelete(id, { new: true });
-    if (!table) {
+    // Eliminar la mesa con el ID proporcionado
+    const tableDeleted = await tableModel.findByIdAndDelete(id);
+
+    if (!tableDeleted) {
       return {
-        msg: "error deleting table",
+        msg: "Error deleting table",
       };
     }
-    return table;
+
+    // Obtener todas las mesas restantes, ordenadas por su campo 'number'
+    const tables = await tableModel.find({ companyId }).sort("number");
+    console.log(tables)
+    // Actualizar los números de las mesas para que sean consecutivos
+    for (let i = 0; i < tables.length; i++) {
+      tables[i].number = i + 1;
+      await tables[i].save();
+    }
+
+    return tableDeleted;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return {
+      msg: "An error occurred",
+    };
   }
 };

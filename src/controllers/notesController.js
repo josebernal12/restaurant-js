@@ -1,4 +1,5 @@
 import {
+  addNoteTicket,
   createNote,
   deleteNote,
   getAllNotes,
@@ -55,6 +56,17 @@ export const getAllNotesController = async (req, res) => {
 export const getNoteByIdController = async (req, res) => {
   const { id } = req.params;
   const note = await getNoteById(id);
+  if (note?.msg) {
+    res.status(404).json(note);
+    return;
+  }
+  res.json(note);
+};
+
+export const addNoteTicketController = async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+  const note = await addNoteTicket(id, data);
   if (note?.msg) {
     res.status(404).json(note);
     return;

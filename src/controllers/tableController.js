@@ -1,7 +1,7 @@
 import {
   availableTable,
   createTable,
-  deletedTable,
+  deleteTable,
   getTableById,
   getTables,
 } from "../services/table.js";
@@ -36,6 +36,6 @@ export const getTableByIdController = async (req, res) => {
 
 export const deleteTableController = async (req, res) => {
   const { id } = req.params;
-  const table = await deletedTable(id);
+  const table = await deleteTable(id, req.user.companyId.toString());
   res.json(table);
 };

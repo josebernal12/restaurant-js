@@ -48,11 +48,11 @@ export const updateNote = async (
       };
     }
     noteUpdate.note.forEach(async (value) => {
-      if(value._id.toString() === noteId.toString()) {
-        value.message = note
+      if (value._id.toString() === noteId.toString()) {
+        value.message = note;
       }
     });
-    await noteUpdate.save()
+    await noteUpdate.save();
     return noteUpdate;
   } catch (error) {
     console.log(error);
@@ -104,6 +104,22 @@ export const getNoteById = async (id) => {
         msg: "no hay nota con ese id",
       };
     }
+    return note;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addNoteTicket = async (id, newNote) => {
+  try {
+    const note = await noteModel.findOne({ ticketId: id });
+    if (!note) {
+      return {
+        msg: "error getting note",
+      };
+    }
+    note.note.push(newNote);
+    await note.save();
     return note;
   } catch (error) {
     console.log(error);
