@@ -2,11 +2,9 @@ import ticketModel from "../model/TIcketModel.js";
 
 export const updateTableTicket = async (id, table) => {
   try {
-    const ticket = await ticketModel.findByIdAndUpdate(
-      id,
-      { tableId: table },
-      { new: true }
-    );
+    const ticket = await ticketModel.findById(id)
+    ticket.tableId = table
+    await ticket.save()
     if (!ticket) {
       return {
         msg: "error updating ticket",
@@ -20,11 +18,9 @@ export const updateTableTicket = async (id, table) => {
 
 export const updateWaiterTicket = async (id, waiter) => {
   try {
-    const ticket = await ticketModel.findByIdAndUpdate(
-      id,
-      { waiterId: waiter },
-      { new: true }
-    );
+    const ticket = await ticketModel.findById(id);
+    ticket.waiterId = waiter;
+    await ticket.save();
     if (!ticket) {
       return {
         msg: "error updating ticket",
@@ -42,8 +38,8 @@ export const deleteProductTicket = async (id, productId) => {
     ticket.products = ticket.products.filter(
       (value) => value._id.toString() !== productId.toString()
     );
-    await ticket.save()
-    return ticket
+    await ticket.save();
+    return ticket;
   } catch (error) {
     console.log(error);
   }
