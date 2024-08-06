@@ -49,31 +49,7 @@ export const createTicket = async (
 
     let invalid = false;
 
-    // // Adjust stock for promotions
-    // if (promotion && promotion.length > 0) {
-    //   for (const promoId of promotion) {
-    //     const promo = await promotionModel.findById(promoId);
-    //     if (!promo) continue;
-
-    //     const factor = getPromotionFactor(promo.type); // Helper function to get the promotion factor
-    //     for (const productId of promo.productsId) {
-    //       const promoProduct = await productModel.findById(productId);
-    //       if (promoProduct?.recipe) {
-    //         for (const recipe of promoProduct.recipe) {
-    //           const product = products.find(p => p._id.equals(productId));
-    //           if (!product) continue;
-
-    //           const adjustedStock = factor * recipe.stock; // Adjust stock based on promotion factor
-    //           if (recipe._id) {
-    //             await inventaryModel.findByIdAndUpdate(recipe._id, {
-    //               $inc: { stock: -adjustedStock },
-    //             });
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+  
 
     // Check stock availability
     for (const product of products) {

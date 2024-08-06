@@ -10,6 +10,7 @@ const ticketSchema = new Schema(
         stock: Number,
         discount: Number,
         iva: Number,
+        priceBasis:Number,
         category: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "category",
