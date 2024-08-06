@@ -40,7 +40,7 @@ export const deleteProductTicket = async (id, productId) => {
   try {
     const ticket = await ticketModel.findById(id);
     ticket.products = ticket.products.filter(
-      (value) => value._id !== productId
+      (value) => value._id.toString() !== productId.toString()
     );
     await ticket.save()
     return ticket

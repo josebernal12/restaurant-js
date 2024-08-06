@@ -14,8 +14,7 @@ export const generateBill = async (
   methodOfPayment,
   companyId,
   splitAccount,
-  numberAccount,
-  account
+  bills
 ) => {
   try {
     // Verificación de campos obligatorios
@@ -44,8 +43,7 @@ export const generateBill = async (
     const lastBill = await billModel.findOne({ companyId }).sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
 
-    if(splitAccount){
-
+    if (splitAccount) {
     }
     // Verificación de tickets coincidentes con la mesa
     if (allTickets.some((ticket) => ticket.tableId.toString() === tableId)) {
