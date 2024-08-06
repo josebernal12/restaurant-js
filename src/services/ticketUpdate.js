@@ -19,6 +19,7 @@ export const updateTableTicket = async (id, table) => {
 export const updateWaiterTicket = async (id, waiter) => {
   try {
     const ticket = await ticketModel.findById(id);
+    console.log(waiter)
     ticket.waiterId = waiter;
     await ticket.save();
     if (!ticket) {

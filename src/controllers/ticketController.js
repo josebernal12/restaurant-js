@@ -201,8 +201,8 @@ export const createMultipleTicketsControlller = async (req, res) => {
 
 export const updateTableTicketController = async (req, res) => {
   const { id } = req.params;
-  const { tableId } = req.body;
-  const ticket = await updateTableTicket(id, tableId);
+  const { table } = req.body;
+  const ticket = await updateTableTicket(id, table);
   if (ticket?.msg) {
     res.status(404).json(ticket);
     return;
@@ -212,8 +212,8 @@ export const updateTableTicketController = async (req, res) => {
 
 export const updateWaiterTicketController = async (req, res) => {
   const { id } = req.params;
-  const { waiterId } = req.body;
-  const ticket = await updateWaiterTicket(id, waiterId);
+  const { waiter } = req.body;
+  const ticket = await updateWaiterTicket(id, waiter);
   if (ticket?.msg) {
     res.status(404).json(ticket);
     return;
