@@ -1,4 +1,4 @@
-import ticketModel from "../model/TIcketModel";
+import ticketModel from "../model/TIcketModel.js";
 
 export const updateTableTicket = async (id, table) => {
   try {
