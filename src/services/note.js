@@ -110,16 +110,19 @@ export const getNoteById = async (id) => {
   }
 };
 
-export const addNoteTicket = async (id, newNote) => {
+export const addNoteTicket = async (data) => {
   try {
-    const note = await noteModel.findOne({ ticketId: id });
+    const note = await noteModel.create({
+      note: data.note,
+      companyId: data.companyId,
+      ticketId: data.companyId,
+      userId: data.userId,
+    });
     if (!note) {
       return {
         msg: "error getting note",
       };
     }
-    note.note.push(newNote);
-    await note.save();
     return note;
   } catch (error) {
     console.log(error);

@@ -64,9 +64,8 @@ export const getNoteByIdController = async (req, res) => {
 };
 
 export const addNoteTicketController = async (req, res) => {
-  const { id } = req.params;
   const { data } = req.body;
-  const note = await addNoteTicket(id, data);
+  const note = await addNoteTicket(data);
   if (note?.msg) {
     res.status(404).json(note);
     return;

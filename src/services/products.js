@@ -31,7 +31,7 @@ export const addProducts = async (
   companyId,
   priceBasis,
   show,
-  quantity = 1,
+  quantity = 1
 ) => {
   try {
     if (!name || !description || !price) {
@@ -46,7 +46,6 @@ export const addProducts = async (
         msg: "Ya existe un producto con ese nombre",
       };
     }
-    console.log(show)
     const newProduct = await (
       await productModel.create({
         name,
@@ -239,7 +238,7 @@ export const updateProduct = async (
           iva,
           companyId,
           priceBasis,
-          show
+          show,
         },
         { new: true }
       )

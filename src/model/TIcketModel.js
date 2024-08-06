@@ -1,92 +1,97 @@
-import mongoose from 'mongoose'
-const { Schema } = mongoose
-import { uid } from 'uid'
-const ticketSchema = new Schema({
-  products: [
-    {
-      name: String,
-      price: Number,
-      stock: Number,
-      discount: Number,
-      category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'category'
-      },
-      uid: {
-        type: String,
-        default: uid(16)
-      },
-      completed: {
-        type: Boolean,
-        default: false
-      },
-      recipe: [{
+import mongoose from "mongoose";
+const { Schema } = mongoose;
+import { uid } from "uid";
+const ticketSchema = new Schema(
+  {
+    products: [
+      {
         name: String,
+        price: Number,
         stock: Number,
-        unitType: Number,
-        unitQuantity: Number,
-        unit: {
-          name: {
-            type: String
-          },
-          clave: {
-            type: String
-          }
+        discount: Number,
+        iva: Number,
+        category: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "category",
         },
-        // max: Number,
-        // min: Number,        
-
-      }],
-    }
-  ],
-  subTotal: {
-    type: Number,
-    // required: true,
-  },
-  total: {
-    type: Number,
-    // required: true,
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  tableId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'table'
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
-  waiter: {
-    type: String
-  },
-  waiterId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
-  status: {
-    type: String,
-  },
-  promotion: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'promotion',
+        uid: {
+          type: String,
+          default: uid(16),
+        },
+        completed: {
+          type: Boolean,
+          default: false,
+        },
+        recipe: [
+          {
+            name: String,
+            stock: Number,
+            unitType: Number,
+            unitQuantity: Number,
+            unit: {
+              name: {
+                type: String,
+              },
+              clave: {
+                type: String,
+              },
+            },
+            // max: Number,
+            // min: Number,
+          },
+        ],
+      },
+    ],
+    subTotal: {
+      type: Number,
+      // required: true,
+    },
+    total: {
+      type: Number,
+      // required: true,
+    },
+    completed: {
+      type: Boolean,
       default: false,
-    }
-  ],
-  folio: {
-    type: Number
+    },
+    tableId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "table",
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    waiter: {
+      type: String,
+    },
+    waiterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    status: {
+      type: String,
+    },
+    promotion: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "promotion",
+        default: false,
+      },
+    ],
+    folio: {
+      type: Number,
+    },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+    },
   },
-  companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company'
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-})
+);
 
-const ticketModel = mongoose.model('ticket', ticketSchema)
+const ticketModel = mongoose.model("ticket", ticketSchema);
 
-export default ticketModel
+export default ticketModel;

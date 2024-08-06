@@ -1,31 +1,40 @@
-import mongoose from "mongoose"
-import billModel from "../model/BillModel.js"
-import ticketModel from "../model/TIcketModel.js"
-import tableModel from "../model/TableModel.js"
-import productModel from "../model/ProductModel.js"
-import moment from 'moment'; // Importa la librería moment.js para manejar fechas
-import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
-import userModel from "../model/UserModel.js"
-import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js"
-export const generateBill = async (ticketId, tableId, userId, methodOfPayment, companyId) => {
+import mongoose from "mongoose";
+import billModel from "../model/BillModel.js";
+import ticketModel from "../model/TIcketModel.js";
+import tableModel from "../model/TableModel.js";
+import productModel from "../model/ProductModel.js";
+import moment from "moment"; // Importa la librería moment.js para manejar fechas
+import { startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
+import userModel from "../model/UserModel.js";
+import { searchByDatabase, searchByDate } from "../helpers/searchByDate.js";
+export const generateBill = async (
+  ticketId,
+  tableId,
+  userId,
+  methodOfPayment,
+  companyId,
+  splitAccount,
+  numberAccount,
+  account
+) => {
   try {
     // Verificación de campos obligatorios
     if (!tableId || !methodOfPayment) {
-      return 'Error al generar factura: faltan datos por proporcionar';
+      return "Error al generar factura: faltan datos por proporcionar";
     }
 
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableId);
     if (!table) {
       return {
-        msg: 'La mesa con ese ID no existe'
+        msg: "La mesa con ese ID no existe",
       };
     }
 
     const ticket = await ticketModel.findById(ticketId);
     if (!ticket) {
       return {
-        msg: 'El ticket con ese ID no existe'
+        msg: "El ticket con ese ID no existe",
       };
     }
 
@@ -35,47 +44,68 @@ export const generateBill = async (ticketId, tableId, userId, methodOfPayment, c
     const lastBill = await billModel.findOne({ companyId }).sort({ folio: -1 });
     const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
 
+    if(splitAccount){
+
+    }
     // Verificación de tickets coincidentes con la mesa
-    if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
+    if (allTickets.some((ticket) => ticket.tableId.toString() === tableId)) {
       const newBill = await billModel.create({
-        ticketId: allTickets.map(ticket => ticket._id),
+        ticketId: allTickets.map((ticket) => ticket._id),
         tableId,
         userId,
         methodOfPayment,
         folio: newFolio,
-        companyId
+        companyId,
       });
 
       // Actualización del estado de la mesa
-      await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
+      await tableModel.findByIdAndUpdate(
+        tableId,
+        { available: true },
+        { new: true }
+      );
 
       // Actualización del estado de los tickets a completados
-      await Promise.all(allTickets.map(async (ticket) => {
-        await ticketModel.findByIdAndUpdate(ticket._id, { completed: true }, { new: true });
-      }));
+      await Promise.all(
+        allTickets.map(async (ticket) => {
+          await ticketModel.findByIdAndUpdate(
+            ticket._id,
+            { completed: true },
+            { new: true }
+          );
+        })
+      );
 
       if (!newBill) {
         return {
-          msg: 'Error al generar la factura'
+          msg: "Error al generar la factura",
         };
       }
       return newBill;
     }
 
     return {
-      msg: 'El ticket no coincide con la mesa'
+      msg: "El ticket no coincide con la mesa",
     };
-
   } catch (error) {
     console.log(error);
     return {
-      msg: 'Ocurrió un error al generar la factura'
+      msg: "Ocurrió un error al generar la factura",
     };
   }
 };
 
-
-export const getBills = async (page, type, name, showAll, quantity, firstDate, secondDate, tableId, companyId) => {
+export const getBills = async (
+  page,
+  type,
+  name,
+  showAll,
+  quantity,
+  firstDate,
+  secondDate,
+  tableId,
+  companyId
+) => {
   try {
     const perPage = 10;
     const pageQuery = parseInt(page) || 1;
@@ -86,15 +116,16 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     // Verifica si se debe mostrar todas las facturas
     if (showAll === "1") {
-      let billsFiltered = await billModel.find({ companyId })
-        .populate('tableId')
-        .populate('userId')
+      let billsFiltered = await billModel
+        .find({ companyId })
+        .populate("tableId")
+        .populate("userId")
         .populate({
-          path: 'ticketId',
+          path: "ticketId",
           populate: {
-            path: 'waiterId',
-            model: 'User' // el nombre del modelo relacionado
-          }
+            path: "waiterId",
+            model: "User", // el nombre del modelo relacionado
+          },
         })
         .sort({ createdAt: -1 });
 
@@ -102,20 +133,20 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
       return {
         totalBills,
-        billsFiltered
+        billsFiltered,
       };
     }
 
     // Establece las fechas de inicio y fin según los parámetros type, firstDate y secondDate
-    if (type === 'week') {
-      startDate = currentDate.clone().subtract(1, 'week').startOf('week');
-      endDate = currentDate.clone().subtract(1, 'week').endOf('week');
-    } else if (type === 'currentWeek') {
-      startDate = currentDate.clone().startOf('week');
-      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Sábado de la semana actual
+    if (type === "week") {
+      startDate = currentDate.clone().subtract(1, "week").startOf("week");
+      endDate = currentDate.clone().subtract(1, "week").endOf("week");
+    } else if (type === "currentWeek") {
+      startDate = currentDate.clone().startOf("week");
+      endDate = currentDate.clone().endOf("week").subtract(1, "day"); // Sábado de la semana actual
     } else if (firstDate && secondDate) {
-      startDate = moment(firstDate).startOf('day');
-      endDate = moment(secondDate).endOf('day');
+      startDate = moment(firstDate).startOf("day");
+      endDate = moment(secondDate).endOf("day");
     }
 
     let query = {};
@@ -124,22 +155,22 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
     if (startDate && endDate) {
       query.createdAt = {
         $gte: startDate.toDate(),
-        $lte: endDate.toDate()
+        $lte: endDate.toDate(),
       };
     }
 
     // Realiza la búsqueda de facturas según la consulta definida
-    let billsFiltered = await billModel.find({ ...query, companyId })
+    let billsFiltered = await billModel
+      .find({ ...query, companyId })
       .populate({
-        path: 'ticketId',
+        path: "ticketId",
         populate: {
-          path: 'waiterId',
-          model: 'User' // el nombre del modelo relacionado
-        }
+          path: "waiterId",
+          model: "User", // el nombre del modelo relacionado
+        },
       })
-      .populate('tableId')
-      .populate('userId');
-
+      .populate("tableId")
+      .populate("userId");
 
     // Filtrar por cantidad si se proporciona
     if (quantity) {
@@ -148,14 +179,16 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     // Filtrar por ID de mesa si se proporciona
     if (tableId) {
-      billsFiltered = billsFiltered.filter(bill => bill.tableId.number === Number(tableId));
+      billsFiltered = billsFiltered.filter(
+        (bill) => bill.tableId.number === Number(tableId)
+      );
     }
 
     // Filtrar por nombre de camarero si se proporciona
     if (name) {
-      billsFiltered = billsFiltered.filter(bill =>
-        bill.ticketId.some(ticket =>
-          ticket.waiterId && ticket.waiterId.name.includes(name)
+      billsFiltered = billsFiltered.filter((bill) =>
+        bill.ticketId.some(
+          (ticket) => ticket.waiterId && ticket.waiterId.name.includes(name)
         )
       );
     }
@@ -167,7 +200,7 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 
     return {
       totalBills,
-      billsFiltered: paginatedBills
+      billsFiltered: paginatedBills,
     };
   } catch (error) {
     console.log(error);
@@ -178,10 +211,10 @@ export const getBills = async (page, type, name, showAll, quantity, firstDate, s
 export const bestWaiter = async (type, companyId) => {
   try {
     let startDate, endDate;
-    
+
     // Determinar las fechas de inicio y fin según el tipo de consulta o si no se proporciona ningún tipo
     switch (type) {
-      case 'week':
+      case "week":
         const today = new Date();
         const dayOfWeek = today.getDay();
         const firstDayOfWeek = new Date(today);
@@ -190,17 +223,29 @@ export const bestWaiter = async (type, companyId) => {
         endDate = new Date(firstDayOfWeek);
         endDate.setDate(endDate.getDate() + 6); // Fin de la semana
         break;
-      case 'month':
+      case "month":
         const currentDate = new Date();
-        startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // Primer día del mes actual
-        endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Último día del mes actual
+        startDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        ); // Primer día del mes actual
+        endDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          0
+        ); // Último día del mes actual
         break;
-      case 'quarter':
+      case "quarter":
         const currentQuarter = Math.floor((new Date().getMonth() + 3) / 3); // Determinar el trimestre actual
-        startDate = new Date(new Date().getFullYear(), 3 * currentQuarter - 3, 1); // Primer día del trimestre actual
+        startDate = new Date(
+          new Date().getFullYear(),
+          3 * currentQuarter - 3,
+          1
+        ); // Primer día del trimestre actual
         endDate = new Date(new Date().getFullYear(), 3 * currentQuarter, 0); // Último día del trimestre actual
         break;
-      case 'year':
+      case "year":
         startDate = new Date(new Date().getFullYear(), 0, 1); // Primer día del año actual
         endDate = new Date(new Date().getFullYear(), 11, 31); // Último día del año actual
         break;
@@ -211,32 +256,37 @@ export const bestWaiter = async (type, companyId) => {
     }
 
     // Construir la consulta basada en las fechas si se proporciona un tipo válido
-    const query = startDate && endDate ? {
-      createdAt: {
-        $gte: startDate,
-        $lte: endDate
-      }
-    } : {};
-    let bills = await billModel.find({ ...query, companyId })
+    const query =
+      startDate && endDate
+        ? {
+            createdAt: {
+              $gte: startDate,
+              $lte: endDate,
+            },
+          }
+        : {};
+    let bills = await billModel
+      .find({ ...query, companyId })
       .populate({
-        path: 'ticketId',
+        path: "ticketId",
         populate: {
-          path: 'waiterId',
-          model: 'User' // el nombre del modelo relacionado
-        }
+          path: "waiterId",
+          model: "User", // el nombre del modelo relacionado
+        },
       })
-      .populate('tableId')
-      .populate('userId');
+      .populate("tableId")
+      .populate("userId");
 
     // Objeto para almacenar el conteo de camareros
     const waiterCount = {};
 
     // Iterar sobre las facturas y contar los camareros
-    bills.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
+    bills.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
         const waiterName = ticket.waiterId?.name; // Accede al nombre del camarero
 
-        if (waiterName) { // Asegúrate de que waiterName no sea undefined o null
+        if (waiterName) {
+          // Asegúrate de que waiterName no sea undefined o null
           // Verificar si ya existe una entrada para este camarero en el objeto waiterCount
           if (waiterCount[waiterName]) {
             waiterCount[waiterName]++; // Incrementar el contador si ya existe
@@ -246,50 +296,48 @@ export const bestWaiter = async (type, companyId) => {
         }
       });
     });
-    const waiterArray = Object.keys(waiterCount).map(waiterName => {
+    const waiterArray = Object.keys(waiterCount).map((waiterName) => {
       return { name: waiterName, sell: waiterCount[waiterName] };
     });
 
     return waiterArray;
   } catch (error) {
     console.log(error);
-    throw new Error('Ocurrió un error al obtener las facturas');
+    throw new Error("Ocurrió un error al obtener las facturas");
   }
-}
+};
 export const getBillById = async (id) => {
   try {
-    const bill = await billModel.findById(id)
-      .populate('tableId')
+    const bill = await billModel
+      .findById(id)
+      .populate("tableId")
       .populate({
-        path: 'userId',
-        select: '-password' // Excluir el campo password
+        path: "userId",
+        select: "-password", // Excluir el campo password
       })
       .populate({
-        path: 'ticketId',
+        path: "ticketId",
         populate: {
-          path: 'waiterId',
-          model: 'User',
-          select: '-password' // Excluir el campo password
-        }
+          path: "waiterId",
+          model: "User",
+          select: "-password", // Excluir el campo password
+        },
       });
 
     if (!bill) {
       return {
-        msg: 'Esa factura con ese ID no existe'
+        msg: "Esa factura con ese ID no existe",
       };
     }
-    
-    return bill;
 
+    return bill;
   } catch (error) {
     console.log(error);
     return {
-      msg: 'Error del servidor'
+      msg: "Error del servidor",
     };
   }
 };
-
-
 
 export const sells = async (date, companyId) => {
   try {
@@ -298,25 +346,33 @@ export const sells = async (date, companyId) => {
     if (date) {
       // Si se proporciona un tipo de consulta, construimos la consulta según el tipo
       switch (date) {
-        case 'month':
+        case "month":
           query = {
             // Filtrar por mes
             createdAt: {
-              $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-              $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-            }
+              $gte: new Date(
+                new Date().getFullYear(),
+                new Date().getMonth(),
+                1
+              ),
+              $lt: new Date(
+                new Date().getFullYear(),
+                new Date().getMonth() + 1,
+                1
+              ),
+            },
           };
           break;
-        case 'year':
+        case "year":
           query = {
             // Filtrar por año
             createdAt: {
               $gte: new Date(new Date().getFullYear(), 0, 1),
-              $lt: new Date(new Date().getFullYear() + 1, 0, 1)
-            }
+              $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+            },
           };
           break;
-        case 'week':
+        case "week":
           // Filtrar por semana
           const startOfWeekDate = startOfWeek(new Date(), { weekStartsOn: 1 }); // Empieza la semana el lunes
           const endOfWeekDate = endOfWeek(new Date(), { weekStartsOn: 1 }); // Termina la semana el domingo
@@ -324,23 +380,25 @@ export const sells = async (date, companyId) => {
           query = {
             createdAt: {
               $gte: startOfWeekDate,
-              $lt: endOfWeekDate
-            }
+              $lt: endOfWeekDate,
+            },
           };
           break;
-        case 'day':
+        case "day":
           // Filtrar por día (hoy)
           const startOfDayDate = startOfDay(new Date());
           const endOfDayDate = endOfDay(new Date());
           query = {
             createdAt: {
               $gte: startOfDayDate,
-              $lt: endOfDayDate
-            }
+              $lt: endOfDayDate,
+            },
           };
 
           // Verificar si hay ventas para el día actual
-          const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
+          const bills = await billModel
+            .find({ ...query, companyId })
+            .populate("ticketId");
           if (bills.length === 0) {
             return 0; // No hay ventas para este día, devolver 0
           }
@@ -350,20 +408,21 @@ export const sells = async (date, companyId) => {
       }
     }
 
-    const bills = await billModel.find({ ...query, companyId }).populate('ticketId');
+    const bills = await billModel
+      .find({ ...query, companyId })
+      .populate("ticketId");
 
     let totalSales = 0;
-    bills.forEach(bill => {
-      bill.ticketId.forEach(value => {
-        totalSales += value.total
-
-      })
+    bills.forEach((bill) => {
+      bill.ticketId.forEach((value) => {
+        totalSales += value.total;
+      });
     });
 
     return { totalSales };
   } catch (error) {
     console.log(error);
-    throw new Error('Error al calcular las ventas.');
+    throw new Error("Error al calcular las ventas.");
   }
 };
 
@@ -375,26 +434,27 @@ export const getBillLastWeek = async (type, page, companyId) => {
   const currentDate = moment();
 
   try {
-    if (type === 'week') {
-      startDate = currentDate.clone().subtract(1, 'week').startOf('week');
-      endDate = currentDate.clone().subtract(1, 'week').endOf('week');
-    } else if (type === 'currentWeek') {
-      startDate = currentDate.clone().startOf('week');
-      endDate = currentDate.clone().endOf('week').subtract(1, 'day'); // Sábado de la semana actual
+    if (type === "week") {
+      startDate = currentDate.clone().subtract(1, "week").startOf("week");
+      endDate = currentDate.clone().subtract(1, "week").endOf("week");
+    } else if (type === "currentWeek") {
+      startDate = currentDate.clone().startOf("week");
+      endDate = currentDate.clone().endOf("week").subtract(1, "day"); // Sábado de la semana actual
     }
     let query = {};
 
     if (startDate && endDate) {
       query.createdAt = {
         $gte: startDate.toDate(),
-        $lte: endDate.toDate()
+        $lte: endDate.toDate(),
       };
     }
     // Realiza la búsqueda de facturas según la consulta definida
-    let billsFiltered = await billModel.find({ ...query, companyId })
-      .populate('ticketId')
-      .populate('tableId')
-      .populate('userId')
+    let billsFiltered = await billModel
+      .find({ ...query, companyId })
+      .populate("ticketId")
+      .populate("tableId")
+      .populate("userId")
       .limit(perPage)
       .skip(skip)
       .sort({ createdAt: -1 });
@@ -403,45 +463,49 @@ export const getBillLastWeek = async (type, page, companyId) => {
 
     if (!billsFiltered) {
       return {
-        billsFiltered: []
+        billsFiltered: [],
       };
     }
 
     return {
       totalBills,
-      billsFiltered
+      billsFiltered,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 export const userSell = async (id, companyId) => {
   try {
-
     const { year, month, week, day } = searchByDate();
-    let { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, userModel, id, companyId)
+    let { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } =
+      await searchByDatabase(year, month, week, day, userModel, id, companyId);
 
-    valorAño = valorAño.filter(bill =>
-      bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId._id.toString() === id)
+    valorAño = valorAño.filter((bill) =>
+      bill.ticketId.some(
+        (ticket) => ticket.waiterId && ticket.waiterId._id.toString() === id
+      )
     );
-    valorMes = valorMes.filter(bill =>
-      bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId._id.toString() === id)
+    valorMes = valorMes.filter((bill) =>
+      bill.ticketId.some(
+        (ticket) => ticket.waiterId && ticket.waiterId._id.toString() === id
+      )
     );
-    valorSemana = valorSemana.filter(bill =>
-      bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId._id.toString() === id)
+    valorSemana = valorSemana.filter((bill) =>
+      bill.ticketId.some(
+        (ticket) => ticket.waiterId && ticket.waiterId._id.toString() === id
+      )
     );
-    valorDia = valorDia.filter(bill =>
-      bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId._id.toString() === id)
+    valorDia = valorDia.filter((bill) =>
+      bill.ticketId.some(
+        (ticket) => ticket.waiterId && ticket.waiterId._id.toString() === id
+      )
     );
-    valorTodos = valorTodos.filter(bill =>
-      bill.ticketId.some(ticket =>
-        ticket.waiterId && ticket.waiterId._id.toString() === id)
+    valorTodos = valorTodos.filter((bill) =>
+      bill.ticketId.some(
+        (ticket) => ticket.waiterId && ticket.waiterId._id.toString() === id
+      )
     );
     return {
       valorAño: valorAño.length,
@@ -450,69 +514,73 @@ export const userSell = async (id, companyId) => {
       valorDia: valorDia.length,
       valorTodos: valorTodos.length,
       name: name.name,
-    }
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 export const productSell = async (id, companyId) => {
   try {
-
     const { year, month, week, day } = searchByDate();
 
-    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } = await searchByDatabase(year, month, week, day, productModel, id, companyId)
+    const { valorAño, valorMes, valorSemana, valorDia, valorTodos, name } =
+      await searchByDatabase(
+        year,
+        month,
+        week,
+        day,
+        productModel,
+        id,
+        companyId
+      );
 
     let totalAño = 0;
     let totalMes = 0;
     let totalSemana = 0;
     let totalDia = 0;
     let totalStock = 0;
-    valorAño.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
-        ticket.products.forEach(product => {
+    valorAño.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
+        ticket.products.forEach((product) => {
           if (product._id.toString() === id) {
             totalAño += product.stock;
           }
         });
       });
     });
-    valorMes.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
-        ticket.products.forEach(product => {
+    valorMes.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
+        ticket.products.forEach((product) => {
           if (product._id.toString() === id) {
             totalMes += product.stock;
           }
         });
       });
     });
-    valorSemana.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
-        ticket.products.forEach(product => {
+    valorSemana.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
+        ticket.products.forEach((product) => {
           if (product._id.toString() === id) {
             totalSemana += product.stock;
-
           }
         });
       });
     });
-    valorDia.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
-        ticket.products.forEach(product => {
+    valorDia.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
+        ticket.products.forEach((product) => {
           if (product._id.toString() === id) {
             totalDia += product.stock;
-
           }
         });
       });
     });
-    valorTodos.forEach(bill => {
-      bill.ticketId.forEach(ticket => {
-        ticket.products.forEach(product => {
+    valorTodos.forEach((bill) => {
+      bill.ticketId.forEach((ticket) => {
+        ticket.products.forEach((product) => {
           if (product._id.toString() === id) {
             totalStock += product.stock;
-
           }
         });
       });
@@ -525,26 +593,35 @@ export const productSell = async (id, companyId) => {
       valorDia: totalDia,
       valorTodos: totalStock,
       name: name.name,
-    }
-
-
-
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-export const generateMultipleBills = async (tickets, tableId, userId, methodOfPayment, companyId) => {
+};
+export const generateMultipleBills = async (
+  tickets,
+  tableId,
+  userId,
+  methodOfPayment,
+  companyId
+) => {
   try {
     // Verificación de campos obligatorios
-    if (!tableId || !methodOfPayment || !tickets || !Array.isArray(tickets) || tickets.length === 0) {
-      return 'Error al generar facturas: faltan datos por proporcionar o el array de tickets está vacío';
+    if (
+      !tableId ||
+      !methodOfPayment ||
+      !tickets ||
+      !Array.isArray(tickets) ||
+      tickets.length === 0
+    ) {
+      return "Error al generar facturas: faltan datos por proporcionar o el array de tickets está vacío";
     }
 
     const tableObjectId = mongoose.Types.ObjectId(tableId);
     const table = await tableModel.findById(tableObjectId);
     if (!table) {
       return {
-        msg: 'La mesa con ese ID no existe'
+        msg: "La mesa con ese ID no existe",
       };
     }
 
@@ -553,10 +630,12 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
       const ticket = await ticketModel.findById(ticketId);
       if (!ticket) {
         return {
-          msg: `El ticket con el ID ${ticketId} no existe`
+          msg: `El ticket con el ID ${ticketId} no existe`,
         };
       }
-      const lastBill = await billModel.findOne({ companyId }).sort({ folio: -1 });
+      const lastBill = await billModel
+        .findOne({ companyId })
+        .sort({ folio: -1 });
       const newFolio = lastBill && lastBill.folio ? lastBill.folio + 1 : 1;
       const newBill = await billModel.create({
         ticketId,
@@ -564,12 +643,11 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
         userId,
         methodOfPayment,
         folio: newFolio,
-        companyId
+        companyId,
       });
       // const allTickets = await ticketModel.find({ tableId });
 
       // Obtener el último folio y calcular el nuevo folio
-
 
       // Verificación de tickets coincidentes con la mesa
       // if (allTickets.some(ticket => ticket.tableId.toString() === tableId)) {
@@ -582,8 +660,16 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
       //   });
 
       // Actualización del estado de la mesa
-      await tableModel.findByIdAndUpdate(tableId, { available: true }, { new: true });
-      await ticketModel.findByIdAndUpdate(ticket._id, { completed: true }, { new: true });
+      await tableModel.findByIdAndUpdate(
+        tableId,
+        { available: true },
+        { new: true }
+      );
+      await ticketModel.findByIdAndUpdate(
+        ticket._id,
+        { completed: true },
+        { new: true }
+      );
 
       // Actualización del estado de los tickets a completados
       // await Promise.all(allTickets.map(async (ticket) => {
@@ -591,27 +677,24 @@ export const generateMultipleBills = async (tickets, tableId, userId, methodOfPa
 
       if (!newBill) {
         return {
-          msg: `Error al generar la factura para el ticket con el ID ${ticketId}`
+          msg: `Error al generar la factura para el ticket con el ID ${ticketId}`,
         };
       }
       createdBills.push(newBill);
-
     }
 
     return createdBills;
-
   } catch (error) {
     console.log(error);
     return {
-      msg: 'Ocurrió un error al generar las facturas'
+      msg: "Ocurrió un error al generar las facturas",
     };
   }
 };
 //pending
 export const payManyTickets = async (tableIds) => {
   try {
-    
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
