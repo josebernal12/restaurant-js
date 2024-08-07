@@ -45,3 +45,11 @@ export const deleteProductTicket = async (id, productId) => {
     console.log(error);
   }
 };
+
+export const payBillWithPart = async (bills) => {
+  try {
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
