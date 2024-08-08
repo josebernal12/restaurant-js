@@ -336,10 +336,10 @@ export const newUpdateTicket = async (
 export const getTickets = async (name, companyId) => {
   try {
     if (name.waiter) {
-      const tickets = await ticketModel.find({ name, companyId });
+      const tickets = await ticketModel.find({ name, companyId }).populate('waiterId');
       return tickets;
     }
-    const tickets = await ticketModel.find({ companyId });
+    const tickets = await ticketModel.find({ companyId }).populate("waiterId");
     if (!tickets) {
       return {
         tickets: [],
