@@ -131,8 +131,11 @@ export const createTicket = async (
 
     newTicket.status = "proceso";
     await newTicket.save();
-
-    return newTicket;
+    const ticket = await ticketModel.findById(newTicket._id).populate({
+      path: 'waiterId',
+      select: "-password", // Excluir el campo password
+    });
+    return ticket;
   } catch (error) {
     console.log(error);
     return {
